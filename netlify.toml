@@ -1,6 +1,1 @@
-[build]
-  publish = "deploy-clean"
-  functions = "deploy-clean/netlify/functions"
 
-[functions."agent-runner"]
-  schedule = "0 7 * * *"
