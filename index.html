@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VetConnect OS — Platform</title>
+<!-- AUTH GUARD — loads before anything else -->
+<script src="auth.js"></script>
+<script>
+  // Require login — redirect to login.html if no valid session
+  var __session = VetConnectAuth.requireAuth();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --purple:#2D1B69;--purple-mid:#3D2B8A;--purple-lit:#5B4AB0;
+  --gold:#C9A84C;--gold-lit:#E8C96A;
+  --bg:#F7F5FF;--surface:#FFFFFF;--surface2:#F0EBFF;
+  --border:rgba(45,27,105,0.1);--text:#1A0F45;--muted:#6B5B95;
+  --success:#10B981;--warning:#F59E0B;--danger:#EF4444;--info:#3B82F6;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{background:var(--purple);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-brand{padding:1.25rem 1rem 1rem;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px;}
+.brand-shield{width:36px;height:36px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.brand-name{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+.brand-sub{font-size:10px;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;}
+.nav-section{padding:.5rem 0;}
+.nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:.08em;text-transform:uppercase;padding:.5rem 1rem .25rem;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1rem;font-size:13px;color:rgba(255,255,255,0.6);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;border-left:2px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-item.active{background:rgba(255,255,255,0.12);color:#fff;border-left-color:var(--gold);}
+.nav-icon{font-size:14px;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:.85rem 1rem;border-top:1px solid rgba(255,255,255,0.1);}
+.user-card{display:flex;align-items:center;gap:8px;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.user-name{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.user-role-label{font-size:10px;color:rgba(255,255,255,0.4);}
+.btn-logout{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:15px;padding:3px;transition:color .15s;}
+.btn-logout:hover{color:var(--danger);}
+
+/* MAIN */
+.main{overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:10;}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--text);}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.btn{padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--purple);color:#fff;}
+.btn-gold{background:var(--gold);color:#1A0F45;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.badge-role{font-size:10px;font-weight:600;padding:3px 10px;border-radius:99px;border:1px solid;}
+
+.content{padding:1.5rem;flex:1;display:flex;flex-direction:column;gap:1.25rem;}
+
+/* HERO BANNER */
+.hero-banner{background:linear-gradient(135deg,#1A0F45 0%,#2D1B69 50%,#3D2B8A 100%);border-radius:14px;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:relative;overflow:hidden;}
+.hero-banner::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.1) 0%,transparent 70%);top:-100px;right:-50px;}
+.hero-text{}
+.hero-eyebrow{font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.hero-title{font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;line-height:1.2;margin-bottom:6px;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,0.6);}
+.hero-actions{display:flex;gap:10px;flex-shrink:0;}
+.hero-stats{display:flex;gap:1.5rem;flex-shrink:0;}
+.hero-stat{text-align:center;}
+.hero-stat-num{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--gold-lit);}
+.hero-stat-label{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+/* KPI STRIP */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-c1::before{background:var(--purple-lit);}
+.kpi-c2::before{background:var(--gold);}
+.kpi-c3::before{background:var(--success);}
+.kpi-c4::before{background:var(--info);}
+.kpi-c5::before{background:var(--warning);}
+.kpi-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;}
+.kpi-value{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--text);line-height:1;}
+.kpi-delta{font-size:11px;margin-top:4px;color:var(--muted);}
+.kpi-delta.up{color:var(--success);}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.three-col{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.card-title{font-size:13px;font-weight:500;color:var(--text);}
+.card-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.card-body{padding:1.1rem;}
+.card-action{font-size:12px;color:var(--purple-lit);cursor:pointer;font-weight:500;background:none;border:none;padding:0;}
+.card-action:hover{text-decoration:underline;}
+
+/* SECTIONS */
+.section{display:none;}
+.section.active{display:flex;flex-direction:column;gap:1.25rem;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{text-align:left;padding:.6rem .85rem;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);}
+.data-table td{padding:.75rem .85rem;border-bottom:1px solid rgba(45,27,105,0.05);color:var(--text);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--surface2);}
+
+/* STATUS PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;}
+.pill::before{content:'●';font-size:7px;}
+.pill-hot{background:#FEE2E2;color:#DC2626;}
+.pill-warm{background:#FEF3C7;color:#D97706;}
+.pill-cold{background:#DBEAFE;color:#2563EB;}
+.pill-active{background:#D1FAE5;color:#059669;}
+.pill-pending{background:#FEF3C7;color:#D97706;}
+
+/* PIPELINE BARS */
+.pipeline-bar{display:flex;align-items:center;gap:.85rem;padding:.5rem 0;border-bottom:1px solid var(--border);}
+.pipeline-bar:last-child{border-bottom:none;}
+.pipeline-label{font-size:12px;color:var(--muted);min-width:80px;}
+.pipeline-track{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.pipeline-fill{height:100%;border-radius:3px;background:var(--purple-lit);}
+.pipeline-num{font-size:12px;font-weight:500;color:var(--text);min-width:24px;text-align:right;}
+
+/* ACTIVITY */
+.activity-item{display:flex;gap:10px;padding:.6rem 0;border-bottom:1px solid rgba(45,27,105,0.05);font-size:12px;}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:7px;height:7px;border-radius:50%;background:var(--purple-lit);flex-shrink:0;margin-top:4px;}
+.activity-text{color:var(--text);flex:1;line-height:1.5;}
+.activity-time{font-size:11px;color:var(--muted);}
+
+/* ALERT ITEMS */
+.alert-item{display:flex;align-items:center;gap:10px;padding:.7rem 0;border-bottom:1px solid rgba(45,27,105,0.05);font-size:12px;}
+.alert-item:last-child{border-bottom:none;}
+.alert-avatar{width:30px;height:30px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--purple-lit);flex-shrink:0;}
+.alert-name{font-weight:500;color:var(--text);}
+.alert-sub{font-size:11px;color:var(--muted);}
+.alert-days{font-size:11px;color:var(--danger);margin-left:auto;white-space:nowrap;}
+.btn-email{font-size:11px;padding:4px 10px;background:var(--purple);color:#fff;border:none;border-radius:6px;cursor:pointer;}
+
+/* ADMIN LINK IN NAV */
+.admin-nav-item{background:rgba(124,58,237,0.15);border-left:2px solid #7C3AED !important;}
+
+/* FUND PROGRESS */
+.fund-card{background:linear-gradient(135deg,#1A0F45,#2D1B69);border-radius:12px;padding:1.25rem 1.5rem;color:#fff;}
+.fund-title{font-family:'DM Serif Display',serif;font-size:1.3rem;color:#fff;margin-bottom:3px;}
+.fund-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1rem;}
+.fund-track{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:.75rem;}
+.fund-fill{height:100%;border-radius:4px;background:var(--gold);}
+.fund-pct{font-size:12px;color:rgba(255,255,255,0.6);}
+.fund-amount{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--gold-lit);float:right;margin-top:-2.5rem;}
+.fund-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1rem;}
+.fund-stat{background:rgba(255,255,255,0.07);border-radius:8px;padding:.65rem;}
+.fund-stat-val{font-size:1.1rem;font-weight:600;color:#fff;}
+.fund-stat-label{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+/* CHART */
+.chart-wrap{position:relative;height:180px;}
+
+/* VETERANS SECTION */
+.vet-card{display:flex;align-items:center;gap:10px;padding:.7rem 0;border-bottom:1px solid rgba(45,27,105,0.05);font-size:13px;}
+.vet-card:last-child{border-bottom:none;}
+.vet-avatar{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--purple-lit);flex-shrink:0;}
+.vet-name{font-weight:500;color:var(--text);}
+.vet-sub{font-size:11px;color:var(--muted);}
+.vet-score{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted);margin-left:auto;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:2rem;color:var(--muted);font-size:13px;}
+.empty-icon{font-size:2rem;margin-bottom:.5rem;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-shield">🛡️</div>
+    <div>
+      <div class="brand-name">VetConnect OS</div>
+      <div class="brand-sub">Platform</div>
+    </div>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-label">Main</div>
+    <button class="nav-item active" onclick="showSection('dashboard')" data-nav="dashboard"><span class="nav-icon">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="showSection('veterans')" data-nav="crm"><span class="nav-icon">🎖️</span> Veterans</button>
+    <button class="nav-item" onclick="showSection('properties')" data-nav="documents"><span class="nav-icon">🏠</span> Properties</button>
+    <button class="nav-item" onclick="showSection('vouchers')" data-nav="documents"><span class="nav-icon">🎟️</span> Vouchers</button>
+    <button class="nav-item" onclick="showSection('payments')" data-nav="analytics"><span class="nav-icon">💰</span> Payments</button>
+    <button class="nav-item" onclick="showSection('markets')" data-nav="analytics"><span class="nav-icon">📍</span> Markets</button>
+  </nav>
+
+  <nav class="nav-section">
+    <div class="nav-label">Investor CRM</div>
+    <button class="nav-item" onclick="showSection('investors')" data-nav="investors"><span class="nav-icon">🔍</span> Investor Search</button>
+    <button class="nav-item" onclick="showSection('crm')" data-nav="crm"><span class="nav-icon">👥</span> CRM / Back Office</button>
+    <button class="nav-item" onclick="showSection('outreach')" data-nav="outreach"><span class="nav-icon">📨</span> Outreach</button>
+    <button class="nav-item" onclick="showSection('documents')" data-nav="documents"><span class="nav-icon">📁</span> Documents</button>
+    <button class="nav-item" onclick="showSection('dealroom')" data-nav="deal-room"><span class="nav-icon">🤝</span> Deal Room</button>
+  </nav>
+
+  <nav class="nav-section">
+    <div class="nav-label">System</div>
+    <button class="nav-item" onclick="showSection('analytics')" data-nav="analytics"><span class="nav-icon">📈</span> Analytics</button>
+    <button class="nav-item" onclick="showSection('integrations')" data-nav="integrations"><span class="nav-icon">🔗</span> Integrations</button>
+    <button class="nav-item" onclick="showSection('settings')" data-nav="settings"><span class="nav-icon">⚙️</span> Settings</button>
+    <button class="nav-item admin-nav-item" onclick="window.location.href='admin.html'" data-nav="admin" id="admin-nav-btn"><span class="nav-icon">🏛️</span> Admin Panel</button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">DB</div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name" id="sidebar-user-name">Loading...</div>
+        <div class="user-role-label" id="sidebar-user-role">—</div>
+      </div>
+      <button class="btn-logout" onclick="VetConnectAuth.logout()" title="Sign out">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <span class="badge-role" id="topbar-role-badge" style="padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600">super_admin</span>
+      <button class="btn btn-gold">+ New Record</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="section active" id="section-dashboard">
+      <!-- Fund progress -->
+      <div class="fund-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">🎯 Fund I Raise Progress</div>
+            <div class="fund-title">VCG Fund I — $10M Target</div>
+            <div class="fund-sub">Pre-Seed Round · Veterans Housing Impact Fund · 14–18% Net IRR</div>
+          </div>
+          <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--gold-lit)">$1.3M</div>
+        </div>
+        <div class="fund-track"><div class="fund-fill" style="width:13%"></div></div>
+        <div class="fund-pct">12.5% funded · $8.8M remaining</div>
+        <div class="fund-stats">
+          <div class="fund-stat"><div class="fund-stat-val">2</div><div class="fund-stat-label">Committed LPs</div></div>
+          <div class="fund-stat"><div class="fund-stat-val">$625K</div><div class="fund-stat-label">Avg Check</div></div>
+          <div class="fund-stat"><div class="fund-stat-val">$1.1M</div><div class="fund-stat-label">Hot Pipeline</div></div>
+          <div class="fund-stat"><div class="fund-stat-val">150+</div><div class="fund-stat-label">Veteran Units</div></div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-c1"><div class="kpi-label">Total Veterans</div><div class="kpi-value" id="kpi-veterans">—</div><div class="kpi-delta up">↑ All orgs</div></div>
+        <div class="kpi-card kpi-c2"><div class="kpi-label">Properties</div><div class="kpi-value" id="kpi-properties">—</div><div class="kpi-delta">Managed</div></div>
+        <div class="kpi-card kpi-c3"><div class="kpi-label">Active Vouchers</div><div class="kpi-value" id="kpi-vouchers">—</div><div class="kpi-delta up">↑ HUD-VASH</div></div>
+        <div class="kpi-card kpi-c4"><div class="kpi-label">Payments Due</div><div class="kpi-value" id="kpi-payments">—</div><div class="kpi-delta">This month</div></div>
+        <div class="kpi-card kpi-c5"><div class="kpi-label">Investors</div><div class="kpi-value">32</div><div class="kpi-delta up">↑ +3 this week</div></div>
+      </div>
+
+      <div class="three-col">
+        <!-- Recent veterans -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Recent Veterans</div><div class="card-sub">Loaded from Airtable</div></div>
+            <button class="card-action" onclick="showSection('veterans')">View all →</button>
+          </div>
+          <div class="card-body" id="dash-veterans-list">
+            <div class="empty"><div class="empty-icon">⏳</div>Loading...</div>
+          </div>
+        </div>
+
+        <!-- Activity + Alerts -->
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Follow-Up Alerts</div><span style="font-size:11px;background:#FEE2E2;color:#DC2626;padding:2px 8px;border-radius:99px;font-weight:600">32 due</span></div>
+            <div class="card-body" style="padding:.75rem 1rem">
+              <div class="alert-item"><div class="alert-avatar">JP</div><div><div class="alert-name">JPMorgan Chase</div><div class="alert-sub">Institutional · Cold</div></div><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="alert-days">813 days ago</span><button class="btn-email">Email</button></div></div>
+              <div class="alert-item"><div class="alert-avatar">HS</div><div><div class="alert-name">Horizon Social Capital</div><div class="alert-sub">Institutional · Cold</div></div><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="alert-days">809 days ago</span><button class="btn-email">Email</button></div></div>
+              <div class="alert-item"><div class="alert-avatar">EC</div><div><div class="alert-name">Enterprise Community</div><div class="alert-sub">Foundation · Hot</div></div><div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="alert-days">5 days ago</span><button class="btn-email" style="background:var(--success)">Email</button></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Activity</div><span style="font-size:11px;color:var(--success);font-weight:600">● Live</span></div>
+            <div class="card-body" style="padding:.75rem 1rem">
+              <div class="activity-item"><div class="activity-dot"></div><div class="activity-text">Multi-tenant auth layer activated<span class="activity-time" style="display:block;font-size:10px;color:var(--muted)">Just now · System</span></div></div>
+              <div class="activity-item"><div class="activity-dot"></div><div class="activity-text">Darryl Barnes logged in as super_admin<span class="activity-time" style="display:block;font-size:10px;color:var(--muted)">Just now · Auth</span></div></div>
+              <div class="activity-item"><div class="activity-dot"></div><div class="activity-text">Marcus Thompson moved to Hot status<span class="activity-time" style="display:block;font-size:10px;color:var(--muted)">2 hours ago</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VETERANS ── -->
+    <div class="section" id="section-veterans">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Veterans</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">All veterans in your organization</p></div>
+        <button class="btn btn-primary">+ Add Veteran</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>VA File #</th><th>Benefit Status</th><th>Employment</th><th>Stability Score</th><th>Risk</th><th>Income</th></tr></thead>
+          <tbody id="veterans-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading veterans...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PROPERTIES ── -->
+    <div class="section" id="section-properties">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Properties</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Managed housing inventory</p></div>
+        <button class="btn btn-primary">+ Add Property</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Address</th><th>Market</th><th>Total Units</th><th>HUD Units</th><th>HQS Score</th></tr></thead>
+          <tbody id="properties-tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">Loading properties...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── VOUCHERS ── -->
+    <div class="section" id="section-vouchers">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Vouchers</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">HUD-VASH and SSVF vouchers</p></div>
+        <button class="btn btn-primary">+ Add Voucher</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Voucher #</th><th>Veteran</th><th>Property</th><th>Monthly Amount</th><th>Status</th><th>Expiry</th></tr></thead>
+          <tbody id="vouchers-tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">Loading vouchers...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PAYMENTS ── -->
+    <div class="section" id="section-payments">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Payments</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Payment tracking by property</p></div>
+        <button class="btn btn-primary">+ Log Payment</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Property</th><th>Period</th><th>Expected</th><th>Received</th><th>Status</th><th>Due Date</th></tr></thead>
+          <tbody id="payments-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading payments...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── MARKETS ── -->
+    <div class="section" id="section-markets">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Markets</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Veteran housing market data</p></div>
+        <button class="btn btn-primary">+ Add Market</button>
+      </div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Market</th><th>State</th><th>Veteran Population</th><th>Utilization Rate</th><th>Median Rent</th><th>Status</th></tr></thead>
+          <tbody id="markets-tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">Loading markets...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── INVESTORS ── -->
+    <div class="section" id="section-investors">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Investor Search</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Find and research impact investors</p></div>
+      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">🔍</div>Investor search module — coming from existing CRM</div></div></div>
+    </div>
+
+    <!-- ── CRM ── -->
+    <div class="section" id="section-crm">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">CRM / Back Office</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Manage investor relationships</p></div>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Investor</th><th>Type</th><th>Status</th><th>Last Contact</th><th>Next Follow-Up</th></tr></thead>
+          <tbody id="crm-tbody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem">Loading investors...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── OUTREACH ── -->
+    <div class="section" id="section-outreach">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Outreach Automation</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Campaigns and follow-ups</p></div>
+      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">📨</div>Outreach module loading...</div></div></div>
+    </div>
+
+    <!-- ── DOCUMENTS ── -->
+    <div class="section" id="section-documents">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Document Library</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Fund documents and reports</p></div>
+      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">📁</div>Documents loading...</div></div></div>
+    </div>
+
+    <!-- ── DEAL ROOM ── -->
+    <div class="section" id="section-dealroom">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Investor Deal Room</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">LP-facing portal</p></div>
+      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">🤝</div>Deal room loading...</div></div></div>
+    </div>
+
+    <!-- ── ANALYTICS ── -->
+    <div class="section" id="section-analytics">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Analytics & Insights</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Platform-wide metrics</p></div>
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-c1"><div class="kpi-label">Total Investors</div><div class="kpi-value">32</div><div class="kpi-delta up">↑ +3 this week</div></div>
+        <div class="kpi-card kpi-c2"><div class="kpi-label">Outreach Sent</div><div class="kpi-value">47</div><div class="kpi-delta up">↑ +8 this month</div></div>
+        <div class="kpi-card kpi-c3"><div class="kpi-label">Responses</div><div class="kpi-value">13</div><div class="kpi-delta">25.5% rate</div></div>
+        <div class="kpi-card kpi-c4"><div class="kpi-label">Hot Leads</div><div class="kpi-value">6</div><div class="kpi-delta up">↑ +2 this week</div></div>
+        <div class="kpi-card kpi-c5"><div class="kpi-label">Capital Committed</div><div class="kpi-value">$1.3M</div><div class="kpi-delta">2 LPs</div></div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Pipeline Trend</div></div><div class="card-body"><div class="chart-wrap"><canvas id="analytics-chart"></canvas></div></div></div>
+    </div>
+
+    <!-- ── INTEGRATIONS ── -->
+    <div class="section" id="section-integrations">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Integrations</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Connected tools and services</p></div>
+      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">🔗</div>Integrations panel loading...</div></div></div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="section" id="section-settings">
+      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Settings</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Platform configuration</p></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Airtable Token</div></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:.85rem">Update your Airtable Personal Access Token. This is stored locally and never sent to any server.</p>
+          <input type="password" id="token-input" placeholder="patXXXXXX..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;margin-bottom:.75rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
+          <span id="token-saved" style="display:none;font-size:12px;color:var(--success);margin-left:10px">✅ Saved</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Session Info</div></div>
+        <div class="card-body" id="session-info-body" style="font-size:13px;color:var(--muted);line-height:2"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ── Session boot ─────────────────────────────────────────────────────────────
+var session = VetConnectAuth.requireAuth();
+if (session) {
+  var perms = session.permissions || VetConnectAuth.ROLE_PERMISSIONS[session.role] || {};
+  var initials = session.full_name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent    = initials;
+  document.getElementById('sidebar-user-name').textContent = session.full_name;
+  document.getElementById('sidebar-user-role').textContent = perms.label || session.role;
+  var rb = document.getElementById('topbar-role-badge');
+  rb.textContent = perms.label || session.role;
+  rb.style.background = (perms.color||'#6B7280') + '22';
+  rb.style.color = perms.color || '#6B7280';
+  rb.style.borderColor = (perms.color||'#6B7280') + '44';
+  // Hide admin nav for non-super_admins
+  if (session.role !== 'super_admin') {
+    var adminBtn = document.getElementById('admin-nav-btn');
+    if (adminBtn) adminBtn.style.display = 'none';
+  }
+  // Apply role-based nav hiding
+  VetConnectAuth.applyRoleNav();
+  // Load session info in settings
+  var sib = document.getElementById('session-info-body');
+  if (sib) sib.innerHTML =
+    '<strong>Name:</strong> '+session.full_name+'<br>'+
+    '<strong>Email:</strong> '+session.email+'<br>'+
+    '<strong>Role:</strong> '+session.role+'<br>'+
+    '<strong>Org:</strong> '+session.org_name+'<br>'+
+    '<strong>Session expires:</strong> 8 hours from login';
+}
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings'];
+var sectionTitles = {dashboard:'Dashboard',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach Automation',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
+
+function showSection(name) {
+  sections.forEach(function(s) {
+    var el = document.getElementById('section-'+s);
+    if (el) el.classList.toggle('active', s===name);
+  });
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.classList.remove('active');
+    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("'"+name+"'")) el.classList.add('active');
+  });
+  document.getElementById('topbar-title').textContent = sectionTitles[name] || name;
+  if (name==='analytics') renderAnalyticsChart();
+  if (name==='veterans')  loadTable('veterans');
+  if (name==='properties')loadTable('properties');
+  if (name==='vouchers')  loadTable('vouchers');
+  if (name==='payments')  loadTable('payments');
+  if (name==='markets')   loadTable('markets');
+  if (name==='crm')       loadTable('crm');
+}
+
+// ── Load from Airtable ───────────────────────────────────────────────────────
+var TABLE_IDS = {
+  veterans:   'tbl4tCL2wag2MKKTK',
+  properties: 'tblopdWlgwI5gTMaA',
+  vouchers:   'tbl29ojex3jMa6IpT',
+  payments:   'tblr9DMVe1QkIHDhk',
+  markets:    'tblSvWyGpo5pjwzgG',
+  investors:  'Investors'
+};
+
+var RENDERERS = {
+  veterans: function(records) {
+    if (!records.length) return '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No veterans found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      var initials = (f.Name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+      return '<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="vet-avatar">'+initials+'</div><div><div style="font-weight:500">'+esc(f.Name||'—')+'</div></div></div></td><td>'+esc(f['VA File Number']||'—')+'</td><td><span class="pill pill-active">'+esc(f['Benefit Status']||'—')+'</span></td><td>'+esc(f['Employment Status']||'—')+'</td><td>'+esc(f['Stability Score']||'—')+'</td><td><span class="pill '+(f['Risk level']==='High'?'pill-hot':f['Risk level']==='Medium'?'pill-warm':'pill-cold')+'">'+esc(f['Risk level']||'—')+'</span></td><td>'+(f['Monthly Income']?'$'+Number(f['Monthly Income']).toLocaleString():'—')+'</td></tr>';
+    }).join('');
+  },
+  properties: function(records) {
+    if (!records.length) return '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">No properties found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      return '<tr><td style="font-weight:500">'+esc(f.Name||'—')+'</td><td>'+esc(f.Address||'—')+'</td><td>'+esc(f.Market||'—')+'</td><td>'+esc(f['Total Units']||'—')+'</td><td>'+esc(f['HUD Units']||'—')+'</td><td>'+esc(f['HQS Score']||'—')+'</td></tr>';
+    }).join('');
+  },
+  vouchers: function(records) {
+    if (!records.length) return '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">No vouchers found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      var vet = Array.isArray(f.Veteran) ? f.Veteran[0] : (f.Veteran||'—');
+      var prop = Array.isArray(f.Property) ? f.Property[0] : (f.Property||'—');
+      return '<tr><td style="font-family:monospace;font-size:11px">'+esc(f['Voucher Number']||'—')+'</td><td>'+esc(vet)+'</td><td>'+esc(prop)+'</td><td>'+(f['Monthly Amount']?'$'+Number(f['Monthly Amount']).toLocaleString():'—')+'</td><td><span class="pill pill-active">'+esc(f.Status||'—')+'</span></td><td>'+esc(f['Expiry Date']||'—')+'</td></tr>';
+    }).join('');
+  },
+  payments: function(records) {
+    if (!records.length) return '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No payments found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      var prop = Array.isArray(f.Property) ? f.Property[0] : (f.Property||'—');
+      var statusClass = f.Status==='Received'?'pill-active':f.Status==='Pending'?'pill-warm':'pill-hot';
+      return '<tr><td style="font-weight:500">'+esc(f.Name||'—')+'</td><td>'+esc(prop)+'</td><td>'+esc(f.Period||'—')+'</td><td>'+(f['Expected Amount']?'$'+Number(f['Expected Amount']).toLocaleString():'—')+'</td><td>'+(f['Received Amount']?'$'+Number(f['Received Amount']).toLocaleString():'—')+'</td><td><span class="pill '+statusClass+'">'+esc(f.Status||'—')+'</span></td><td>'+esc(f['Expected Date']||'—')+'</td></tr>';
+    }).join('');
+  },
+  markets: function(records) {
+    if (!records.length) return '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem">No markets found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      return '<tr><td style="font-weight:500">'+esc(f.Name||'—')+'</td><td>'+esc(f.State||'—')+'</td><td>'+(f['Veteran Population']?Number(f['Veteran Population']).toLocaleString():'—')+'</td><td>'+(f['Utilization Rate']?f['Utilization Rate']+'%':'—')+'</td><td>'+(f['median_rent']?'$'+Number(f['median_rent']).toLocaleString():'—')+'</td><td><span class="pill pill-active">'+esc(f.Status||'—')+'</span></td></tr>';
+    }).join('');
+  },
+  crm: function(records) {
+    if (!records.length) return '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem">No investors found</td></tr>';
+    return records.map(function(r) {
+      var f = r.fields;
+      var statusClass = f.Status==='Hot'?'pill-hot':f.Status==='Warm'?'pill-warm':'pill-cold';
+      return '<tr><td style="font-weight:500">'+esc(f.Name||f['Investor Name']||'—')+'</td><td>'+esc(f.Type||f['Investor Type']||'—')+'</td><td><span class="pill '+statusClass+'">'+esc(f.Status||'—')+'</span></td><td>'+esc(f['Last Contact']||f['Last Contacted']||'—')+'</td><td>'+esc(f['Next Follow-Up']||'—')+'</td></tr>';
+    }).join('');
+  }
+};
+
+function esc(v) { return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+var _loaded = {};
+function loadTable(name) {
+  if (_loaded[name]) return;
+  var tbodyId = name+'-tbody';
+  var tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  var tableId = TABLE_IDS[name] || name;
+  VetConnectAuth.query(tableId, '', { max: 50 }).then(function(data) {
+    var records = data.records || [];
+    _loaded[name] = true;
+    tbody.innerHTML = RENDERERS[name] ? RENDERERS[name](records) : '<tr><td style="text-align:center;padding:1.5rem;color:var(--muted)">No renderer for this table</td></tr>';
+    // Update KPI on dashboard
+    var kpiMap = {veterans:'kpi-veterans',properties:'kpi-properties',vouchers:'kpi-vouchers',payments:'kpi-payments'};
+    if (kpiMap[name]) { var k = document.getElementById(kpiMap[name]); if(k) k.textContent = records.length; }
+  }).catch(function(e) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:1.5rem;color:var(--muted)">Could not load — check Airtable token in Settings</td></tr>';
+  });
+}
+
+// Load dashboard KPIs on boot
+['veterans','properties','vouchers','payments'].forEach(function(t){ loadTable(t); });
+// Load dash veterans list
+VetConnectAuth.query('tbl4tCL2wag2MKKTK','',{max:5}).then(function(d){
+  var el = document.getElementById('dash-veterans-list');
+  if (!el) return;
+  var records = d.records||[];
+  if (!records.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🎖️</div>No veterans yet</div>'; return; }
+  el.innerHTML = records.map(function(r){
+    var f=r.fields;
+    var ini=(f.Name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+    return '<div class="vet-card"><div class="vet-avatar">'+ini+'</div><div><div class="vet-name">'+esc(f.Name||'—')+'</div><div class="vet-sub">'+esc(f['Benefit Status']||'')+(f['Risk level']?' · '+f['Risk level']+' Risk':'')+'</div></div><span class="vet-score">Score: '+esc(f['Stability Score']||'—')+'</span></div>';
+  }).join('');
+}).catch(function(){});
+
+// ── Analytics chart ──────────────────────────────────────────────────────────
+var _chartDone = false;
+function renderAnalyticsChart() {
+  if (_chartDone) return;
+  _chartDone = true;
+  var ctx = document.getElementById('analytics-chart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:['Nov','Dec','Jan','Feb','Mar','Apr','May'],
+      datasets:[
+        {label:'Veterans Housed',data:[20,45,72,95,112,138,150],borderColor:'#5B4AB0',backgroundColor:'rgba(91,74,176,0.1)',tension:0.4,fill:true},
+        {label:'Capital ($K)',   data:[0,200,400,700,900,1100,1300],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.1)',tension:0.4,fill:true}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,0.05)'}}}}
+  });
+}
+
+// ── Settings token save ──────────────────────────────────────────────────────
+function saveToken() {
+  var t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  VetConnectAuth.setToken(t, true);
+  _loaded = {}; // reset cache so tables reload with new token
+  document.getElementById('token-saved').style.display = 'inline';
+  setTimeout(function(){ document.getElementById('token-saved').style.display='none'; }, 3000);
+}
+</script>
+</body>
+</html>

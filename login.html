@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VetConnect OS — Sign In</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple:     #2D1B69;
+    --purple-mid: #3D2B8A;
+    --purple-lit: #5B4AB0;
+    --gold:       #C9A84C;
+    --gold-lit:   #E8C96A;
+    --white:      #FFFFFF;
+    --off-white:  #F7F5FF;
+    --muted:      #9B8FC4;
+    --border:     rgba(255,255,255,0.12);
+    --error:      #FF6B6B;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--purple);
+    color: var(--white);
+  }
+
+  body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Left panel ── */
+  .left {
+    background: linear-gradient(160deg, #1A0F45 0%, #2D1B69 50%, #3D2B8A 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .left::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+  }
+  .left::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,74,176,0.15) 0%, transparent 70%);
+    bottom: 50px; right: -50px;
+    pointer-events: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-shield {
+    width: 48px; height: 48px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .brand-text { line-height: 1.2; }
+  .brand-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--white); }
+  .brand-tagline { font-size: 12px; color: var(--muted); font-weight: 300; letter-spacing: 0.02em; }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold-lit);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-eyebrow::before { content: '●'; font-size: 7px; }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-lit);
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 380px;
+    margin-bottom: 2.5rem;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .stat { }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--gold-lit);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+
+  .left-footer {
+    font-size: 11px;
+    color: rgba(155,143,196,0.5);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Right panel ── */
+  .right {
+    background: var(--off-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .login-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+
+  .login-sub {
+    font-size: 14px;
+    color: #6B5B95;
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+  }
+
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4A3B7A;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--purple);
+    background: var(--white);
+    border: 1.5px solid #D4C8F0;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--purple-lit);
+    box-shadow: 0 0 0 3px rgba(91,74,176,0.12);
+  }
+
+  input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255,107,107,0.12);
+  }
+
+  .password-wrap { position: relative; }
+  .toggle-pw {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--muted);
+    padding: 4px;
+  }
+
+  .error-msg {
+    display: none;
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .error-msg.visible { display: block; }
+
+  .forgot {
+    text-align: right;
+    margin-top: -8px;
+    margin-bottom: 1.5rem;
+  }
+  .forgot a {
+    font-size: 12px;
+    color: var(--purple-lit);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .forgot a:hover { text-decoration: underline; }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: var(--purple);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-login:hover { background: var(--purple-mid); }
+  .btn-login:active { transform: scale(0.99); }
+  .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-login .spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+  .btn-login.loading .btn-text { display: none; }
+  .btn-login.loading .spinner { display: block; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alert {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    align-items: center;
+    gap: 10px;
+  }
+  .alert.visible { display: flex; }
+  .alert.alert-error {
+    background: #FFF0F0;
+    border: 1px solid #FFCECE;
+    color: #C0392B;
+  }
+  .alert.alert-success {
+    background: #F0FFF4;
+    border: 1px solid #C3E6CB;
+    color: #276749;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.75rem 0;
+    color: #B0A4D0;
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #D4C8F0;
+  }
+
+  .role-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .role-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: var(--white);
+    border: 1px solid #D4C8F0;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #6B5B95;
+    font-weight: 500;
+  }
+  .role-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .login-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: #B0A4D0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    body { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .right { padding: 2rem 1.5rem; background: var(--purple); }
+    .login-card { max-width: 100%; }
+    .login-title { color: var(--white); }
+    .login-sub { color: var(--muted); }
+    label { color: rgba(255,255,255,0.7); }
+    input[type="email"], input[type="password"] {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: var(--white);
+    }
+    input::placeholder { color: var(--muted); }
+    .forgot a { color: var(--gold-lit); }
+    .divider { color: var(--muted); }
+    .divider::before, .divider::after { background: rgba(255,255,255,0.15); }
+    .role-badge { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: var(--muted); }
+    .login-footer { color: var(--muted); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LEFT PANEL ═══ -->
+<div class="left">
+  <div class="brand">
+    <div class="brand-shield">🛡️</div>
+    <div class="brand-text">
+      <div class="brand-name">VetConnect OS</div>
+      <div class="brand-tagline">Veteran Housing Platform</div>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Multi-Tenant Platform</div>
+    <h1 class="hero-title">
+      Housing veterans.<br>
+      <em>Scaling impact.</em>
+    </h1>
+    <p class="hero-desc">
+      A secure, role-based operating system for veteran housing organizations — from case managers to investors, everyone gets exactly the access they need.
+    </p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">150+</div>
+        <div class="stat-label">Veteran units</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label">Access roles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Orgs supported</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="left-footer">
+    © 2025 VetConnect OS · Private Capital. Public Purpose.
+  </div>
+</div>
+
+<!-- ═══ RIGHT PANEL ═══ -->
+<div class="right">
+  <div class="login-card">
+    <h2 class="login-title">Sign in</h2>
+    <p class="login-sub">Access your organization's dashboard</p>
+
+    <!-- Alert box -->
+    <div class="alert alert-error" id="alert-box">
+      <span id="alert-icon">⚠️</span>
+      <span id="alert-text">Invalid email or password.</span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@organization.org" autocomplete="email" />
+        <div class="error-msg" id="email-error">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input type="password" id="password" placeholder="••••••••••" autocomplete="current-password" />
+          <button type="button" class="toggle-pw" id="toggle-pw" aria-label="Toggle password visibility">👁</button>
+        </div>
+        <div class="error-msg" id="pw-error">Password is required.</div>
+      </div>
+
+      <div class="forgot"><a href="#">Forgot password?</a></div>
+
+      <button type="submit" class="btn-login" id="btn-login">
+        <span class="btn-text">Sign in to VetConnect OS</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="divider">Roles on this platform</div>
+
+    <div class="role-badges">
+      <div class="role-badge"><span class="dot" style="background:#7C3AED"></span>Super Admin</div>
+      <div class="role-badge"><span class="dot" style="background:#2563EB"></span>Org Admin</div>
+      <div class="role-badge"><span class="dot" style="background:#059669"></span>Case Manager</div>
+      <div class="role-badge"><span class="dot" style="background:#D97706"></span>Property Mgr</div>
+      <div class="role-badge"><span class="dot" style="background:#DC2626"></span>Finance</div>
+      <div class="role-badge"><span class="dot" style="background:#0891B2"></span>Investor LP</div>
+      <div class="role-badge"><span class="dot" style="background:#6B7280"></span>Volunteer</div>
+    </div>
+
+    <div class="login-footer">
+      Secure access · Tenant-isolated · Role-scoped
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  // Toggle password visibility
+  document.getElementById('toggle-pw').addEventListener('click', function() {
+    const pw = document.getElementById('password');
+    const isText = pw.type === 'text';
+    pw.type = isText ? 'password' : 'text';
+    this.textContent = isText ? '👁' : '🙈';
+  });
+
+  // Form submit
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('btn-login');
+    const alertBox = document.getElementById('alert-box');
+    const emailErr = document.getElementById('email-error');
+    const pwErr = document.getElementById('pw-error');
+
+    // Reset state
+    alertBox.classList.remove('visible');
+    document.getElementById('email').classList.remove('error');
+    document.getElementById('password').classList.remove('error');
+    emailErr.classList.remove('visible');
+    pwErr.classList.remove('visible');
+
+    // Validate
+    let valid = true;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('email').classList.add('error');
+      emailErr.classList.add('visible');
+      valid = false;
+    }
+    if (!password) {
+      document.getElementById('password').classList.add('error');
+      pwErr.classList.add('visible');
+      valid = false;
+    }
+    if (!valid) return;
+
+    // Loading state
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      const result = await VetConnectAuth.login(email, password);
+
+      if (result.success) {
+        // Redirect based on role
+        const redirectMap = {
+          super_admin:      'admin.html',
+          org_admin:        'index.html',
+          case_manager:     'index.html',
+          property_manager: 'index.html',
+          finance:          'index.html',
+          investor_lp:      'deal-room.html',
+          volunteer:        'tasks.html'
+        };
+        const dest = redirectMap[result.user.role] || 'index.html';
+        window.location.href = dest;
+      } else {
+        alertBox.classList.add('visible');
+        document.getElementById('alert-text').textContent = result.message || 'Invalid email or password.';
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    } catch (err) {
+      alertBox.classList.add('visible');
+      document.getElementById('alert-text').textContent = 'Connection error. Please try again.';
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

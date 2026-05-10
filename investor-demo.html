@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCG Fund I — Impact Investor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0A0614;
+  --ink2:#1E1240;
+  --gold:#C9A84C;
+  --gold-lit:#E8C96A;
+  --gold-dim:#8A6820;
+  --cream:#FAF7F0;
+  --cream2:#F2EDE0;
+  --purple:#2D1B69;
+  --purple-lit:#5B4AB0;
+  --muted:#6B5B45;
+  --border:rgba(201,168,76,0.2);
+  --success:#2D7D4A;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);overflow-x:hidden;}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4;
+}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 50%, rgba(91,74,176,0.08) 0%, transparent 60%),
+    linear-gradient(180deg, #0A0614 0%, #120820 100%);
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+
+/* Gold horizontal rule lines */
+.hero::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0.4;
+}
+
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.5rem 4rem;
+  border-bottom:1px solid rgba(201,168,76,0.08);
+  position:relative;z-index:10;
+}
+.nav-brand{display:flex;align-items:center;gap:14px;}
+.nav-shield{
+  width:40px;height:40px;
+  background:rgba(201,168,76,0.1);
+  border:1px solid rgba(201,168,76,0.3);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.nav-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);}
+.nav-sub{font-size:10px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;}
+.nav-right{display:flex;gap:12px;align-items:center;}
+.btn-outline{
+  padding:9px 20px;border:1px solid var(--border);border-radius:6px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
+  color:var(--gold);background:rgba(201,168,76,0.06);
+  cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;
+}
+.btn-outline:hover{background:rgba(201,168,76,0.12);border-color:var(--gold);}
+.btn-solid{
+  padding:9px 22px;
+  background:var(--gold);border:none;border-radius:6px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;
+  color:var(--ink);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;
+}
+.btn-solid:hover{background:var(--gold-lit);}
+
+.hero-body{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:6rem 2rem 4rem;
+  position:relative;z-index:2;
+}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(201,168,76,0.3);
+  border-radius:99px;padding:5px 16px;
+  font-size:11px;font-weight:500;color:var(--gold);
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:2rem;
+  background:rgba(201,168,76,0.05);
+}
+.hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3rem,7vw,6rem);
+  font-weight:300;line-height:1.05;
+  color:var(--cream);
+  margin-bottom:1.5rem;
+  letter-spacing:-.02em;
+}
+.hero-title em{font-style:italic;color:var(--gold-lit);}
+.hero-title strong{font-weight:600;}
+
+.hero-sub{
+  font-size:clamp(15px,2vw,18px);font-weight:300;
+  color:rgba(250,247,240,0.6);
+  max-width:560px;line-height:1.7;
+  margin:0 auto 3rem;
+}
+
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;}
+
+.hero-stats{
+  display:flex;gap:0;
+  border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;background:rgba(10,6,20,0.6);
+  backdrop-filter:blur(20px);
+}
+.hero-stat{
+  padding:1.25rem 2.5rem;
+  border-right:1px solid var(--border);
+  text-align:center;
+}
+.hero-stat:last-child{border-right:none;}
+.hs-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.2rem;font-weight:600;
+  color:var(--gold-lit);line-height:1;
+}
+.hs-label{font-size:11px;color:rgba(250,247,240,0.5);margin-top:5px;letter-spacing:.05em;}
+
+/* ── SECTIONS ── */
+section{padding:6rem 4rem;max-width:1200px;margin:0 auto;}
+
+.section-eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:1rem;display:flex;align-items:center;gap:8px;
+}
+.section-eyebrow::before{content:'';flex:0 0 24px;height:1px;background:var(--gold);}
+
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:300;color:var(--cream);
+  line-height:1.15;margin-bottom:1rem;
+}
+.section-title em{font-style:italic;color:var(--gold-lit);}
+
+.section-sub{
+  font-size:16px;font-weight:300;
+  color:rgba(250,247,240,0.55);
+  max-width:560px;line-height:1.7;
+  margin-bottom:3rem;
+}
+
+/* ── DIVIDER ── */
+.divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent);
+  margin:0 4rem;
+}
+
+/* ── FUND THESIS ── */
+.thesis-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;}
+.thesis-card{
+  background:rgba(201,168,76,0.03);
+  border:1px solid var(--border);
+  border-radius:12px;padding:2rem;
+  position:relative;overflow:hidden;
+  transition:border-color .3s;
+}
+.thesis-card:hover{border-color:rgba(201,168,76,0.4);}
+.thesis-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.thesis-card:hover::before{opacity:1;}
+.tc-icon{font-size:24px;margin-bottom:1rem;}
+.tc-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--cream);margin-bottom:.75rem;}
+.tc-body{font-size:14px;font-weight:300;color:rgba(250,247,240,0.6);line-height:1.7;}
+
+/* ── FUND METRICS ── */
+.metrics-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:start;}
+.metrics-left{}
+.metric-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1rem 0;border-bottom:1px solid rgba(201,168,76,0.1);
+}
+.metric-row:last-child{border-bottom:none;}
+.metric-label{font-size:13px;font-weight:300;color:rgba(250,247,240,0.5);letter-spacing:.03em;}
+.metric-value{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--gold-lit);}
+.metric-sub{font-size:11px;color:rgba(250,247,240,0.35);text-align:right;margin-top:1px;}
+
+.progress-card{
+  background:rgba(201,168,76,0.04);
+  border:1px solid var(--border);border-radius:16px;
+  padding:2rem;
+}
+.pc-label{font-size:11px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;}
+.pc-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--cream);margin-bottom:.25rem;}
+.pc-sub{font-size:13px;color:rgba(250,247,240,0.4);margin-bottom:1.5rem;}
+.progress-track{height:6px;background:rgba(201,168,76,0.1);border-radius:3px;overflow:hidden;margin-bottom:.5rem;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-dim),var(--gold-lit));width:13%;}
+.progress-pct{font-size:12px;color:rgba(250,247,240,0.4);}
+.pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;}
+.pcs{background:rgba(10,6,20,0.4);border-radius:8px;padding:.85rem;}
+.pcs-val{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--cream);}
+.pcs-label{font-size:11px;color:rgba(250,247,240,0.4);margin-top:2px;}
+
+/* ── CHART ── */
+.chart-card{
+  background:rgba(201,168,76,0.03);
+  border:1px solid var(--border);border-radius:16px;
+  padding:2rem;margin-top:2rem;
+}
+.chart-wrap{height:220px;position:relative;}
+
+/* ── PROPERTIES ── */
+.properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.prop-card{
+  background:rgba(201,168,76,0.03);
+  border:1px solid var(--border);border-radius:12px;
+  padding:1.5rem;transition:all .3s;
+}
+.prop-card:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-2px);}
+.prop-market{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+.prop-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:.25rem;}
+.prop-address{font-size:12px;color:rgba(250,247,240,0.4);margin-bottom:1rem;}
+.prop-stats{display:flex;gap:1rem;}
+.ps{text-align:center;}
+.ps-val{font-size:1.1rem;font-weight:600;color:var(--gold-lit);}
+.ps-label{font-size:10px;color:rgba(250,247,240,0.4);margin-top:1px;}
+.hqs-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:500;padding:3px 8px;
+  border-radius:99px;margin-top:.75rem;
+}
+.hqs-good{background:rgba(45,125,74,0.15);color:#4ADE80;border:1px solid rgba(45,125,74,0.3);}
+.hqs-warn{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid var(--border);}
+
+/* ── IMPACT ── */
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:3rem;}
+.impact-card{
+  text-align:center;padding:2rem 1rem;
+  border:1px solid var(--border);border-radius:12px;
+  background:rgba(201,168,76,0.03);
+}
+.ic-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:3rem;font-weight:300;color:var(--gold-lit);line-height:1;
+  margin-bottom:.5rem;
+}
+.ic-label{font-size:12px;font-weight:300;color:rgba(250,247,240,0.5);line-height:1.5;}
+
+.veterans-list{display:flex;flex-direction:column;gap:.75rem;}
+.vet-row{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.25rem;
+  background:rgba(201,168,76,0.03);
+  border:1px solid rgba(201,168,76,0.08);
+  border-radius:10px;
+  transition:border-color .2s;
+}
+.vet-row:hover{border-color:rgba(201,168,76,0.2);}
+.vet-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(201,168,76,0.1);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:var(--gold);flex-shrink:0;
+}
+.vet-name{font-size:14px;font-weight:500;color:var(--cream);}
+.vet-detail{font-size:12px;color:rgba(250,247,240,0.4);margin-top:1px;}
+.vet-score{
+  margin-left:auto;font-size:11px;font-weight:500;
+  padding:3px 10px;border-radius:99px;
+}
+.score-high{background:rgba(45,125,74,0.15);color:#4ADE80;}
+.score-med{background:rgba(201,168,76,0.1);color:var(--gold);}
+.score-low{background:rgba(239,68,68,0.1);color:#F87171;}
+
+/* ── DEAL ROOM / CTA ── */
+.dealroom{
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.07) 0%, transparent 70%),
+    rgba(201,168,76,0.03);
+  border:1px solid var(--border);border-radius:20px;
+  padding:4rem;text-align:center;
+  position:relative;overflow:hidden;
+  margin:0 4rem 6rem;
+}
+.dealroom::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.5;
+}
+.dr-eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.dr-title{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--cream);margin-bottom:1rem;line-height:1.1;}
+.dr-title em{font-style:italic;color:var(--gold-lit);}
+.dr-sub{font-size:16px;font-weight:300;color:rgba(250,247,240,0.5);max-width:480px;margin:0 auto 2.5rem;line-height:1.7;}
+.dr-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-large{padding:14px 32px;font-size:15px;font-weight:600;}
+
+/* ── INVESTOR LOGIN MODAL ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(10,6,20,0.85);backdrop-filter:blur(8px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:#120820;
+  border:1px solid var(--border);border-radius:16px;
+  padding:2.5rem;width:100%;max-width:420px;
+  position:relative;
+}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:none;border:none;color:rgba(250,247,240,0.4);
+  font-size:20px;cursor:pointer;
+}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--cream);margin-bottom:.5rem;}
+.modal-sub{font-size:13px;color:rgba(250,247,240,0.4);margin-bottom:2rem;}
+.form-field{margin-bottom:1.1rem;}
+.form-label{display:block;font-size:11px;font-weight:500;color:rgba(201,168,76,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;}
+.form-input{
+  width:100%;padding:11px 14px;
+  font-family:'Outfit',sans-serif;font-size:14px;
+  color:var(--cream);
+  background:rgba(250,247,240,0.04);
+  border:1px solid rgba(201,168,76,0.15);border-radius:8px;
+  outline:none;transition:border-color .2s;
+}
+.form-input:focus{border-color:rgba(201,168,76,0.5);}
+.form-input::placeholder{color:rgba(250,247,240,0.2);}
+.btn-modal{
+  width:100%;padding:12px;
+  background:var(--gold);border:none;border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
+  color:var(--ink);cursor:pointer;transition:background .2s;
+  margin-top:.5rem;
+}
+.btn-modal:hover{background:var(--gold-lit);}
+.modal-alert{
+  display:none;padding:10px 14px;border-radius:6px;
+  font-size:12px;font-weight:500;margin-bottom:1rem;
+  background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);
+  color:#F87171;
+}
+.modal-alert.show{display:block;}
+
+/* ── SCHEDULE CALL MODAL ── */
+.call-modal{background:#120820;border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:460px;position:relative;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid rgba(201,168,76,0.1);
+  padding:2rem 4rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:rgba(250,247,240,0.25);
+}
+
+/* ── ANIMATIONS ── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  .nav{padding:1.25rem 1.5rem;}
+  section{padding:4rem 1.5rem;}
+  .divider{margin:0 1.5rem;}
+  .thesis-grid,.properties-grid{grid-template-columns:1fr;}
+  .metrics-layout{grid-template-columns:1fr;}
+  .impact-grid{grid-template-columns:1fr 1fr;}
+  .hero-stats{flex-direction:column;}
+  .hero-stat{border-right:none;border-bottom:1px solid var(--border);}
+  .hero-stat:last-child{border-bottom:none;}
+  .dealroom{margin:0 1.5rem 4rem;padding:2.5rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-shield">🛡️</div>
+    <div>
+      <div class="nav-name">VetConnect OS</div>
+      <div class="nav-sub">Venture Collective Group</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="#thesis" class="btn-outline">Investment Thesis</a>
+    <a href="#metrics" class="btn-outline">Fund Metrics</a>
+    <a href="#impact" class="btn-outline">Impact</a>
+    <button class="btn-solid" onclick="openModal('login-modal')">Investor Login</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-body">
+    <div class="hero-eyebrow">VCG Fund I — Now Raising</div>
+    <h1 class="hero-title">
+      <em>Private capital.</em><br>
+      <strong>Public purpose.</strong><br>
+      Superior returns.
+    </h1>
+    <p class="hero-sub">
+      A veteran housing impact fund delivering institutional-grade returns backed by HUD-VASH vouchers, VA lease guarantees, and mission-driven asset management.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-solid btn-large" onclick="openModal('call-modal')">Schedule Discovery Call</button>
+      <button class="btn-outline btn-large" onclick="openModal('login-modal')">Access Deal Room</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hs-num">$10M</div>
+        <div class="hs-label">Target AUM</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-num">14–18%</div>
+        <div class="hs-label">Net IRR Target</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-num">2.5×</div>
+        <div class="hs-label">Equity Multiple</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-num">7%</div>
+        <div class="hs-label">Preferred Return</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-num">150+</div>
+        <div class="hs-label">Veteran Units</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ THESIS ═══ -->
+<section id="thesis" class="fade-up">
+  <div class="section-eyebrow">Investment Thesis</div>
+  <h2 class="section-title">Why veteran housing <em>now</em></h2>
+  <p class="section-sub">Three structural advantages converge to create a rare impact-return opportunity that institutional capital has overlooked.</p>
+  <div class="thesis-grid">
+    <div class="thesis-card">
+      <div class="tc-icon">🏛️</div>
+      <div class="tc-title">Government-Backed Revenue</div>
+      <div class="tc-body">HUD-VASH and SSVF vouchers guarantee rental income directly from the VA and HUD — the most creditworthy tenants in America. Zero collection risk. Zero eviction exposure.</div>
+    </div>
+    <div class="thesis-card">
+      <div class="tc-icon">📈</div>
+      <div class="tc-title">Structural Supply Gap</div>
+      <div class="tc-body">580,000+ veterans experience housing instability annually. Existing supply meets less than 30% of demand. Every unit placed generates immediate, measurable impact and guaranteed occupancy.</div>
+    </div>
+    <div class="thesis-card">
+      <div class="tc-icon">🎖️</div>
+      <div class="tc-title">Mission-Aligned Returns</div>
+      <div class="tc-body">ESG mandates and CRA requirements are driving institutional capital toward veteran housing. First movers establish track records before the market becomes crowded. The window is now.</div>
+    </div>
+    <div class="thesis-card">
+      <div class="tc-icon">⚖️</div>
+      <div class="tc-title">Regulatory Moat</div>
+      <div class="tc-body">VCG holds established relationships with VA medical centers, HUD regional offices, and veteran service organizations — relationships that take years to build and cannot be replicated quickly.</div>
+    </div>
+    <div class="thesis-card">
+      <div class="tc-icon">🔒</div>
+      <div class="tc-title">Downside Protection</div>
+      <div class="tc-body">VA lease guarantees provide a hard floor on returns. Properties underwritten conservatively at 80% occupancy regularly achieve 95%+. Downside is structurally limited by federal backing.</div>
+    </div>
+    <div class="thesis-card">
+      <div class="tc-icon">🤖</div>
+      <div class="tc-title">Technology Edge</div>
+      <div class="tc-body">VetConnect OS — our proprietary AI-powered operating platform — monitors every veteran, voucher, and payment in real time. Institutional-grade management at a fraction of traditional overhead.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ FUND METRICS ═══ -->
+<section id="metrics" class="fade-up">
+  <div class="section-eyebrow">Fund Metrics</div>
+  <h2 class="section-title">VCG Fund I — <em>Pre-Seed Round</em></h2>
+  <p class="section-sub">Currently raising our pre-seed round of $10M to establish the first institutional veteran housing portfolio in the Gulf Coast region.</p>
+  <div class="metrics-layout">
+    <div class="metrics-left">
+      <div class="metric-row">
+        <div><div class="metric-label">Target Fund Size</div></div>
+        <div style="text-align:right"><div class="metric-value">$10,000,000</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Net IRR Target</div></div>
+        <div style="text-align:right"><div class="metric-value">14–18%</div><div class="metric-sub">Annually</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Equity Multiple</div></div>
+        <div style="text-align:right"><div class="metric-value">2.5×</div><div class="metric-sub">Over 7-year hold</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Preferred Return</div></div>
+        <div style="text-align:right"><div class="metric-value">7%</div><div class="metric-sub">Annual, accruing</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Minimum Investment</div></div>
+        <div style="text-align:right"><div class="metric-value">$250,000</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Investment Horizon</div></div>
+        <div style="text-align:right"><div class="metric-value">7 Years</div><div class="metric-sub">With liquidity provisions</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Fund Structure</div></div>
+        <div style="text-align:right"><div class="metric-value">LP/GP</div><div class="metric-sub">Delaware LLC</div></div>
+      </div>
+      <div class="metric-row">
+        <div><div class="metric-label">Revenue Backing</div></div>
+        <div style="text-align:right"><div class="metric-value">HUD-VASH</div><div class="metric-sub">+ VA lease guarantees</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="progress-card">
+        <div class="pc-label">🎯 Raise Progress — Fund I</div>
+        <div class="pc-title">$1.3M Committed</div>
+        <div class="pc-sub">Pre-Seed Round · 2 Committed LPs · $8.7M remaining</div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+        <div class="progress-pct">12.5% funded · Target close Q3 2025</div>
+        <div class="pc-stats">
+          <div class="pcs"><div class="pcs-val">2</div><div class="pcs-label">Committed LPs</div></div>
+          <div class="pcs"><div class="pcs-val">$625K</div><div class="pcs-label">Avg Check Size</div></div>
+          <div class="pcs"><div class="pcs-val">$1.1M</div><div class="pcs-label">Hot Pipeline</div></div>
+          <div class="pcs"><div class="pcs-val">Q3 2025</div><div class="pcs-label">Target Close</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div style="font-size:12px;color:rgba(250,247,240,0.4);margin-bottom:1rem;letter-spacing:.05em;text-transform:uppercase;">Projected Returns vs. Benchmarks</div>
+        <div class="chart-wrap"><canvas id="returns-chart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PROPERTIES ═══ -->
+<section class="fade-up">
+  <div class="section-eyebrow">Portfolio Properties</div>
+  <h2 class="section-title">Current <em>housing inventory</em></h2>
+  <p class="section-sub">Five properties across the Gulf Coast and Southeast — all HUD-certified, VA-approved, and actively housing veterans today.</p>
+  <div class="properties-grid" id="properties-grid">
+    <!-- Populated by JS from Airtable -->
+    <div class="prop-card">
+      <div class="prop-market">Mobile, AL</div>
+      <div class="prop-name">Magnolia Arms</div>
+      <div class="prop-address">1204 Springhill Ave, Mobile AL 36604</div>
+      <div class="prop-stats">
+        <div class="ps"><div class="ps-val">24</div><div class="ps-label">Total Units</div></div>
+        <div class="ps"><div class="ps-val">18</div><div class="ps-label">HUD Units</div></div>
+        <div class="ps"><div class="ps-val">92</div><div class="ps-label">HQS Score</div></div>
+      </div>
+      <div><span class="hqs-badge hqs-good">✓ HQS Compliant</span></div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-market">Mobile, AL</div>
+      <div class="prop-name">Veterans Village I</div>
+      <div class="prop-address">3311 Airport Blvd, Mobile AL 36606</div>
+      <div class="prop-stats">
+        <div class="ps"><div class="ps-val">36</div><div class="ps-label">Total Units</div></div>
+        <div class="ps"><div class="ps-val">30</div><div class="ps-label">HUD Units</div></div>
+        <div class="ps"><div class="ps-val">88</div><div class="ps-label">HQS Score</div></div>
+      </div>
+      <div><span class="hqs-badge hqs-good">✓ HQS Compliant</span></div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-market">Birmingham, AL</div>
+      <div class="prop-name">Liberty Court</div>
+      <div class="prop-address">7820 Crestwood Blvd, Birmingham AL 35210</div>
+      <div class="prop-stats">
+        <div class="ps"><div class="ps-val">48</div><div class="ps-label">Total Units</div></div>
+        <div class="ps"><div class="ps-val">40</div><div class="ps-label">HUD Units</div></div>
+        <div class="ps"><div class="ps-val">95</div><div class="ps-label">HQS Score</div></div>
+      </div>
+      <div><span class="hqs-badge hqs-good">✓ HQS Compliant</span></div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-market">Atlanta, GA</div>
+      <div class="prop-name">Peachtree Transitional</div>
+      <div class="prop-address">445 Marietta St NW, Atlanta GA 30313</div>
+      <div class="prop-stats">
+        <div class="ps"><div class="ps-val">60</div><div class="ps-label">Total Units</div></div>
+        <div class="ps"><div class="ps-val">52</div><div class="ps-label">HUD Units</div></div>
+        <div class="ps"><div class="ps-val">90</div><div class="ps-label">HQS Score</div></div>
+      </div>
+      <div><span class="hqs-badge hqs-good">✓ HQS Compliant</span></div>
+    </div>
+    <div class="prop-card">
+      <div class="prop-market">Mobile, AL</div>
+      <div class="prop-name">Gulf Coast Commons</div>
+      <div class="prop-address">5500 Government Blvd, Mobile AL 36693</div>
+      <div class="prop-stats">
+        <div class="ps"><div class="ps-val">30</div><div class="ps-label">Total Units</div></div>
+        <div class="ps"><div class="ps-val">24</div><div class="ps-label">HUD Units</div></div>
+        <div class="ps"><div class="ps-val">87</div><div class="ps-label">HQS Score</div></div>
+      </div>
+      <div><span class="hqs-badge hqs-warn">⚡ Score Monitoring</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ IMPACT ═══ -->
+<section id="impact" class="fade-up">
+  <div class="section-eyebrow">Veteran Impact</div>
+  <h2 class="section-title">The mission behind <em>the returns</em></h2>
+  <p class="section-sub">Every dollar invested directly translates to veterans housed, stabilized, and reconnected to their communities.</p>
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="ic-num">10</div>
+      <div class="ic-label">Veterans currently housed across portfolio</div>
+    </div>
+    <div class="impact-card">
+      <div class="ic-num">198</div>
+      <div class="ic-label">Total HUD-approved units under management</div>
+    </div>
+    <div class="impact-card">
+      <div class="ic-num">87%</div>
+      <div class="ic-label">Average portfolio occupancy rate</div>
+    </div>
+    <div class="impact-card">
+      <div class="ic-num">5</div>
+      <div class="ic-label">Markets across Gulf Coast and Southeast</div>
+    </div>
+  </div>
+
+  <div class="veterans-list">
+    <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;">Veteran profiles — anonymized for privacy</div>
+    <div class="vet-row">
+      <div class="vet-avatar">MT</div>
+      <div><div class="vet-name">Marcus T. — U.S. Army, 8 years</div><div class="vet-detail">HUD-VASH · Magnolia Arms · Part-time employed</div></div>
+      <div class="vet-score score-high">Stability: 78</div>
+    </div>
+    <div class="vet-row">
+      <div class="vet-avatar">AD</div>
+      <div><div class="vet-name">Anthony D. — U.S. Marines, 12 years</div><div class="vet-detail">HUD-VASH · Peachtree Transitional · Full-time employed</div></div>
+      <div class="vet-score score-high">Stability: 85</div>
+    </div>
+    <div class="vet-row">
+      <div class="vet-avatar">DW</div>
+      <div><div class="vet-name">Darnell W. — U.S. Navy, 6 years</div><div class="vet-detail">HUD-VASH · Liberty Court · Full-time employed</div></div>
+      <div class="vet-score score-high">Stability: 91</div>
+    </div>
+    <div class="vet-row">
+      <div class="vet-avatar">RC</div>
+      <div><div class="vet-name">Robert C. — U.S. Army, 4 years</div><div class="vet-detail">HUD-VASH · Magnolia Arms · Part-time employed</div></div>
+      <div class="vet-score score-med">Stability: 62</div>
+    </div>
+    <div class="vet-row">
+      <div class="vet-avatar">WF</div>
+      <div><div class="vet-name">William F. — U.S. Air Force, 10 years</div><div class="vet-detail">HUD-VASH · Liberty Court · Full-time employed</div></div>
+      <div class="vet-score score-high">Stability: 88</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ DEAL ROOM CTA ═══ -->
+<div class="dealroom fade-up">
+  <div class="dr-eyebrow">Accredited Investors Only</div>
+  <h2 class="dr-title">Ready to <em>go deeper?</em></h2>
+  <p class="dr-sub">Access the full Deal Room — financial models, legal documents, LP agreement, and a direct line to Darryl Barnes, CEO & Founder.</p>
+  <div class="dr-actions">
+    <button class="btn-solid btn-large" onclick="openModal('login-modal')">Access Deal Room</button>
+    <button class="btn-outline btn-large" onclick="openModal('call-modal')">Schedule a Call with Darryl</button>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>© 2025 Venture Collective Group · VetConnect OS · All rights reserved</div>
+  <div>Private Capital. Public Purpose. Superior Returns.</div>
+  <div>dlbarnes@dbglobalinvestments.com · www.vcgnow.com</div>
+</footer>
+
+<!-- ═══ INVESTOR LOGIN MODAL ═══ -->
+<div class="modal-bg" id="login-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModals()">×</button>
+    <div class="modal-title">Investor Access</div>
+    <div class="modal-sub">Sign in to access the VCG Fund I Deal Room</div>
+    <div class="modal-alert" id="login-alert">Invalid credentials. Please try again.</div>
+    <div class="form-field">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="inv-email" placeholder="you@institution.com">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="inv-password" placeholder="••••••••">
+    </div>
+    <button class="btn-modal" onclick="investorLogin()">
+      <span id="login-btn-text">Sign In</span>
+    </button>
+    <div style="margin-top:1.25rem;text-align:center;font-size:12px;color:rgba(250,247,240,0.3);">
+      Don't have access? <a href="#" onclick="closeModals();openModal('call-modal')" style="color:var(--gold);text-decoration:none;">Request access →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCHEDULE CALL MODAL ═══ -->
+<div class="modal-bg" id="call-modal">
+  <div class="call-modal">
+    <button class="modal-close" onclick="closeModals()">×</button>
+    <div class="modal-title">Schedule a Call</div>
+    <div class="modal-sub">30-minute discovery call with Darryl Barnes, CEO & Founder, U.S. Army Veteran</div>
+    <div class="form-field">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="call-name" placeholder="Jane Smith">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Institution / Organization</label>
+      <input type="text" class="form-input" id="call-org" placeholder="JPMorgan Chase, Calvert Impact...">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="call-email" placeholder="you@institution.com">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Investment Range</label>
+      <select class="form-input" id="call-range" style="color:rgba(250,247,240,0.6)">
+        <option value="">Select range...</option>
+        <option>$250K – $500K</option>
+        <option>$500K – $1M</option>
+        <option>$1M – $2.5M</option>
+        <option>$2.5M+</option>
+      </select>
+    </div>
+    <button class="btn-modal" onclick="submitCallRequest()">Request Discovery Call</button>
+    <div style="margin-top:1rem;text-align:center;font-size:11px;color:rgba(250,247,240,0.2);">We'll respond within 24 hours to confirm a time.</div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+// ── Modal controls ────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModals() { document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('open')); }
+document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModals(); }));
+
+// ── Investor login ────────────────────────────────────────────────────────────
+async function investorLogin() {
+  const email    = document.getElementById('inv-email').value.trim();
+  const password = document.getElementById('inv-password').value;
+  const alert    = document.getElementById('login-alert');
+  const btnText  = document.getElementById('login-btn-text');
+  alert.classList.remove('show');
+  btnText.textContent = 'Signing in...';
+  try {
+    const result = await VetConnectAuth.login(email, password);
+    if (result.success) {
+      const role = result.user.role;
+      if (role === 'investor_lp') {
+        window.location.href = 'deal-room.html';
+      } else if (role === 'super_admin' || role === 'org_admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    } else {
+      alert.textContent = result.message || 'Invalid credentials.';
+      alert.classList.add('show');
+      btnText.textContent = 'Sign In';
+    }
+  } catch(e) {
+    alert.textContent = 'Connection error. Please try again.';
+    alert.classList.add('show');
+    btnText.textContent = 'Sign In';
+  }
+}
+
+// ── Schedule call ─────────────────────────────────────────────────────────────
+function submitCallRequest() {
+  const name  = document.getElementById('call-name').value.trim();
+  const org   = document.getElementById('call-org').value.trim();
+  const email = document.getElementById('call-email').value.trim();
+  const range = document.getElementById('call-range').value;
+  if (!name || !email) { alert('Please fill in your name and email.'); return; }
+  // In production: POST to a Netlify function that emails Darryl
+  closeModals();
+  setTimeout(() => alert(`Thank you ${name}! We'll reach out to ${email} within 24 hours to confirm your discovery call.`), 200);
+}
+
+// ── Returns chart ─────────────────────────────────────────────────────────────
+new Chart(document.getElementById('returns-chart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ['S&P 500', 'REIT Index', 'Private Equity', 'VCG Fund I\n(Target)'],
+    datasets: [{
+      data: [10.5, 8.2, 12.4, 16],
+      backgroundColor: ['rgba(250,247,240,0.08)','rgba(250,247,240,0.08)','rgba(250,247,240,0.08)','rgba(201,168,76,0.6)'],
+      borderColor:     ['rgba(250,247,240,0.15)','rgba(250,247,240,0.15)','rgba(250,247,240,0.15)','rgba(201,168,76,0.9)'],
+      borderWidth: 1, borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% Net IRR` }}
+    },
+    scales: {
+      x: { ticks: { color:'rgba(250,247,240,0.4)', font:{size:11} }, grid:{ display:false } },
+      y: { ticks: { color:'rgba(250,247,240,0.4)', font:{size:11}, callback: v => v+'%' }, grid:{ color:'rgba(250,247,240,0.05)' }, max:20 }
+    }
+  }
+});
+
+// ── Scroll animations ─────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
