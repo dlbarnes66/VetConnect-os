@@ -2,5 +2,4 @@
 /login.html           /login.html           200
 /investor-demo.html   /investor-demo.html   200
 /deal-room.html       /deal-room.html       200
-/.netlify/functions/* /.netlify/functions/:splat 200
 /*                    /login.html           200
