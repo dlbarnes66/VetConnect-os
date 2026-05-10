@@ -1,9 +1,1 @@
-[build]
-  publish = "vetconnect-os"
-  functions = "vetconnect-os/netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-
-[functions."agent-runner"]
-  schedule = "0 7 * * *"
