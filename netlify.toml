@@ -1,17 +1,1 @@
-[build]
-  functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
- VetConnect OS — Netlify configuration
-# This file goes in the root of the VetConnect-os repo (next to admin.html)
-# Only ADD the [functions] block if it doesn't exist; preserve other existing config.
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-
-[build]
-  # If you don't already have a build step, this is fine.
-  # Adjust if your repo has different existing build settings.
-  publish = "."
