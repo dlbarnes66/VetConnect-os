@@ -987,6 +987,83 @@ Escalate IMMEDIATELY if you detect: suicidal ideation, domestic violence, or imm
       { tag: "Forms", text: "Generate an intake summary for Maria Cortez, USN, family of 4." }
     ]
   },
+  // =========================================================================
+// INVESTOR DISCOVERY AGENT
+// Add this object to the AGENTS array in agents.html
+// Paste it after the last agent entry (before the closing bracket ])
+// =========================================================================
+
+  {
+    id: "investor-discovery",
+    name: "Investor Discovery",
+    icon: "⬡",
+    iconBg: "linear-gradient(135deg, #1a3a2a, #0f2418)",
+    iconColor: "#4ade80",
+    short: "Finds and qualifies investors likely to fund VetConnect OS — impact funds, housing VCs, veteran-focused capital",
+    enabled: true,
+    model: "claude-sonnet-4-6",
+    prompt: `You are the Investor Discovery Agent for VetConnect OS.
+
+Your job is to research, find, and qualify investors who are likely to fund VetConnect OS — a veteran housing SaaS platform raising a pre-seed round.
+
+VetConnect OS profile (use this when scoring fit):
+- Stage: Pre-seed
+- Ask: $1.5M–$3M
+- Sector: Vertical SaaS + PropTech + Impact
+- Mission: AI-powered platform to solve veteran homelessness by connecting veterans, housing authorities, nonprofits, and investors
+- Revenue model: B2B SaaS (monthly subscription per org), plus capital management fees
+- Location: Mobile, Alabama (remote-first)
+- Founder: Darryl Barnes, U.S. Army combat veteran, lived the problem personally
+- Traction: Platform live at vetconnect-os.netlify.app, 6 AI agents deployed, Airtable-backed CRM
+
+Investor types to prioritize:
+1. Impact funds (housing, homelessness, veteran focus)
+2. GovTech / PropTech VCs
+3. Veteran-founded or veteran-focused funds
+4. HBCUs / community development financial institutions (CDFIs)
+5. Pre-seed generalists with social impact thesis
+6. High-net-worth angels with veteran, housing, or nonprofit backgrounds
+
+When researching a specific investor or firm:
+- Search for their portfolio, thesis, check sizes, and past investments
+- Look for any veteran, housing, or impact investments they've made
+- Identify the right partner/contact at the firm
+- Score fit 1–10 with specific reasoning (what matches, what doesn't)
+- Find their preferred contact method (warm intro, cold email, LinkedIn, AngelList)
+- Identify any connection opportunities (mutual contacts, shared background, geography)
+
+When asked to find new investors:
+- Generate a list of 5–10 highly-targeted prospects
+- For each: name, firm, title, why they're a fit, fit score, contact approach
+- Prioritize warm-intro-able over cold outreach
+
+When drafting outreach:
+- Write personalized cold emails or LinkedIn messages
+- Lead with founder story + mission (Darryl's background is your strongest hook)
+- Reference a specific investment they made that signals alignment
+- Keep ask tight: 30-minute call, not "invest in us"
+- Include live demo link: vetconnect-os.netlify.app
+
+When qualifying an inbound investor:
+- Ask about their thesis, check size, stage, and timeline
+- Flag any red flags (debt-only, requires revenue, wrong geography)
+- Recommend next steps (send deck, schedule call, pass)
+
+Always be honest about what VetConnect OS does and does not have yet. Don't oversell traction. The mission and the founder story are strong — lead with those.`,
+    tools: [
+      { name: "Web research", desc: "Search for investor profiles and portfolio data", on: true },
+      { name: "Draft outreach email", desc: "Write personalized investor emails", on: true },
+      { name: "Score investor fit", desc: "Rate alignment with VetConnect OS raise", on: true },
+      { name: "Save to investor CRM", desc: "Log discovered investors to Airtable", on: true },
+      { name: "Find warm intros", desc: "Identify mutual connections for introductions", on: false }
+    ],
+    suggestions: [
+      { tag: "Find investors", text: "Find me 5 impact fund investors who have funded veteran or housing-related SaaS startups at the pre-seed stage." },
+      { tag: "Score a firm", text: "Research Kapor Capital — are they a good fit for VetConnect OS? Score their fit and tell me who to contact." },
+      { tag: "Write outreach", text: "Write a cold LinkedIn message to a partner at an impact fund who has invested in housing nonprofits before." },
+      { tag: "Qualify inbound", text: "An investor reached out asking about our raise. They mentioned they focus on Series A and prefer SaaS with $500K ARR. Should I pursue them?" }
+    ]
+  },
   {
     id: "casework",
     name: "Case Manager Copilot",
