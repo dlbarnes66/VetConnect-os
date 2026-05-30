@@ -1901,7 +1901,84 @@ get("chatInput").addEventListener("keydown", e => {
 });
 get("sendBtn").onclick = sendMessage;
 
+// =========================================================================
+// AIRTABLE CONFIG
+// =========================================================================
+const AIRTABLE_TOKEN = "patcAL8ArnxUoAUUn.b6197ea69e7c3f2809514637dd22263217739f341c191d47ef7143471958b17c";
+const AIRTABLE_BASE = "appooo5Vcblwu8Ysn";
+const AIRTABLE_TABLE = "Investor%20Outreach";
+
+async function fetchInvestorCRM() {
+  try {
+    const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}?maxRecords=50`, {
+      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
+    });
+    const data = await res.json();
+    if (!data.records) return null;
+    return data.records.map(r => r.fields);
+  } catch (err) {
+    console.error("Airtable fetch error:", err);
+    return null;
+  }
+}
+
 async function sendMessage() {
+  const input = get("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const a = currentAgent();
+
+  chatHistory[a.id].push({ role: "user", content: escapeHtml(text) });
+  addMessageEl("user", escapeHtml(text));
+  input.value = "";
+  autoResize();
+
+  const typing = addMessageEl("assistant", `<div class="typing"><span></span><span></span><span></span></div>`);
+
+  try {
+    const messages = chatHistory[a.id]
+      .filter(m => m.role === "user" || m.role === "assistant")
+      .map(m => ({ role: m.role, content: m.content }));
+
+    // Inject live Airtable data for CRM agents
+    let systemPrompt = a.prompt;
+    if (["fundraising-crm", "investor-qualification", "investor-discovery", "outreach"].includes(a.id)) {
+      const crmData = await fetchInvestorCRM();
+      if (crmData && crmData.length > 0) {
+        systemPrompt += `\n\n--- LIVE INVESTOR OUTREACH DATA (from Airtable, as of now) ---\n${JSON.stringify(crmData, null, 2)}\n---`;
+      } else {
+        systemPrompt += `\n\n--- INVESTOR OUTREACH DATA: No records found yet in Airtable. ---`;
+      }
+    }
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "YOUR_ANTHROPIC_API_KEY_HERE",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: a.model || "claude-sonnet-4-6",
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    const data = await res.json();
+    typing.remove();
+    const reply = data.content[0].text;
+    chatHistory[a.id].push({ role: "assistant", content: reply });
+    addMessageEl("assistant", reply);
+
+  } catch (err) {
+    typing.remove();
+    addMessageEl("assistant", `<i>Error reaching Claude API. Check your API key and try again.</i>`);
+    console.error(err);
+  }
+}
   const input = get("chatInput");
   const text = input.value.trim();
   if (!text) return;
