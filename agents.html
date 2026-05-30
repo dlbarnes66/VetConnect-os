@@ -1570,13 +1570,39 @@ async function sendMessage() {
   // typing indicator
   const typing = addMessageEl("assistant", `<div class="typing"><span></span><span></span><span></span></div>`);
 
-  // simulate response
-  await new Promise(r => setTimeout(r, 900 + Math.random() * 800));
-  typing.remove();
+// real Claude API call
+  try {
+    const messages = chatHistory[a.id]
+      .filter(m => m.role === "user" || m.role === "assistant")
+      .map(m => ({ role: m.role, content: m.content }));
 
-  const reply = simulateResponse(a, text);
-  chatHistory[a.id].push({ role: "assistant", content: reply });
-  addMessageEl("assistant", reply);
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "YOUR_ANTHROPIC_API_KEY_HERE",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: a.model || "claude-sonnet-4-6",
+        max_tokens: 1024,
+        system: a.prompt,
+        messages: messages
+      })
+    });
+
+    const data = await res.json();
+    typing.remove();
+    const reply = data.content[0].text;
+    chatHistory[a.id].push({ role: "assistant", content: reply });
+    addMessageEl("assistant", reply);
+
+  } catch (err) {
+    typing.remove();
+    addMessageEl("assistant", `<i>Error reaching Claude API. Check your API key and try again.</i>`);
+    console.error(err);
+  }
 }
 
 function escapeHtml(s) {
