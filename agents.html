@@ -1910,18 +1910,27 @@ const AIRTABLE_TABLE = "Investor%20Outreach";
 
 async function fetchInvestorCRM() {
   try {
-    const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}?maxRecords=50`, {
-      headers: { "Authorization": `Bearer ${AIRTABLE_TOKEN}` }
-    });
+    const res = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}?maxRecords=50`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    if (!res.ok) {
+      console.error("Airtable error:", res.status, await res.text());
+      return null;
+    }
     const data = await res.json();
-    if (!data.records) return null;
+    if (!data.records || data.records.length === 0) return null;
     return data.records.map(r => r.fields);
   } catch (err) {
     console.error("Airtable fetch error:", err);
     return null;
   }
 }
-
 async function sendMessage() {
   const input = get("chatInput");
   const text = input.value.trim();
