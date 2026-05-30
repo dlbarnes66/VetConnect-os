@@ -1846,8 +1846,7 @@ function renderUsage() {
     "fundraising-crm": ["Pipeline snapshot pulled", "Sentiment analyzed", "Follow-up flagged", "Meeting prep generated"],
     "investor-qualification": ["Intent score: 74/100", "Pipeline ranked", "Deal risk flagged", "Segment analysis run"],
   };
-  const logActions = actions[a.id];
-  let log = "";
+  const logActions = actions[a.id] || ["Activity logged", "Agent invoked", "Response generated", "Task completed"];  let log = "";
   for (let i = 0; i < 6; i++) {
     const min = i * 17 + 3;
     log += `
