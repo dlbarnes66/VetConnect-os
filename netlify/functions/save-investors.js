@@ -65,7 +65,6 @@ exports.handler = async function(event) {
         'Full Name':    inv.name || inv.full_name || 'Unknown',
         'Company':      inv.firm || inv.company || '',
         'Lead Type':    inv.lead_type || 'VC / Investor',
-        'Status':       'AI Discovery',
         'Qualified':    'Pending Review',
         'Source':       inv.source || 'AI Discovery Agent',
         'Notes':        noteParts.join('\n\n'),
