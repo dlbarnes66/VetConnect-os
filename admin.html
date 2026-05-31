@@ -230,6 +230,40 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--purple-lit);}
 .form-row textarea{min-height:70px;resize:vertical;line-height:1.5;}
 .chart-wrap{position:relative;height:180px;}
+
+/* ===== INTEGRATIONS ===== */
+.integrations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.integration-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s;}
+.integration-card:hover{box-shadow:0 4px 16px rgba(45,27,105,0.08);border-color:rgba(45,27,105,0.2);}
+.integration-card.connected{border-color:rgba(16,185,129,0.3);background:linear-gradient(135deg,var(--surface),rgba(16,185,129,0.03));}
+.integration-card.coming-soon{opacity:.65;}
+.integration-header{display:flex;align-items:center;gap:10px;}
+.integration-logo{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--border);}
+.integration-name{font-size:14px;font-weight:600;color:var(--text);}
+.integration-category{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.integration-desc{font-size:12px;color:var(--muted);line-height:1.55;flex:1;}
+.integration-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.integration-status{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;}
+.integration-status.live{color:var(--success);}
+.integration-status.live::before{content:"●";font-size:7px;}
+.integration-status.soon{color:var(--muted);}
+.integration-status.soon::before{content:"○";font-size:7px;}
+.integration-status.setup{color:var(--warning);}
+.integration-status.setup::before{content:"◐";font-size:9px;}
+.integration-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:"DM Sans",sans-serif;transition:opacity .15s;}
+.integration-btn:hover{opacity:.85;}
+.integration-btn.btn-connect{background:var(--purple);color:#fff;}
+.integration-btn.btn-connected{background:rgba(16,185,129,0.12);color:var(--success);border:1px solid rgba(16,185,129,0.3);cursor:default;}
+.integration-btn.btn-setup{background:var(--gold);color:#1A0F45;}
+.integration-btn.btn-soon{background:var(--surface2);color:var(--muted);cursor:not-allowed;}
+.integrations-section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:.25rem 0 .5rem;margin-top:.25rem;}
+.integration-input-row{display:flex;gap:8px;align-items:center;}
+.integration-input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:12px;color:var(--text);background:var(--surface);outline:none;}
+.integration-input:focus{border-color:var(--purple-lit);}
+.integration-save-btn{padding:7px 14px;background:var(--purple);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;}
+.integration-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.integration-tag.native{background:rgba(91,74,176,0.12);color:var(--purple-lit);}
+.integration-tag.external{background:rgba(201,168,76,0.12);color:var(--gold);}
 </style>
 </head>
 <body>
@@ -548,9 +582,309 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
     </div>
 
     <!-- INTEGRATIONS -->
+    <!-- INTEGRATIONS -->
     <div class="section" id="section-integrations">
-      <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Integrations</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Connected tools and services</p></div>
-      <div class="card"><div class="card-body"><div class="empty"><div class="empty-icon">&#x1F517;</div>Integrations panel loading...</div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Integrations</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">Connect your accounting, communication, and operations tools</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:12px;color:var(--muted)">2 connected</span>
+          <span style="font-size:12px;color:var(--muted)">·</span>
+          <span style="font-size:12px;color:var(--success);font-weight:600">● Platform live</span>
+        </div>
+      </div>
+
+      <!-- ACCOUNTING -->
+      <div class="integrations-section-label">&#x1F4B3; Accounting &amp; Finance</div>
+      <div class="integrations-grid">
+
+        <!-- QuickBooks -->
+        <div class="integration-card" id="int-quickbooks">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#2CA01C22;border-color:#2CA01C44;">&#x1F4CA;</div>
+            <div>
+              <div class="integration-name">QuickBooks Online</div>
+              <div class="integration-category">Accounting</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Sync rent payments, HAP payments, and operational expenses. Auto-reconcile Treasury deposits from HUD-VASH vouchers. Generate P&amp;L by property and fund.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">API Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="qb-api-key" placeholder="Enter QuickBooks API key..." />
+              <button class="integration-save-btn" onclick="saveIntegration('quickbooks','qb-api-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status setup" id="qb-status">Not configured</span>
+            <a href="https://developer.intuit.com/app/developer/qbo/docs/get-started" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get API key &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Xero -->
+        <div class="integration-card" id="int-xero">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#13B5EA22;border-color:#13B5EA44;">&#x1F4D8;</div>
+            <div>
+              <div class="integration-name">Xero</div>
+              <div class="integration-category">Accounting</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Alternative to QuickBooks. Track fund expenses, LP distributions, property-level accounting. Strong non-profit and impact fund reporting features.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">API Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="xero-api-key" placeholder="Enter Xero API key..." />
+              <button class="integration-save-btn" onclick="saveIntegration('xero','xero-api-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="xero-status">Not configured</span>
+            <a href="https://developer.xero.com/documentation/getting-started-guide/" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get API key &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Stripe -->
+        <div class="integration-card" id="int-stripe">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#635BFF22;border-color:#635BFF44;">&#x1F4B3;</div>
+            <div>
+              <div class="integration-name">Stripe</div>
+              <div class="integration-category">Payments</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Collect SaaS subscription payments from housing orgs using VetConnect OS. Process LP capital calls and investor management fees. Real-time payment tracking.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Secret Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="stripe-api-key" placeholder="sk_live_..." />
+              <button class="integration-save-btn" onclick="saveIntegration('stripe','stripe-api-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="stripe-status">Not configured</span>
+            <a href="https://dashboard.stripe.com/apikeys" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get API key &#x2192;</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COMMUNICATIONS -->
+      <div class="integrations-section-label" style="margin-top:.5rem">&#x1F4AC; Communications</div>
+      <div class="integrations-grid">
+
+        <!-- Mailgun — already wired -->
+        <div class="integration-card connected" id="int-mailgun">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#FF000022;border-color:#FF000044;">&#x2709;&#xFE0F;</div>
+            <div>
+              <div class="integration-name">Mailgun</div>
+              <div class="integration-category">Transactional Email</div>
+            </div>
+            <span class="integration-tag native" style="margin-left:auto">Native</span>
+          </div>
+          <div class="integration-desc">Powers investor outreach emails from the CRM. Sends from dlbarnes@mg.vcgnow.com with reply-to at dlbarnes@vcgnow.com. Delivery tracking and bounce handling built in.</div>
+          <div class="integration-footer">
+            <span class="integration-status live">Connected · mg.vcgnow.com</span>
+            <button class="integration-btn btn-connected">&#x2713; Active</button>
+          </div>
+        </div>
+
+        <!-- Twilio SMS -->
+        <div class="integration-card" id="int-twilio">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#F2284922;border-color:#F2284944;">&#x1F4F1;</div>
+            <div>
+              <div class="integration-name">Twilio SMS</div>
+              <div class="integration-category">SMS / Voice</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Send automated SMS reminders to veterans for housing appointments, payment due dates, and case manager check-ins. Two-way messaging for veteran support.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Auth Token</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="twilio-token" placeholder="Twilio Auth Token..." />
+              <button class="integration-save-btn" onclick="saveIntegration('twilio','twilio-token')">Save</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="text" class="integration-input" id="twilio-sid" placeholder="Account SID..." style="flex:1" />
+              <input type="text" class="integration-input" id="twilio-phone" placeholder="+1..." style="flex:0.6" />
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="twilio-status">Not configured</span>
+            <a href="https://console.twilio.com" target="_blank" style="font-size:11px;color:var(--purple-lit)">Twilio Console &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Slack -->
+        <div class="integration-card" id="int-slack">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#4A154B22;border-color:#4A154B44;">&#x1F4AC;</div>
+            <div>
+              <div class="integration-name">Slack</div>
+              <div class="integration-category">Team Communications</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Post investor activity alerts, new deck lead notifications, and veteran intake summaries to your Slack channels. Real-time pipeline updates for your team.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Webhook URL</label>
+            <div class="integration-input-row">
+              <input type="text" class="integration-input" id="slack-webhook" placeholder="https://hooks.slack.com/services/..." />
+              <button class="integration-save-btn" onclick="saveIntegration('slack','slack-webhook')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="slack-status">Not configured</span>
+            <a href="https://api.slack.com/messaging/webhooks" target="_blank" style="font-size:11px;color:var(--purple-lit)">Create webhook &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Calendly — already in emails -->
+        <div class="integration-card connected" id="int-calendly">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#006BFF22;border-color:#006BFF44;">&#x1F4C5;</div>
+            <div>
+              <div class="integration-name">Calendly</div>
+              <div class="integration-category">Scheduling</div>
+            </div>
+            <span class="integration-tag native" style="margin-left:auto">Native</span>
+          </div>
+          <div class="integration-desc">Investor meeting link is embedded in all outreach emails and email templates. Booking link: calendly.com/dlbarnes-dbglobalinvestments</div>
+          <div class="integration-footer">
+            <span class="integration-status live">Connected · booking link active</span>
+            <a href="https://calendly.com/dlbarnes-dbglobalinvestments/new-meeting-1" target="_blank" class="integration-btn btn-connected" style="text-decoration:none">&#x2713; Active</a>
+          </div>
+        </div>
+
+        <!-- Zoom -->
+        <div class="integration-card" id="int-zoom">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#2D8CFF22;border-color:#2D8CFF44;">&#x1F4F9;</div>
+            <div>
+              <div class="integration-name">Zoom</div>
+              <div class="integration-category">Video Meetings</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Auto-generate Zoom links for investor meetings booked via Calendly. Send meeting transcripts to the Meeting Intelligence Agent for follow-up action items.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">API Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="zoom-api-key" placeholder="Zoom OAuth Client Secret..." />
+              <button class="integration-save-btn" onclick="saveIntegration('zoom','zoom-api-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="zoom-status">Not configured</span>
+            <a href="https://marketplace.zoom.us/develop/create" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get API key &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Otter AI -->
+        <div class="integration-card" id="int-otter">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#7C3AED22;border-color:#7C3AED44;">&#x1F399;&#xFE0F;</div>
+            <div>
+              <div class="integration-name">Otter.ai</div>
+              <div class="integration-category">Meeting Transcription</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Auto-transcribe investor and case management meetings. Feed transcripts directly to the Meeting Intelligence Agent to extract objections, commitments, and follow-up actions.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">API Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="otter-api-key" placeholder="Otter.ai API key..." />
+              <button class="integration-save-btn" onclick="saveIntegration('otter','otter-api-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="otter-status">Not configured</span>
+            <a href="https://otter.ai/developers" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get API key &#x2192;</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STORAGE & DOCUMENTS -->
+      <div class="integrations-section-label" style="margin-top:.5rem">&#x1F4C2; Storage &amp; Documents</div>
+      <div class="integrations-grid">
+
+        <!-- Google Drive -->
+        <div class="integration-card" id="int-gdrive">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#4285F422;border-color:#4285F444;">&#x1F4C1;</div>
+            <div>
+              <div class="integration-name">Google Drive</div>
+              <div class="integration-category">Document Storage</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Store and share investor data rooms, pitch decks, and financial models. The Due Diligence Agent can auto-generate documents directly to a designated Drive folder.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Service Account Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="gdrive-key" placeholder="Google Service Account JSON key..." />
+              <button class="integration-save-btn" onclick="saveIntegration('gdrive','gdrive-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="gdrive-status">Not configured</span>
+            <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="font-size:11px;color:var(--purple-lit)">Create credentials &#x2192;</a>
+          </div>
+        </div>
+
+        <!-- Airtable — already connected -->
+        <div class="integration-card connected" id="int-airtable">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#FCB40022;border-color:#FCB40044;">&#x1F5C3;&#xFE0F;</div>
+            <div>
+              <div class="integration-name">Airtable</div>
+              <div class="integration-category">CRM Database</div>
+            </div>
+            <span class="integration-tag native" style="margin-left:auto">Native</span>
+          </div>
+          <div class="integration-desc">Powers the entire CRM — Veterans, Properties, Vouchers, Payments, Deck Leads, and Investor Outreach. Live bidirectional sync across the platform and all 16 AI agents.</div>
+          <div class="integration-footer">
+            <span class="integration-status live">Connected · Base appooo5Vcblwu8Ysn</span>
+            <button class="integration-btn btn-connected" onclick="showSection('settings')">&#x2713; Manage token</button>
+          </div>
+        </div>
+
+        <!-- DocuSign -->
+        <div class="integration-card" id="int-docusign">
+          <div class="integration-header">
+            <div class="integration-logo" style="background:#FFCC0022;border-color:#FFCC0044;">&#x270D;&#xFE0F;</div>
+            <div>
+              <div class="integration-name">DocuSign</div>
+              <div class="integration-category">e-Signatures</div>
+            </div>
+            <span class="integration-tag external" style="margin-left:auto">External</span>
+          </div>
+          <div class="integration-desc">Send SAFE agreements and LP subscription docs for e-signature directly from the CRM. Auto-log signed documents to investor records and the data room.</div>
+          <div style="margin-top:4px">
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Integration Key</label>
+            <div class="integration-input-row">
+              <input type="password" class="integration-input" id="docusign-key" placeholder="DocuSign Integration Key..." />
+              <button class="integration-save-btn" onclick="saveIntegration('docusign','docusign-key')">Save</button>
+            </div>
+          </div>
+          <div class="integration-footer">
+            <span class="integration-status soon" id="docusign-status">Not configured</span>
+            <a href="https://developers.docusign.com" target="_blank" style="font-size:11px;color:var(--purple-lit)">Get key &#x2192;</a>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- SETTINGS -->
@@ -1000,6 +1334,39 @@ function renderAnalyticsChart(){
 
 // SETTINGS
 function saveToken(){var t=document.getElementById('token-input').value.trim();if(!t)return;VetConnectAuth.setToken(t,true);_loaded={};deckLeadsCache=[];document.getElementById('token-saved').style.display='inline';setTimeout(function(){document.getElementById('token-saved').style.display='none';},3000);}
+
+
+// INTEGRATIONS — save API keys to localStorage
+function saveIntegration(name, inputId) {
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) return;
+  localStorage.setItem('vcg_int_' + name, val);
+  const statusEl = document.getElementById(name.split('-')[0] + '-status') ||
+                   document.getElementById(name + '-status');
+  if (statusEl) {
+    statusEl.textContent = 'Connected';
+    statusEl.className = 'integration-status live';
+  }
+  const card = document.getElementById('int-' + name);
+  if (card) card.classList.add('connected');
+  // Replace save button with checkmark
+  const btn = document.querySelector('#int-' + name + ' .integration-save-btn');
+  if (btn) { btn.textContent = '✓ Saved'; btn.style.background = 'var(--success)'; }
+}
+
+// On load — restore any saved integration states
+document.addEventListener('DOMContentLoaded', function() {
+  const integrations = ['quickbooks','xero','stripe','twilio','slack','zoom','otter','gdrive','docusign'];
+  integrations.forEach(function(name) {
+    const key = localStorage.getItem('vcg_int_' + name);
+    if (key) {
+      const statusEl = document.getElementById(name + '-status');
+      if (statusEl) { statusEl.textContent = 'Connected'; statusEl.className = 'integration-status live'; }
+      const card = document.getElementById('int-' + name);
+      if (card) card.classList.add('connected');
+    }
+  });
+});
 
 // KEYBOARD
 document.addEventListener('keydown',function(e){
