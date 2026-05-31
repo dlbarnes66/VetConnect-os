@@ -252,7 +252,8 @@
 // API calls via Netlify functions — no keys in HTML
 async function fetchInvestorCRM() {
   try {
-    const res = await fetch("/.netlify/functions/airtable");
+    // Query Deck Leads table — the unified CRM where all investors are stored
+    const res = await fetch("/.netlify/functions/airtable?table=tblnDM50dD7d8Fkjy");
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.records || data.records.length === 0) return null;
