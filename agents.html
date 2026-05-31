@@ -288,26 +288,66 @@ Escalate IMMEDIATELY for: suicidal ideation, domestic violence, or imminent home
   {
     id:"investor-discovery", name:"Investor Discovery", icon:"⬡",
     iconBg:"linear-gradient(135deg,#1a3a2a,#0f2418)", iconColor:"#4ade80",
-    short:"Finds and qualifies investors likely to fund VetConnect OS — impact funds, housing VCs, veteran-focused capital",
+    short:"Finds and qualifies investors likely to fund VetConnect OS — saves directly to your CRM with one command",
     enabled:true, model:"claude-sonnet-4-6",
-    prompt:`You are the Investor Discovery Agent for VetConnect OS.
-Find and qualify investors for VetConnect OS pre-seed raise.
-Profile: Pre-seed, $1.5M–$3M ask, Vertical SaaS + PropTech + Impact, founder Darryl Barnes (Army combat vet), platform live at vetconnect-os.netlify.app, 14 AI agents deployed.
-Prioritize: impact funds, GovTech/PropTech VCs, veteran-focused funds, CDFIs, pre-seed impact generalists, angels with veteran/housing background.
-For each investor: name, firm, title, why fit, fit score 1-10, contact approach.
-Don't oversell traction. Mission and founder story are the strongest hooks.`,
+    prompt:`You are the Investor Discovery Agent for VetConnect OS, built by VCG Venture Collective Group.
+
+You find and qualify investors for VetConnect OS, then save them directly to the CRM with a single command.
+
+VETCONNECT OS PROFILE:
+- Stage: Pre-seed | Ask: $500K SAFE at $4M cap
+- Sector: Vertical SaaS + PropTech + Impact
+- Founder: Darryl Barnes — U.S. Army combat veteran, lived the problem personally
+- Traction: 247+ veterans housed, 92% stability rate, $94K/mo Treasury revenue, platform live
+- Platform: vetconnect-os.netlify.app — 16 AI agents deployed
+
+INVESTOR TYPES TO PRIORITIZE:
+1. Impact funds (housing, homelessness, veteran focus)
+2. GovTech / PropTech VCs
+3. Veteran-founded or veteran-focused funds
+4. CDFIs / community development financial institutions
+5. Pre-seed generalists with social impact thesis
+6. High-net-worth angels with veteran, housing, or nonprofit backgrounds
+
+HOW TO PRESENT INVESTORS:
+For each investor return:
+- Name, Firm, Title
+- Why Fit (2-3 sentences specific to VetConnect OS)
+- Thesis, Portfolio Overlap, Stage Focus, Check Size
+- Fit Score (1-10)
+- Contact Approach, Warm Intro Angle
+
+After presenting a list, ALWAYS end with:
+"Say **save all to CRM** to push all investors above into your pipeline automatically. Or say **save investors 1, 3, 5** to save specific ones."
+
+HOW TO SAVE TO CRM:
+When the user says any variation of "save to CRM", "save all", "save these", "push to CRM", "add to pipeline":
+1. Identify which investors to save
+2. Output a structured JSON block exactly like this:
+
+SAVE_TO_CRM_JSON:
+[{"name":"Full Name","firm":"Firm","lead_type":"VC / Investor","stage":"Pre-seed","fit_score":9,"why_fit":"Why they fit","thesis":"Their thesis","portfolio_overlap":"Relevant companies","contact_approach":"How to reach","warm_intro":"Any warm intro angle","outreach_status":"Not Started","source":"AI Discovery Agent"}]
+END_SAVE_JSON
+
+3. The system will auto-save and confirm. Do NOT say you cannot save — the system handles it.
+
+RULES:
+- Always be honest about VetConnect OS current stage
+- Don't oversell traction — mission and founder story are the strongest hooks
+- Always offer to save after presenting a list
+- After save confirmation, tell the user to check CRM → Outreach in the dashboard`,
     tools:[
       {name:"Web research",desc:"Search for investor profiles and portfolio data",on:true},
+      {name:"Save to CRM",desc:"Push investors directly to Airtable Investor Outreach",on:true},
       {name:"Draft outreach email",desc:"Write personalized investor emails",on:true},
       {name:"Score investor fit",desc:"Rate alignment with VetConnect OS raise",on:true},
-      {name:"Save to investor CRM",desc:"Log discovered investors to Airtable",on:true},
       {name:"Find warm intros",desc:"Identify mutual connections for introductions",on:false}
     ],
     suggestions:[
-      {tag:"Find investors",text:"Find me 5 impact fund investors who have funded veteran or housing-related SaaS startups at the pre-seed stage."},
-      {tag:"Score a firm",text:"Research Kapor Capital — are they a good fit for VetConnect OS? Score their fit and tell me who to contact."},
-      {tag:"Write outreach",text:"Write a cold LinkedIn message to a partner at an impact fund who has invested in housing nonprofits before."},
-      {tag:"Qualify inbound",text:"An investor reached out asking about our raise. They mentioned they focus on Series A and prefer SaaS with $500K ARR. Should I pursue them?"}
+      {tag:"Find + Save",text:"Find me 5 impact fund investors who have funded veteran or housing-related SaaS at pre-seed, then save them all to my CRM."},
+      {tag:"Score a firm",text:"Research Kapor Capital — score their fit for VetConnect OS and save them to my CRM if they're above 7/10."},
+      {tag:"Save inbound",text:"An investor named Sarah Guo at Conviction Capital reached out. Research her, score the fit, and add her to my CRM."},
+      {tag:"Full pipeline build",text:"Find me 10 investors across impact VCs, PropTech VCs, and veteran-focused angels. Score them all and save the top 7 to my CRM."}
     ]
   },
   {
@@ -1012,6 +1052,26 @@ get("chatInput").addEventListener("input",autoResize);
 get("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}});
 get("sendBtn").onclick=sendMessage;
 
+// =========================================================================
+// SAVE TO CRM — pushes investors from Discovery Agent to Airtable
+// =========================================================================
+async function saveToCRM(investors) {
+  const res = await fetch("/.netlify/functions/save-investors", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ investors })
+  });
+  return await res.json();
+}
+
+// Detect if user is asking to save investors to CRM
+function isSaveCommand(text) {
+  const t = text.toLowerCase();
+  return t.match(/save (all|them|these|investor|to crm|to the crm|\d)/i) ||
+         t.match(/push (to |them to )?(crm|pipeline|airtable)/i) ||
+         t.match(/add (them|all|these) to (crm|pipeline|airtable)/i);
+}
+
 async function sendMessage(){
   const input=get("chatInput");
   const text=input.value.trim();
@@ -1026,19 +1086,80 @@ async function sendMessage(){
       .filter(m=>m.role==="user"||m.role==="assistant")
       .map(m=>({role:m.role,content:m.content}));
     let systemPrompt=a.prompt;
+
+    // Inject live CRM data for relevant agents
     if(["fundraising-crm","investor-qualification","investor-discovery","outreach"].includes(a.id)){
       const crmData=await fetchInvestorCRM();
       systemPrompt+=crmData&&crmData.length>0
         ?`\n\n--- LIVE INVESTOR OUTREACH DATA (from Airtable) ---\n${JSON.stringify(crmData,null,2)}\n---`
         :`\n\n--- INVESTOR OUTREACH DATA: Table is empty. Tell the user to add investors via the Investor Discovery agent. ---`;
     }
+
+    // For Discovery Agent: inject save capability instructions
+    if(a.id==="investor-discovery" && isSaveCommand(text)){
+      systemPrompt += `\n\n--- SAVE TO CRM INSTRUCTIONS ---
+The user wants to save investors to Airtable. You MUST respond with a JSON block in this exact format so the system can auto-save:
+
+SAVE_TO_CRM_JSON:
+[
+  {
+    "name": "Full Name",
+    "firm": "Firm Name",
+    "lead_type": "VC / Investor",
+    "stage": "Pre-seed",
+    "fit_score": 8,
+    "why_fit": "Why they fit VetConnect OS",
+    "thesis": "Their investment thesis",
+    "portfolio_overlap": "Relevant portfolio companies",
+    "contact_approach": "How to reach them",
+    "warm_intro": "Any warm intro angle or blank",
+    "outreach_status": "Not Started",
+    "source": "AI Discovery Agent"
+  }
+]
+END_SAVE_JSON
+
+After the JSON block, tell the user you are saving and to wait for confirmation.
+Include ONLY the investors the user asked to save.
+---`;
+    }
+
     const data=await callClaude(a.model||"claude-sonnet-4-6",systemPrompt,messages);
     typing.remove();
     if(!data.content||!data.content[0]){
       addMessageEl("assistant",`<i>API error: ${JSON.stringify(data.error||data)}</i>`);
       return;
     }
-    const reply=data.content[0].text;
+
+    let reply=data.content[0].text;
+
+    // Auto-save: detect JSON block in reply and push to Airtable
+    if(a.id==="investor-discovery"){
+      const jsonMatch = reply.match(/SAVE_TO_CRM_JSON:\s*(\[[\s\S]*?\])\s*END_SAVE_JSON/);
+      if(jsonMatch){
+        try {
+          const investors = JSON.parse(jsonMatch[1]);
+          // Remove the raw JSON block from the displayed reply
+          reply = reply.replace(/SAVE_TO_CRM_JSON:\s*\[[\s\S]*?\]\s*END_SAVE_JSON/, '').trim();
+
+          // Show saving status
+          const savingMsg = addMessageEl("assistant", `<div style="color:#4ade80;font-size:13px">⏳ Saving ${investors.length} investor${investors.length===1?'':'s'} to your CRM...</div>`);
+
+          const result = await saveToCRM(investors);
+          savingMsg.remove();
+
+          if(result.success){
+            const savedNames = investors.map((inv,i) => `${i+1}. ${inv.name}${inv.firm?' — '+inv.firm:''}`).join('\n');
+            reply += `\n\n✅ **Saved ${result.saved} investor${result.saved===1?'':'s'} to your CRM**\n\n${savedNames}\n\nYou can view them in **CRM → Outreach** in the dashboard. The Fundraising CRM Agent can now give you a pipeline snapshot.`;
+          } else {
+            reply += `\n\n⚠️ Save partially failed: ${result.message}. Try again or use the "+ Add Investor" button in the CRM section.`;
+          }
+        } catch(parseErr){
+          console.error("JSON parse error in save:", parseErr);
+        }
+      }
+    }
+
     chatHistory[a.id].push({role:"assistant",content:reply});
     addMessageEl("assistant",reply);
   } catch(err){
