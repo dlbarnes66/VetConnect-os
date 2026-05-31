@@ -1,5 +1,5 @@
 // netlify/functions/save-investors.js
-// Receives investor data from the Discovery Agent and writes to Airtable Investor Outreach table
+// Saves investors from Discovery Agent directly to Airtable Deck Leads table
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
@@ -8,75 +8,94 @@ exports.handler = async function(event) {
 
   const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = 'appooo5Vcblwu8Ysn';
-  const TABLE_ID = 'tblwOqhwXxHlA1Ka9'; // Investor Outreach table
+  const TABLE_ID = 'tblnDM50dD7d8Fkjy'; // Deck Leads table — the unified CRM
 
   if (!AIRTABLE_TOKEN) {
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ success: false, error: 'AIRTABLE_TOKEN not set in environment variables' })
+      body: JSON.stringify({ success: false, error: 'AIRTABLE_TOKEN not configured in Netlify environment variables' })
     };
   }
 
   let investors;
   try {
     const body = JSON.parse(event.body);
-    investors = body.investors; // array of investor objects
+    investors = body.investors;
     if (!investors || !Array.isArray(investors) || investors.length === 0) {
       return {
         statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ success: false, error: 'No investors provided. Expected { investors: [...] }' })
+        body: JSON.stringify({ success: false, error: 'No investors provided' })
       };
     }
   } catch (err) {
     return {
       statusCode: 400,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ success: false, error: 'Invalid JSON body: ' + err.message })
+      body: JSON.stringify({ success: false, error: 'Invalid JSON: ' + err.message })
     };
   }
 
   const results = [];
   const errors = [];
+  const now = new Date().toISOString().split('T')[0];
 
-  // Airtable batch limit is 10 records per request
+  // Airtable max 10 records per POST
   const chunks = [];
   for (let i = 0; i < investors.length; i += 10) {
     chunks.push(investors.slice(i, i + 10));
   }
 
   for (const chunk of chunks) {
-    const records = chunk.map(inv => ({
-      fields: {
-        // Required
-        'Name': inv.name || inv.full_name || 'Unknown',
+    const records = chunk.map(inv => {
+      // Build notes from all available context
+      const noteParts = [];
+      if (inv.why_fit)           noteParts.push('WHY FIT: ' + inv.why_fit);
+      if (inv.thesis)            noteParts.push('THESIS: ' + inv.thesis);
+      if (inv.portfolio_overlap) noteParts.push('PORTFOLIO OVERLAP: ' + inv.portfolio_overlap);
+      if (inv.contact_approach)  noteParts.push('CONTACT APPROACH: ' + inv.contact_approach);
+      if (inv.warm_intro)        noteParts.push('WARM INTRO: ' + inv.warm_intro);
+      noteParts.push('Added by AI Discovery Agent on ' + now);
 
-        // Firm / contact
-        'Firm': inv.firm || inv.company || '',
-        'Lead Type': inv.lead_type || 'VC / Investor',
-        'Stage Focus': inv.stage || inv.stage_focus || '',
+      return {
+        fields: {
+          // Core identity — matches Deck Leads table fields
+          'Full Name':      inv.name || inv.full_name || 'Unknown',
+          'Company':        inv.firm || inv.company || '',
+          'Firm':           inv.firm || inv.company || '',
+          'Title':          inv.title || '',
+          'Lead Type':      inv.lead_type || 'VC / Investor',
 
-        // Outreach tracking
-        'Outreach Status': inv.outreach_status || 'Not Started',
-        'Source': inv.source || 'AI Discovery Agent',
+          // Outreach tracking
+          'Outreach Status': inv.outreach_status || 'Not Started',
+          'Stage Focus':     inv.stage || inv.stage_focus || '',
+          'Source':          inv.source || 'AI Discovery Agent',
+          'Status':          'AI Discovery',
+          'Qualified':       'Pending Review',
 
-        // Fit scoring
-        'Fit Score': inv.fit_score ? String(inv.fit_score) : '',
+          // Fit scoring — store as text since field may be text type
+          'Fit Score':       inv.fit_score ? String(inv.fit_score) : '',
 
-        // Notes — combine why-fit reasoning + contact approach
-        'Notes': buildNotes(inv),
+          // Notes — full context from agent research
+          'Notes':           noteParts.join('\n\n'),
 
-        // Outreach draft if agent wrote one
-        ...(inv.outreach_draft ? { 'Outreach Draft': inv.outreach_draft } : {}),
+          // Activity log
+          'Activity Log':    now + ' — Added by AI Discovery Agent (Fit Score: ' + (inv.fit_score || 'N/A') + '/10)',
 
-        // Email if provided
-        ...(inv.email ? { 'Email': inv.email } : {}),
+          // Contact info if agent found it
+          ...(inv.email    ? { 'Email': inv.email }       : {}),
+          ...(inv.linkedin ? { 'LinkedIn URL': inv.linkedin } : {}),
+          ...(inv.phone    ? { 'Phone': inv.phone }       : {}),
 
-        // LinkedIn if provided
-        ...(inv.linkedin ? { 'LinkedIn': inv.linkedin } : {}),
-      }
-    }));
+          // Outreach draft if agent generated one
+          ...(inv.outreach_draft ? { 'Outreach Draft': inv.outreach_draft } : {}),
+
+          // First contact date
+          'First Contact Date': now,
+        }
+      };
+    });
 
     try {
       const response = await fetch(
@@ -94,12 +113,17 @@ exports.handler = async function(event) {
       const data = await response.json();
 
       if (!response.ok) {
-        errors.push({ chunk: chunk.map(i => i.name), error: data.error?.message || JSON.stringify(data) });
+        const errMsg = data.error?.message || JSON.stringify(data);
+        errors.push({ investors: chunk.map(i => i.name || 'Unknown'), error: errMsg });
+        console.error('Airtable error:', errMsg);
       } else {
-        results.push(...(data.records || []).map(r => ({ id: r.id, name: r.fields['Name'] })));
+        results.push(...(data.records || []).map(r => ({
+          id: r.id,
+          name: r.fields['Full Name']
+        })));
       }
     } catch (err) {
-      errors.push({ chunk: chunk.map(i => i.name), error: err.message });
+      errors.push({ investors: chunk.map(i => i.name || 'Unknown'), error: err.message });
     }
   }
 
@@ -115,35 +139,8 @@ exports.handler = async function(event) {
       records: results,
       errors: errors.length > 0 ? errors : undefined,
       message: errors.length === 0
-        ? `${results.length} investor${results.length === 1 ? '' : 's'} saved to CRM successfully`
-        : `${results.length} saved, ${errors.length} failed`
+        ? `${results.length} investor${results.length === 1 ? '' : 's'} saved to CRM`
+        : `${results.length} saved, ${errors.length} chunk(s) failed`
     })
   };
 };
-
-function buildNotes(inv) {
-  const parts = [];
-  const ts = new Date().toISOString().split('T')[0];
-
-  if (inv.why_fit || inv.reason) {
-    parts.push(`WHY FIT: ${inv.why_fit || inv.reason}`);
-  }
-  if (inv.contact_approach) {
-    parts.push(`CONTACT APPROACH: ${inv.contact_approach}`);
-  }
-  if (inv.thesis) {
-    parts.push(`THESIS: ${inv.thesis}`);
-  }
-  if (inv.portfolio_overlap) {
-    parts.push(`PORTFOLIO OVERLAP: ${inv.portfolio_overlap}`);
-  }
-  if (inv.warm_intro) {
-    parts.push(`WARM INTRO: ${inv.warm_intro}`);
-  }
-  if (inv.notes) {
-    parts.push(inv.notes);
-  }
-
-  parts.push(`Added by AI Discovery Agent on ${ts}`);
-  return parts.join('\n\n');
-}
