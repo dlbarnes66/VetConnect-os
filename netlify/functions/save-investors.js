@@ -1,5 +1,6 @@
 // netlify/functions/save-investors.js
 // Saves investors from Discovery Agent to Airtable Deck Leads table
+// ONLY writes to plain text fields to avoid select option permission errors
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
@@ -8,7 +9,7 @@ exports.handler = async function(event) {
 
   const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = 'appooo5Vcblwu8Ysn';
-  const TABLE_ID = 'tblnDM50dD7d8Fkjy'; // Deck Leads — the unified CRM table
+  const TABLE_ID = 'tblnDM50dD7d8Fkjy'; // Deck Leads
 
   if (!AIRTABLE_TOKEN) {
     return {
@@ -38,47 +39,45 @@ exports.handler = async function(event) {
   }
 
   const results = [];
-  const errors = [];
-  const now = new Date().toISOString().split('T')[0];
+  const errors  = [];
+  const now     = new Date().toISOString().split('T')[0];
 
-  // Airtable max 10 records per POST
   const chunks = [];
-  for (let i = 0; i < investors.length; i += 10) {
-    chunks.push(investors.slice(i, i + 10));
-  }
+  for (let i = 0; i < investors.length; i += 10) chunks.push(investors.slice(i, i + 10));
 
   for (const chunk of chunks) {
     const records = chunk.map(inv => {
-      // Build rich notes — fit score goes here since it's not a table field
+
+      // Build rich notes — everything goes here so no select fields are needed
       const noteParts = [];
       if (inv.fit_score)         noteParts.push('FIT SCORE: ' + inv.fit_score + '/10');
       if (inv.why_fit)           noteParts.push('WHY FIT: ' + inv.why_fit);
       if (inv.thesis)            noteParts.push('THESIS: ' + inv.thesis);
+      if (inv.stage)             noteParts.push('STAGE FOCUS: ' + inv.stage);
       if (inv.portfolio_overlap) noteParts.push('PORTFOLIO OVERLAP: ' + inv.portfolio_overlap);
       if (inv.contact_approach)  noteParts.push('CONTACT APPROACH: ' + inv.contact_approach);
       if (inv.warm_intro)        noteParts.push('WARM INTRO: ' + inv.warm_intro);
-      if (inv.notes)             noteParts.push(inv.notes);
       noteParts.push('Added by AI Discovery Agent on ' + now);
 
-      // Only include fields that exist in the Deck Leads table
+      // ONLY plain text fields — no selects, no single-selects, no multi-selects
       const fields = {
         'Full Name':    inv.name || inv.full_name || 'Unknown',
         'Company':      inv.firm || inv.company || '',
-        'Lead Type':    inv.lead_type || 'VC / Investor',
-        'Qualified':    'Pending Review',
-        'Source':       inv.source || 'AI Discovery Agent',
+        'Firm':         inv.firm || inv.company || '',
+        'Source':       'AI Discovery Agent',
         'Notes':        noteParts.join('\n\n'),
         'Activity Log': now + ' — Added by AI Discovery Agent',
       };
 
-      // Optional fields — only add if we have a value
-      if (inv.title)              fields['Role']     = inv.title;
-      if (inv.email)              fields['Email']    = inv.email;
-      if (inv.phone)              fields['Phone']    = inv.phone;
-      if (inv.stage || inv.stage_focus) fields['Stage Focus'] = inv.stage || inv.stage_focus;
-      if (inv.outreach_draft)     fields['Outreach Draft'] = inv.outreach_draft;
-      if (inv.linkedin)           fields['LinkedIn URL'] = inv.linkedin;
-      if (inv.firm || inv.company) fields['Firm'] = inv.firm || inv.company;
+      // Safe optional plain text fields (confirmed from table schema)
+      if (inv.title)            fields['Role']             = inv.title;
+      if (inv.email)            fields['Email']            = inv.email;
+      if (inv.phone)            fields['Phone']            = inv.phone;
+      if (inv.linkedin)         fields['LinkedIn URL']     = inv.linkedin;
+      if (inv.twitter)          fields['Twitter Handle']   = inv.twitter;
+      if (inv.intro_source)     fields['Intro Source']     = inv.intro_source;
+      if (inv.sectors)          fields['Sectors of Interest'] = inv.sectors;
+      if (inv.outreach_draft)   fields['Outreach Draft']   = inv.outreach_draft;
 
       return { fields };
     });
@@ -120,9 +119,9 @@ exports.handler = async function(event) {
     },
     body: JSON.stringify({
       success: errors.length === 0,
-      saved: results.length,
+      saved:   results.length,
       records: results,
-      errors: errors.length > 0 ? errors : undefined,
+      errors:  errors.length > 0 ? errors : undefined,
       message: errors.length === 0
         ? `${results.length} investor${results.length === 1 ? '' : 's'} saved to CRM`
         : `${results.length} saved, ${errors.length} failed — ${errors[0]?.error}`
