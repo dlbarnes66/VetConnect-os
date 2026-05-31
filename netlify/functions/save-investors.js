@@ -1,5 +1,5 @@
 // netlify/functions/save-investors.js
-// Saves investors from Discovery Agent directly to Airtable Deck Leads table
+// Saves investors from Discovery Agent to Airtable Deck Leads table
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
@@ -8,13 +8,13 @@ exports.handler = async function(event) {
 
   const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = 'appooo5Vcblwu8Ysn';
-  const TABLE_ID = 'tblnDM50dD7d8Fkjy'; // Deck Leads table — the unified CRM
+  const TABLE_ID = 'tblnDM50dD7d8Fkjy'; // Deck Leads — the unified CRM table
 
   if (!AIRTABLE_TOKEN) {
     return {
       statusCode: 500,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ success: false, error: 'AIRTABLE_TOKEN not configured in Netlify environment variables' })
+      body: JSON.stringify({ success: false, error: 'AIRTABLE_TOKEN not configured' })
     };
   }
 
@@ -49,52 +49,39 @@ exports.handler = async function(event) {
 
   for (const chunk of chunks) {
     const records = chunk.map(inv => {
-      // Build notes from all available context
+      // Build rich notes — fit score goes here since it's not a table field
       const noteParts = [];
+      if (inv.fit_score)         noteParts.push('FIT SCORE: ' + inv.fit_score + '/10');
       if (inv.why_fit)           noteParts.push('WHY FIT: ' + inv.why_fit);
       if (inv.thesis)            noteParts.push('THESIS: ' + inv.thesis);
       if (inv.portfolio_overlap) noteParts.push('PORTFOLIO OVERLAP: ' + inv.portfolio_overlap);
       if (inv.contact_approach)  noteParts.push('CONTACT APPROACH: ' + inv.contact_approach);
       if (inv.warm_intro)        noteParts.push('WARM INTRO: ' + inv.warm_intro);
+      if (inv.notes)             noteParts.push(inv.notes);
       noteParts.push('Added by AI Discovery Agent on ' + now);
 
-      return {
-        fields: {
-          // Core identity — matches Deck Leads table fields
-          'Full Name':      inv.name || inv.full_name || 'Unknown',
-          'Company':        inv.firm || inv.company || '',
-          'Firm':           inv.firm || inv.company || '',
-          'Title':          inv.title || '',
-          'Lead Type':      inv.lead_type || 'VC / Investor',
-
-          // Outreach tracking
-          'Outreach Status': inv.outreach_status || 'Not Started',
-          'Stage Focus':     inv.stage || inv.stage_focus || '',
-          'Source':          inv.source || 'AI Discovery Agent',
-          'Status':          'AI Discovery',
-          'Qualified':       'Pending Review',
-
-          // Fit scoring — store as text since field may be text type
-          'Fit Score':       inv.fit_score ? String(inv.fit_score) : '',
-
-          // Notes — full context from agent research
-          'Notes':           noteParts.join('\n\n'),
-
-          // Activity log
-          'Activity Log':    now + ' — Added by AI Discovery Agent (Fit Score: ' + (inv.fit_score || 'N/A') + '/10)',
-
-          // Contact info if agent found it
-          ...(inv.email    ? { 'Email': inv.email }       : {}),
-          ...(inv.linkedin ? { 'LinkedIn URL': inv.linkedin } : {}),
-          ...(inv.phone    ? { 'Phone': inv.phone }       : {}),
-
-          // Outreach draft if agent generated one
-          ...(inv.outreach_draft ? { 'Outreach Draft': inv.outreach_draft } : {}),
-
-          // First contact date
-          'First Contact Date': now,
-        }
+      // Only include fields that exist in the Deck Leads table
+      const fields = {
+        'Full Name':    inv.name || inv.full_name || 'Unknown',
+        'Company':      inv.firm || inv.company || '',
+        'Lead Type':    inv.lead_type || 'VC / Investor',
+        'Status':       'AI Discovery',
+        'Qualified':    'Pending Review',
+        'Source':       inv.source || 'AI Discovery Agent',
+        'Notes':        noteParts.join('\n\n'),
+        'Activity Log': now + ' — Added by AI Discovery Agent',
       };
+
+      // Optional fields — only add if we have a value
+      if (inv.title)              fields['Role']     = inv.title;
+      if (inv.email)              fields['Email']    = inv.email;
+      if (inv.phone)              fields['Phone']    = inv.phone;
+      if (inv.stage || inv.stage_focus) fields['Stage Focus'] = inv.stage || inv.stage_focus;
+      if (inv.outreach_draft)     fields['Outreach Draft'] = inv.outreach_draft;
+      if (inv.linkedin)           fields['LinkedIn URL'] = inv.linkedin;
+      if (inv.firm || inv.company) fields['Firm'] = inv.firm || inv.company;
+
+      return { fields };
     });
 
     try {
@@ -115,7 +102,6 @@ exports.handler = async function(event) {
       if (!response.ok) {
         const errMsg = data.error?.message || JSON.stringify(data);
         errors.push({ investors: chunk.map(i => i.name || 'Unknown'), error: errMsg });
-        console.error('Airtable error:', errMsg);
       } else {
         results.push(...(data.records || []).map(r => ({
           id: r.id,
@@ -140,7 +126,7 @@ exports.handler = async function(event) {
       errors: errors.length > 0 ? errors : undefined,
       message: errors.length === 0
         ? `${results.length} investor${results.length === 1 ? '' : 's'} saved to CRM`
-        : `${results.length} saved, ${errors.length} chunk(s) failed`
+        : `${results.length} saved, ${errors.length} failed — ${errors[0]?.error}`
     })
   };
 };
