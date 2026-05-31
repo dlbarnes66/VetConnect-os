@@ -157,6 +157,13 @@
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
   ::-webkit-scrollbar-thumb:hover{background:var(--border-soft)}
+  /* ── CRM Save Bar ── */
+  .crm-save-bar{margin-top:12px;padding:12px 14px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-radius:8px;}
+  .crm-save-btn{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.12);color:#4ade80;font-family:var(--font-body);transition:all .15s;}
+  .crm-save-btn:hover{background:rgba(74,222,128,0.25);border-color:#4ade80;}
+  .crm-save-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .crm-save-all{background:rgba(74,222,128,0.2);border-color:#4ade80;}
+  .crm-save-status{font-size:11px;margin-top:6px;min-height:14px;}
   @media(max-width:1100px){.app{grid-template-columns:220px 280px 1fr}}
   @media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}.nav{flex-direction:row;padding:12px;overflow-x:auto}.agent-list{max-height:220px}.nav-section,.brand,.nav-footer{display:none}.nav-item{white-space:nowrap}}
 </style>
@@ -292,7 +299,7 @@ Escalate IMMEDIATELY for: suicidal ideation, domestic violence, or imminent home
     enabled:true, model:"claude-sonnet-4-6",
     prompt:`You are the Investor Discovery Agent for VetConnect OS, built by VCG Venture Collective Group.
 
-You find and qualify investors for VetConnect OS, then save them directly to the CRM with a single command.
+You find and qualify investors for VetConnect OS pre-seed raise.
 
 VETCONNECT OS PROFILE:
 - Stage: Pre-seed | Ask: $500K SAFE at $4M cap
@@ -309,33 +316,24 @@ INVESTOR TYPES TO PRIORITIZE:
 5. Pre-seed generalists with social impact thesis
 6. High-net-worth angels with veteran, housing, or nonprofit backgrounds
 
-HOW TO PRESENT INVESTORS:
-For each investor return:
-- Name, Firm, Title
-- Why Fit (2-3 sentences specific to VetConnect OS)
-- Thesis, Portfolio Overlap, Stage Focus, Check Size
-- Fit Score (1-10)
-- Contact Approach, Warm Intro Angle
+FORMAT EVERY INVESTOR EXACTLY LIKE THIS — the system reads this format to populate the CRM:
 
-After presenting a list, ALWAYS end with:
-"Say **save all to CRM** to push all investors above into your pipeline automatically. Or say **save investors 1, 3, 5** to save specific ones."
+1. [Full Name] — [Firm Name]
+- Why Fit: [2-3 sentences specific to VetConnect OS]
+- Thesis: [Their stated investment thesis]
+- Portfolio Overlap: [Specific companies that signal alignment]
+- Stage Focus: [Pre-seed / Seed / etc.]
+- Check Size: [$X-$Y]
+- Fit Score: [X/10]
+- Contact Approach: [Cold email / LinkedIn / Warm intro via X]
+- Warm Intro Angle: [Any mutual connections or shared background]
 
-HOW TO SAVE TO CRM:
-When the user says any variation of "save to CRM", "save all", "save these", "push to CRM", "add to pipeline":
-1. Identify which investors to save
-2. Output a structured JSON block exactly like this:
-
-SAVE_TO_CRM_JSON:
-[{"name":"Full Name","firm":"Firm","lead_type":"VC / Investor","stage":"Pre-seed","fit_score":9,"why_fit":"Why they fit","thesis":"Their thesis","portfolio_overlap":"Relevant companies","contact_approach":"How to reach","warm_intro":"Any warm intro angle","outreach_status":"Not Started","source":"AI Discovery Agent"}]
-END_SAVE_JSON
-
-3. The system will auto-save and confirm. Do NOT say you cannot save — the system handles it.
+After the list, tell the user they can use the Save to CRM buttons that appear below each response to push investors directly into their pipeline.
 
 RULES:
 - Always be honest about VetConnect OS current stage
 - Don't oversell traction — mission and founder story are the strongest hooks
-- Always offer to save after presenting a list
-- After save confirmation, tell the user to check CRM → Outreach in the dashboard`,
+- Number every investor starting from 1`,
     tools:[
       {name:"Web research",desc:"Search for investor profiles and portfolio data",on:true},
       {name:"Save to CRM",desc:"Push investors directly to Airtable Investor Outreach",on:true},
@@ -1053,8 +1051,12 @@ get("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey)
 get("sendBtn").onclick=sendMessage;
 
 // =========================================================================
-// SAVE TO CRM — pushes investors from Discovery Agent to Airtable
+// SAVE TO CRM — Save button approach (reliable, no fragile JSON parsing)
 // =========================================================================
+
+// Store the last investor list the Discovery Agent returned
+let _lastDiscoveredInvestors = [];
+
 async function saveToCRM(investors) {
   const res = await fetch("/.netlify/functions/save-investors", {
     method: "POST",
@@ -1064,12 +1066,122 @@ async function saveToCRM(investors) {
   return await res.json();
 }
 
-// Detect if user is asking to save investors to CRM
-function isSaveCommand(text) {
-  const t = text.toLowerCase();
-  return t.match(/save (all|them|these|investor|to crm|to the crm|\d)/i) ||
-         t.match(/push (to |them to )?(crm|pipeline|airtable)/i) ||
-         t.match(/add (them|all|these) to (crm|pipeline|airtable)/i);
+// Parse investor list from agent reply text
+function parseInvestorsFromReply(text) {
+  const investors = [];
+  // Match numbered investor entries like "1. Name — Firm" or "**1. Name — Firm**"
+  const blocks = text.split(/\n(?=\*?\*?\d+\.)/);
+  blocks.forEach(block => {
+    // Extract name and firm from header line
+    const headerMatch = block.match(/\d+\.\s+\*?\*?([^—\n*]+?)\*?\*?\s*[—-]\s*\*?\*?([^\n*]+)/);
+    if (!headerMatch) return;
+    const name = headerMatch[1].trim();
+    const firm = headerMatch[2].trim();
+    if (!name || name.length < 2) return;
+
+    // Extract fit score
+    const scoreMatch = block.match(/[Ff]it\s*[Ss]core[:\s]*(\d+)/);
+    const fit_score = scoreMatch ? parseInt(scoreMatch[1]) : null;
+
+    // Extract stage
+    const stageMatch = block.match(/[Ss]tage[:\s]+([^\n•*-]+)/);
+    const stage = stageMatch ? stageMatch[1].trim() : '';
+
+    // Extract why fit
+    const whyMatch = block.match(/[Ww]hy\s*[Ff]it[:\s]+([^\n]+)/);
+    const why_fit = whyMatch ? whyMatch[1].trim() : '';
+
+    // Extract contact approach
+    const contactMatch = block.match(/[Cc]ontact\s*[Aa]pproach[:\s]+([^\n]+)/);
+    const contact_approach = contactMatch ? contactMatch[1].trim() : '';
+
+    // Extract thesis
+    const thesisMatch = block.match(/[Tt]hesis[:\s]+([^\n]+)/);
+    const thesis = thesisMatch ? thesisMatch[1].trim() : '';
+
+    investors.push({ name, firm, fit_score, stage, why_fit, thesis, contact_approach,
+      lead_type: 'VC / Investor', outreach_status: 'Not Started', source: 'AI Discovery Agent' });
+  });
+  return investors;
+}
+
+// Render the Save to CRM button bar after a Discovery Agent response
+function renderSaveBar(investors, msgEl) {
+  if (!investors || investors.length === 0) return;
+  _lastDiscoveredInvestors = investors;
+
+  const bar = document.createElement('div');
+  bar.className = 'crm-save-bar';
+  bar.innerHTML = `
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:8px;">
+      ◈ ${investors.length} investor${investors.length===1?'':'s'} found — ready to save
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button class="crm-save-btn crm-save-all" onclick="handleSaveAll(this)">
+        ⬇ Save All ${investors.length} to CRM
+      </button>
+      ${investors.map((inv,i) => `
+        <button class="crm-save-btn crm-save-one" onclick="handleSaveOne(this,${i})">
+          ${inv.name.split(' ')[0]}${inv.firm?' — '+inv.firm.split(' ')[0]:''}
+        </button>`).join('')}
+    </div>
+    <div class="crm-save-status"></div>`;
+  msgEl.appendChild(bar);
+}
+
+async function handleSaveAll(btn) {
+  const bar = btn.closest('.crm-save-bar');
+  const status = bar.querySelector('.crm-save-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving...';
+  status.textContent = '';
+  try {
+    const result = await saveToCRM(_lastDiscoveredInvestors);
+    if (result.success || result.saved > 0) {
+      btn.textContent = `✅ Saved ${result.saved} to CRM`;
+      btn.style.background = 'var(--green)';
+      status.textContent = 'View them in CRM → Outreach in the dashboard.';
+      status.style.color = 'var(--green)';
+      // Disable all individual buttons too
+      bar.querySelectorAll('.crm-save-one').forEach(b => b.disabled = true);
+    } else {
+      btn.textContent = '⬇ Save All to CRM';
+      btn.disabled = false;
+      const errMsg = result.errors?.[0]?.error || result.message || 'Unknown error';
+      status.textContent = '✗ ' + errMsg;
+      status.style.color = 'var(--red)';
+    }
+  } catch(err) {
+    btn.textContent = '⬇ Save All to CRM';
+    btn.disabled = false;
+    status.textContent = '✗ ' + err.message;
+    status.style.color = 'var(--red)';
+  }
+}
+
+async function handleSaveOne(btn, idx) {
+  const inv = _lastDiscoveredInvestors[idx];
+  if (!inv) return;
+  btn.disabled = true;
+  btn.textContent = '⏳...';
+  try {
+    const result = await saveToCRM([inv]);
+    if (result.success || result.saved > 0) {
+      btn.textContent = '✅ Saved';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#fff';
+    } else {
+      btn.disabled = false;
+      btn.textContent = inv.name.split(' ')[0];
+      const bar = btn.closest('.crm-save-bar');
+      const status = bar.querySelector('.crm-save-status');
+      status.textContent = '✗ ' + (result.errors?.[0]?.error || result.message);
+      status.style.color = 'var(--red)';
+    }
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = inv.name.split(' ')[0];
+  }
 }
 
 async function sendMessage(){
@@ -1086,82 +1198,27 @@ async function sendMessage(){
       .filter(m=>m.role==="user"||m.role==="assistant")
       .map(m=>({role:m.role,content:m.content}));
     let systemPrompt=a.prompt;
-
-    // Inject live CRM data for relevant agents
     if(["fundraising-crm","investor-qualification","investor-discovery","outreach"].includes(a.id)){
       const crmData=await fetchInvestorCRM();
       systemPrompt+=crmData&&crmData.length>0
         ?`\n\n--- LIVE INVESTOR OUTREACH DATA (from Airtable) ---\n${JSON.stringify(crmData,null,2)}\n---`
         :`\n\n--- INVESTOR OUTREACH DATA: Table is empty. Tell the user to add investors via the Investor Discovery agent. ---`;
     }
-
-    // For Discovery Agent: inject save capability instructions
-    if(a.id==="investor-discovery" && isSaveCommand(text)){
-      systemPrompt += `\n\n--- SAVE TO CRM INSTRUCTIONS ---
-The user wants to save investors to Airtable. You MUST respond with a JSON block in this exact format so the system can auto-save:
-
-SAVE_TO_CRM_JSON:
-[
-  {
-    "name": "Full Name",
-    "firm": "Firm Name",
-    "lead_type": "VC / Investor",
-    "stage": "Pre-seed",
-    "fit_score": 8,
-    "why_fit": "Why they fit VetConnect OS",
-    "thesis": "Their investment thesis",
-    "portfolio_overlap": "Relevant portfolio companies",
-    "contact_approach": "How to reach them",
-    "warm_intro": "Any warm intro angle or blank",
-    "outreach_status": "Not Started",
-    "source": "AI Discovery Agent"
-  }
-]
-END_SAVE_JSON
-
-After the JSON block, tell the user you are saving and to wait for confirmation.
-Include ONLY the investors the user asked to save.
----`;
-    }
-
     const data=await callClaude(a.model||"claude-sonnet-4-6",systemPrompt,messages);
     typing.remove();
     if(!data.content||!data.content[0]){
       addMessageEl("assistant",`<i>API error: ${JSON.stringify(data.error||data)}</i>`);
       return;
     }
-
-    let reply=data.content[0].text;
-
-    // Auto-save: detect JSON block in reply and push to Airtable
-    if(a.id==="investor-discovery"){
-      const jsonMatch = reply.match(/SAVE_TO_CRM_JSON:\s*(\[[\s\S]*?\])\s*END_SAVE_JSON/);
-      if(jsonMatch){
-        try {
-          const investors = JSON.parse(jsonMatch[1]);
-          // Remove the raw JSON block from the displayed reply
-          reply = reply.replace(/SAVE_TO_CRM_JSON:\s*\[[\s\S]*?\]\s*END_SAVE_JSON/, '').trim();
-
-          // Show saving status
-          const savingMsg = addMessageEl("assistant", `<div style="color:#4ade80;font-size:13px">⏳ Saving ${investors.length} investor${investors.length===1?'':'s'} to your CRM...</div>`);
-
-          const result = await saveToCRM(investors);
-          savingMsg.remove();
-
-          if(result.success){
-            const savedNames = investors.map((inv,i) => `${i+1}. ${inv.name}${inv.firm?' — '+inv.firm:''}`).join('\n');
-            reply += `\n\n✅ **Saved ${result.saved} investor${result.saved===1?'':'s'} to your CRM**\n\n${savedNames}\n\nYou can view them in **CRM → Outreach** in the dashboard. The Fundraising CRM Agent can now give you a pipeline snapshot.`;
-          } else {
-            reply += `\n\n⚠️ Save partially failed: ${result.message}. Try again or use the "+ Add Investor" button in the CRM section.`;
-          }
-        } catch(parseErr){
-          console.error("JSON parse error in save:", parseErr);
-        }
-      }
-    }
-
+    const reply=data.content[0].text;
     chatHistory[a.id].push({role:"assistant",content:reply});
-    addMessageEl("assistant",reply);
+    const msgEl = addMessageEl("assistant",reply);
+
+    // For Discovery Agent — parse the reply and show Save to CRM buttons
+    if(a.id==="investor-discovery"){
+      const investors = parseInvestorsFromReply(reply);
+      if(investors.length > 0) renderSaveBar(investors, msgEl.querySelector('.msg-body'));
+    }
   } catch(err){
     typing.remove();
     addMessageEl("assistant",`<i>Error: ${err.message}</i>`);
