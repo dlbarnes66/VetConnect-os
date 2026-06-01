@@ -1382,41 +1382,21 @@ function openDueDiligence() {
   var firm = f.Firm || f.Company || '';
   var notes = f.Notes || '';
   var source = f.Source || '';
-
-  // Build a rich context prompt from the CRM record
-  var context = 'Run due diligence on this investor from my CRM pipeline:
-
-';
-  context += 'Name: ' + name + '
-';
-  if (firm)   context += 'Firm: ' + firm + '
-';
-  if (f.Role || f.Title) context += 'Title: ' + (f.Role || f.Title) + '
-';
-  if (f.Email) context += 'Email: ' + f.Email + '
-';
-  if (f['Stage Focus']) context += 'Stage Focus: ' + f['Stage Focus'] + '
-';
-  if (f['Outreach Status']) context += 'Outreach Status: ' + f['Outreach Status'] + '
-';
-  if (f['LinkedIn URL']) context += 'LinkedIn: ' + f['LinkedIn URL'] + '
-';
-  if (source) context += 'Source: ' + source + '
-';
-  if (notes)  context += '
-Notes from CRM:
-' + notes + '
-';
-  context += '
-Give me: thesis alignment with VetConnect OS, how to approach them, likely objections, warm intro opportunities, and whether to prioritize them. End with a recommended next action.';
-
-  // Store the prompt so agents.html can pick it up when the iframe loads
+  var lines = ['Run due diligence on this investor from my CRM pipeline:', ''];
+  lines.push('Name: ' + name);
+  if (firm)   lines.push('Firm: ' + firm);
+  if (f.Role || f.Title) lines.push('Title: ' + (f.Role || f.Title));
+  if (f.Email) lines.push('Email: ' + f.Email);
+  if (f['Stage Focus']) lines.push('Stage Focus: ' + f['Stage Focus']);
+  if (f['Outreach Status']) lines.push('Outreach Status: ' + f['Outreach Status']);
+  if (f['LinkedIn URL']) lines.push('LinkedIn: ' + f['LinkedIn URL']);
+  if (source) lines.push('Source: ' + source);
+  if (notes)  { lines.push(''); lines.push('Notes from CRM:'); lines.push(notes); }
+  lines.push('');
+  lines.push('Give me: thesis alignment with VetConnect OS, how to approach them, likely objections, warm intro opportunities, and whether to prioritize them. End with a recommended next action.');
+  var context = lines.join('\n');
   window._pendingAgentPrompt = { agentId: 'due-diligence', prompt: context };
-
-  // Open the agents panel on due-diligence
   openAgentsPanel('due-diligence');
-
-  // After iframe loads, send the message
   var iframe = document.getElementById('agents-iframe');
   var attempts = 0;
   var tryInject = setInterval(function() {
@@ -1429,23 +1409,14 @@ Give me: thesis alignment with VetConnect OS, how to approach them, likely objec
         setTimeout(function() {
           var input = iwin.document.getElementById('chatInput');
           if (input) {
-            // Use native setter to trigger React/plain JS event listeners
-            var nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
-            if (nativeSetter && nativeSetter.set) {
-              nativeSetter.set.call(input, context);
-            } else {
-              input.value = context;
-            }
+            input.value = context;
             input.dispatchEvent(new Event('input', { bubbles: true }));
-            // Auto-send after a short delay
-            setTimeout(function() {
-              if (iwin.sendMessage) iwin.sendMessage();
-            }, 400);
+            setTimeout(function() { if (iwin.sendMessage) iwin.sendMessage(); }, 400);
           }
         }, 600);
       }
     } catch(e) {}
-    if (attempts > 30) clearInterval(tryInject); // stop after 3 seconds
+    if (attempts > 30) clearInterval(tryInject);
   }, 100);
 }
 
