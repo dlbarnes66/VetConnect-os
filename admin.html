@@ -1242,7 +1242,7 @@ function showSection(name) {
   if (name==='vouchers') loadTable('vouchers');
   if (name==='payments') loadTable('payments');
   if (name==='markets') loadTable('markets');
-  if (name==='crm') loadDeckLeads();
+  if (name==='crm') { switchCRMTab('vetconnect'); }
   if (name==='outreach') loadOutreach();
 }
 
@@ -1584,28 +1584,27 @@ function getVCGToken() {
 
 function switchCRMTab(tab) {
   _activeCRMTab = tab;
-  var tabs = ['vetconnect','veterans','pha','fund1'];
-  tabs.forEach(function(t) {
+  ['vetconnect','veterans','pha','fund1'].forEach(function(t) {
     var btn   = document.getElementById('crm-tab-' + t);
     var panel = document.getElementById('crm-panel-' + t);
     var active = t === tab;
     if (btn) {
-      btn.style.background  = active ? 'var(--purple)' : 'var(--surface)';
-      btn.style.color       = active ? '#fff' : 'var(--muted)';
+      btn.style.background = active ? 'var(--purple)' : 'var(--surface)';
+      btn.style.color      = active ? '#fff' : 'var(--muted)';
     }
-    if (panel) panel.style.display = active ? 'flex' : 'none';
-    if (panel && active) panel.style.flexDirection = 'column';
-    if (panel && active) panel.style.gap = '1.25rem';
+    if (panel) {
+      panel.style.display       = active ? 'block' : 'none';
+    }
   });
-  // Load data on first switch
-  if (tab === 'vetconnect' && deckLeadsCache.length === 0) loadDeckLeads();
-  if (tab === 'veterans'   && _vetCRMCache.length === 0)  loadVeteranCRM();
-  if (tab === 'pha'        && _phaCRMCache.length === 0)   loadPHACRM();
-  if (tab === 'fund1'      && _fund1Cache.length === 0)    loadFund1CRM();
-  // Update add button label
+  // Load data on first switch to each tab
+  if (tab === 'vetconnect' && !deckLeadsCache.length) loadDeckLeads();
+  if (tab === 'veterans'   && !_vetCRMCache.length)   loadVeteranCRM();
+  if (tab === 'pha'        && !_phaCRMCache.length)    loadPHACRM();
+  if (tab === 'fund1'      && !_fund1Cache.length)     loadFund1CRM();
+  // Update add button
   var addBtn = document.getElementById('crm-add-btn');
   if (addBtn) {
-    var labels = { vetconnect:'+ Add Lead', veterans:'+ Add Veteran', pha:'+ Add PHA', fund1:'+ Add Investor' };
+    var labels = {vetconnect:'+ Add Lead',veterans:'+ Add Veteran',pha:'+ Add PHA',fund1:'+ Add Investor'};
     addBtn.textContent = labels[tab] || '+ Add Record';
   }
 }
@@ -1814,12 +1813,6 @@ function openFund1Detail(recordId) {
   if (!deckLeadsCache.find(function(r){return r.id===rec.id;})) {
     deckLeadsCache.push(currentLead);
   }
-}
-
-// Load VetConnect tab data on CRM open
-var _origLoadDeckLeads = loadDeckLeads;
-function loadDeckLeads() {
-  _origLoadDeckLeads();
 }
 
 // KEYBOARD
