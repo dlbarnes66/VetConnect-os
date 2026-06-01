@@ -502,35 +502,174 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
       </div>
     </div>
 
-    <!-- CRM / BACK OFFICE -->
+    <!-- CRM / BACK OFFICE — 4 tabs -->
     <div class="section" id="section-crm">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
-        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">CRM / Back Office</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Deck Leads &#xB7; Investors &#xB7; Property Managers &#xB7; Landlords</p></div>
-        <div style="display:flex;gap:.5rem"><button class="btn btn-ghost btn-sm" onclick="reloadDeckLeads()">&#x21BB; Refresh</button></div>
+        <div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">CRM / Back Office</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">Investor Pipeline &middot; Veteran Cases &middot; PHA Partners &middot; VCG Fund I</p>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-ghost btn-sm" onclick="refreshActiveCRM()">&#x21BB; Refresh</button>
+          <button class="btn btn-gold btn-sm" id="crm-add-btn" onclick="crmAddRecord()">+ Add Record</button>
+        </div>
       </div>
-      <div class="agent-quick-bar">
-        <span class="agent-quick-bar-label">&#x25C8; AI Agents</span>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('fundraising-crm')">&#x2B17; Fundraising CRM</button>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('meeting-intelligence')">&#x25C9; Meeting Intel</button>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('investor-qualification')">&#x25C8; Qualify Pipeline</button>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('outreach')">&#x2709; Write Outreach</button>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('due-diligence')">&#x2B21; Data Room</button>
-        <button class="agent-quick-btn" onclick="openAgentsPanel('capital-strategy')">&#x25C6; Capital Strategy</button>
+
+      <!-- TAB BAR -->
+      <div style="display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;flex-shrink:0;">
+        <button class="crm-tab active" id="crm-tab-vetconnect" onclick="switchCRMTab('vetconnect')" style="flex:1;padding:.65rem;font-size:12px;font-weight:600;border:none;cursor:pointer;border-right:1px solid var(--border);background:var(--purple);color:#fff;transition:all .15s;">
+          &#x1F50D; VetConnect OS Investors
+        </button>
+        <button class="crm-tab" id="crm-tab-veterans" onclick="switchCRMTab('veterans')" style="flex:1;padding:.65rem;font-size:12px;font-weight:600;border:none;cursor:pointer;border-right:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;">
+          &#x1F396;&#xFE0F; Veteran Cases
+        </button>
+        <button class="crm-tab" id="crm-tab-pha" onclick="switchCRMTab('pha')" style="flex:1;padding:.65rem;font-size:12px;font-weight:600;border:none;cursor:pointer;border-right:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;">
+          &#x1F3DB;&#xFE0F; PHA Partners
+        </button>
+        <button class="crm-tab" id="crm-tab-fund1" onclick="switchCRMTab('fund1')" style="flex:1;padding:.65rem;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s;">
+          &#x1F4B0; VCG Fund I
+        </button>
       </div>
-      <div class="crm-filter-bar">
-        <span class="crm-filter-label">Type</span>
-        <select id="crm-filter-type" onchange="renderDeckLeads()"><option value="">All Types</option><option value="VC / Investor">VC / Investor</option><option value="Property Manager">Property Manager</option><option value="Landlord">Landlord</option><option value="Veteran Service Org">Veteran Service Org</option><option value="Foundation / Grant">Foundation / Grant</option><option value="Other">Other</option><option value="Unknown">Unknown</option></select>
-        <span class="crm-filter-label">Status</span>
-        <select id="crm-filter-status" onchange="renderDeckLeads()"><option value="">All Statuses</option><option value="Email Pending">Email Pending</option><option value="Email Verified">Email Verified</option><option value="Bounced">Bounced</option></select>
-        <span class="crm-filter-label">Qualified</span>
-        <select id="crm-filter-qualified" onchange="renderDeckLeads()"><option value="">All</option><option value="Pending Review">Pending Review</option><option value="Qualified">Qualified</option><option value="Investigate">Investigate</option><option value="Disqualified">Disqualified</option></select>
-        <input type="text" id="crm-search" placeholder="&#x1F50D; Search by name, company, or email..." oninput="renderDeckLeads()">
-        <span class="crm-count" id="crm-count">0 leads</span>
+
+      <!-- TAB: VETCONNECT OS INVESTORS (existing Deck Leads) -->
+      <div id="crm-panel-vetconnect">
+        <div class="agent-quick-bar">
+          <span class="agent-quick-bar-label">&#x25C8; AI Agents</span>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('fundraising-crm')">&#x2B17; Fundraising CRM</button>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('meeting-intelligence')">&#x25C9; Meeting Intel</button>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('investor-qualification')">&#x25C8; Qualify Pipeline</button>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('outreach')">&#x2709; Write Outreach</button>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('due-diligence')">&#x2B21; Due Diligence</button>
+          <button class="agent-quick-btn" onclick="openAgentsPanel('capital-strategy')">&#x25C6; Capital Strategy</button>
+        </div>
+        <div class="crm-filter-bar">
+          <span class="crm-filter-label">Type</span>
+          <select id="crm-filter-type" onchange="renderDeckLeads()">
+            <option value="">All Types</option>
+            <option value="VC / Investor">VC / Investor</option>
+            <option value="Property Manager">Property Manager</option>
+            <option value="Landlord">Landlord</option>
+            <option value="Veteran Service Org">Veteran Service Org</option>
+            <option value="Foundation / Grant">Foundation / Grant</option>
+            <option value="Other">Other</option>
+          </select>
+          <span class="crm-filter-label">Status</span>
+          <select id="crm-filter-status" onchange="renderDeckLeads()">
+            <option value="">All</option>
+            <option value="Email Pending">Email Pending</option>
+            <option value="Email Verified">Email Verified</option>
+            <option value="Bounced">Bounced</option>
+          </select>
+          <span class="crm-filter-label">Qualified</span>
+          <select id="crm-filter-qualified" onchange="renderDeckLeads()">
+            <option value="">All</option>
+            <option value="Pending Review">Pending Review</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Investigate">Investigate</option>
+            <option value="Disqualified">Disqualified</option>
+          </select>
+          <input type="text" id="crm-search" placeholder="&#x1F50D; Search by name, company, or email..." oninput="renderDeckLeads()">
+          <span class="crm-count" id="crm-count">0 leads</span>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Company</th><th>Lead Type</th><th>Submitted</th><th>Status</th><th>Qualified</th><th>Last Activity</th></tr></thead>
+            <tbody id="crm-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading...</td></tr></tbody>
+          </table>
+        </div>
       </div>
-      <div class="card"><table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Lead Type</th><th>Submitted</th><th>Status</th><th>Qualified</th><th>Last Activity</th></tr></thead><tbody id="crm-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading deck leads...</td></tr></tbody></table></div>
+
+      <!-- TAB: VETERAN CASES -->
+      <div id="crm-panel-veterans" style="display:none">
+        <div class="crm-filter-bar">
+          <input type="text" id="vet-crm-search" placeholder="&#x1F50D; Search veterans..." oninput="renderVeteranCRM()" style="flex:1">
+          <span class="crm-filter-label">Risk</span>
+          <select id="vet-crm-risk" onchange="renderVeteranCRM()">
+            <option value="">All Risk Levels</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <span class="crm-count" id="vet-crm-count">0 veterans</span>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>VA File #</th><th>Benefit Status</th><th>Employment</th><th>Stability Score</th><th>Risk</th><th>Monthly Income</th></tr></thead>
+            <tbody id="vet-crm-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading veterans...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: PHA PARTNERS -->
+      <div id="crm-panel-pha" style="display:none">
+        <div class="crm-filter-bar">
+          <input type="text" id="pha-search" placeholder="&#x1F50D; Search PHAs..." oninput="renderPHACRM()" style="flex:1">
+          <span class="crm-filter-label">State</span>
+          <select id="pha-state" onchange="renderPHACRM()">
+            <option value="">All States</option>
+            <option value="AL">Alabama</option><option value="FL">Florida</option>
+            <option value="GA">Georgia</option><option value="MS">Mississippi</option>
+            <option value="TX">Texas</option><option value="Other">Other</option>
+          </select>
+          <span class="crm-count" id="pha-count">0 PHAs</span>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Agency Name</th><th>Contact</th><th>State</th><th>Vouchers</th><th>Utilization</th><th>Relationship</th><th>Last Contact</th></tr></thead>
+            <tbody id="pha-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading PHA partners...</td></tr></tbody>
+          </table>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:.5rem">PHA Partners pulls from your VetConnect OS Markets table. Add PHAs directly in Airtable or use the button above.</div>
+          <button class="btn btn-ghost btn-sm" onclick="window.open('https://airtable.com/appooo5Vcblwu8Ysn','_blank')">Open in Airtable &#x2192;</button>
+        </div>
+      </div>
+
+      <!-- TAB: VCG FUND I -->
+      <div id="crm-panel-fund1" style="display:none">
+        <div class="crm-filter-bar">
+          <input type="text" id="fund1-search" placeholder="&#x1F50D; Search investors..." oninput="renderFund1CRM()" style="flex:1">
+          <span class="crm-filter-label">Status</span>
+          <select id="fund1-status" onchange="renderFund1CRM()">
+            <option value="">All</option>
+            <option value="warm">Warm</option>
+            <option value="hot">Hot</option>
+            <option value="cold">Cold</option>
+            <option value="committed">Committed</option>
+            <option value="passed">Passed</option>
+          </select>
+          <span class="crm-filter-label">Type</span>
+          <select id="fund1-type" onchange="renderFund1CRM()">
+            <option value="">All Types</option>
+            <option value="Institutional">Institutional</option>
+            <option value="Family Office">Family Office</option>
+            <option value="Angel">Angel</option>
+            <option value="HNWI">HNWI</option>
+          </select>
+          <span class="crm-count" id="fund1-count">0 investors</span>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Firm / Name</th><th>Contact</th><th>Type</th><th>Investment Range</th><th>Focus</th><th>Status</th><th>Last Contact</th></tr></thead>
+            <tbody id="fund1-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading Fund I investors...</td></tr></tbody>
+          </table>
+        </div>
+        <!-- Outreach Log sub-section -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem">
+          <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Recent Outreach Log</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadFund1OutreachLog()">&#x21BB; Refresh</button>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead><tr><th>Investor</th><th>Subject</th><th>Method</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="fund1-outreach-tbody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem">Load Fund I tab to see outreach log</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
-    <!-- OUTREACH -->
+        <!-- OUTREACH -->
     <div class="section" id="section-outreach">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
         <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Investor Outreach</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Track investors you are researching, contacting, and meeting with</p></div>
@@ -1110,6 +1249,15 @@ function showSection(name) {
 // AIRTABLE
 var TABLE_IDS = {veterans:'tbl4tCL2wag2MKKTK',properties:'tblopdWlgwI5gTMaA',vouchers:'tbl29ojex3jMa6IpT',payments:'tblr9DMVe1QkIHDhk',markets:'tblSvWyGpo5pjwzgG',deckLeads:'tblnDM50dD7d8Fkjy'};
 var AIRTABLE_BASE_ID = 'appooo5Vcblwu8Ysn';
+var VCG_BASE_ID    = 'app2NoY3IVNxAxgsV';
+var VCG_TABLES = {
+  investors:   'tbl0wBMdscOCrRQgF',
+  outreachLog: 'tblYOWODS24SMImAd',
+  campaigns:   'tblq8ivLHwm1QFjcy',
+  callLog:     'tblq0lDlUC6Jpp8ES',
+  documents:   'tblyzOkQvfcndE3CT',
+  websiteLeads:'tblWn9W3TTzxDLHsr'
+};
 function esc(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 var RENDERERS = {
@@ -1418,6 +1566,260 @@ function openDueDiligence() {
     } catch(e) {}
     if (attempts > 30) clearInterval(tryInject);
   }, 100);
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// 4-TAB CRM — tab switching + data loaders
+// ═══════════════════════════════════════════════════════════
+var _activeCRMTab = 'vetconnect';
+var _fund1Cache = [];
+var _vetCRMCache = [];
+var _phaCRMCache = [];
+
+function getVCGToken() {
+  return localStorage.getItem('vcg_airtable_token_full') ||
+         sessionStorage.getItem('vcg_airtable_token_full');
+}
+
+function switchCRMTab(tab) {
+  _activeCRMTab = tab;
+  var tabs = ['vetconnect','veterans','pha','fund1'];
+  tabs.forEach(function(t) {
+    var btn   = document.getElementById('crm-tab-' + t);
+    var panel = document.getElementById('crm-panel-' + t);
+    var active = t === tab;
+    if (btn) {
+      btn.style.background  = active ? 'var(--purple)' : 'var(--surface)';
+      btn.style.color       = active ? '#fff' : 'var(--muted)';
+    }
+    if (panel) panel.style.display = active ? 'flex' : 'none';
+    if (panel && active) panel.style.flexDirection = 'column';
+    if (panel && active) panel.style.gap = '1.25rem';
+  });
+  // Load data on first switch
+  if (tab === 'vetconnect' && deckLeadsCache.length === 0) loadDeckLeads();
+  if (tab === 'veterans'   && _vetCRMCache.length === 0)  loadVeteranCRM();
+  if (tab === 'pha'        && _phaCRMCache.length === 0)   loadPHACRM();
+  if (tab === 'fund1'      && _fund1Cache.length === 0)    loadFund1CRM();
+  // Update add button label
+  var addBtn = document.getElementById('crm-add-btn');
+  if (addBtn) {
+    var labels = { vetconnect:'+ Add Lead', veterans:'+ Add Veteran', pha:'+ Add PHA', fund1:'+ Add Investor' };
+    addBtn.textContent = labels[tab] || '+ Add Record';
+  }
+}
+
+function refreshActiveCRM() {
+  if (_activeCRMTab === 'vetconnect') { deckLeadsCache = []; loadDeckLeads(); }
+  if (_activeCRMTab === 'veterans')   { _vetCRMCache  = []; loadVeteranCRM(); }
+  if (_activeCRMTab === 'pha')        { _phaCRMCache  = []; loadPHACRM(); }
+  if (_activeCRMTab === 'fund1')      { _fund1Cache   = []; loadFund1CRM(); }
+}
+
+function crmAddRecord() {
+  if (_activeCRMTab === 'vetconnect') openAddInvestorModal();
+  else if (_activeCRMTab === 'fund1') {
+    window.open('https://airtable.com/app2NoY3IVNxAxgsV/tbl0wBMdscOCrRQgF', '_blank');
+  } else {
+    window.open('https://airtable.com/appooo5Vcblwu8Ysn', '_blank');
+  }
+}
+
+// ── VETERAN CRM tab ──
+function loadVeteranCRM() {
+  var tbody = document.getElementById('vet-crm-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading veterans...</td></tr>';
+  VetConnectAuth.query(TABLE_IDS.veterans, '', { max: 200 }).then(function(data) {
+    _vetCRMCache = data.records || [];
+    renderVeteranCRM();
+  }).catch(function() {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Could not load — check Airtable token</td></tr>';
+  });
+}
+
+function renderVeteranCRM() {
+  var tbody   = document.getElementById('vet-crm-tbody');
+  var countEl = document.getElementById('vet-crm-count');
+  var search  = (document.getElementById('vet-crm-search')?.value || '').toLowerCase();
+  var risk    = document.getElementById('vet-crm-risk')?.value || '';
+  var filtered = _vetCRMCache.filter(function(r) {
+    var f = r.fields;
+    if (risk && f['Risk level'] !== risk) return false;
+    if (search) {
+      var hay = ((f.Name||'') + ' ' + (f['VA File Number']||'')).toLowerCase();
+      if (hay.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+  if (countEl) countEl.textContent = filtered.length + ' veterans';
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No veterans match filters</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(function(r) {
+    var f = r.fields;
+    var ini = (f.Name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+    var rc = f['Risk level']==='High'?'pill-hot':f['Risk level']==='Medium'?'pill-warm':'pill-cold';
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="vet-avatar">'+ini+'</div><div style="font-weight:500">'+esc(f.Name||'—')+'</div></div></td>' +
+      '<td>'+esc(f['VA File Number']||'—')+'</td>' +
+      '<td><span class="pill pill-active">'+esc(f['Benefit Status']||'—')+'</span></td>' +
+      '<td>'+esc(f['Employment Status']||'—')+'</td>' +
+      '<td>'+esc(f['Stability Score']||'—')+'</td>' +
+      '<td><span class="pill '+rc+'">'+esc(f['Risk level']||'—')+'</span></td>' +
+      '<td>'+(f['Monthly Income']?'$'+Number(f['Monthly Income']).toLocaleString():'—')+'</td></tr>';
+  }).join('');
+}
+
+// ── PHA CRM tab ──
+function loadPHACRM() {
+  var tbody = document.getElementById('pha-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading PHA partners...</td></tr>';
+  VetConnectAuth.query(TABLE_IDS.markets, '', { max: 100 }).then(function(data) {
+    _phaCRMCache = data.records || [];
+    renderPHACRM();
+  }).catch(function() {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Could not load</td></tr>';
+  });
+}
+
+function renderPHACRM() {
+  var tbody   = document.getElementById('pha-tbody');
+  var countEl = document.getElementById('pha-count');
+  var search  = (document.getElementById('pha-search')?.value || '').toLowerCase();
+  var state   = document.getElementById('pha-state')?.value || '';
+  var filtered = _phaCRMCache.filter(function(r) {
+    var f = r.fields;
+    if (state && f.State !== state) return false;
+    if (search) {
+      var hay = ((f.Name||'') + ' ' + (f.State||'')).toLowerCase();
+      if (hay.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+  if (countEl) countEl.textContent = filtered.length + ' PHAs';
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No PHAs found — add them in Airtable</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(function(r) {
+    var f = r.fields;
+    var util = f['Utilization Rate'] ? f['Utilization Rate'] + '%' : '—';
+    var statusClass = f.Status === 'Active' ? 'pill-active' : 'pill-neutral';
+    return '<tr>' +
+      '<td style="font-weight:500">'+esc(f.Name||'—')+'</td>' +
+      '<td>'+esc(f.Contact||'—')+'</td>' +
+      '<td>'+esc(f.State||'—')+'</td>' +
+      '<td>'+(f['Veteran Population']?Number(f['Veteran Population']).toLocaleString():'—')+'</td>' +
+      '<td>'+esc(util)+'</td>' +
+      '<td><span class="pill '+statusClass+'">'+esc(f.Status||'—')+'</span></td>' +
+      '<td>'+(f['median_rent']?'$'+Number(f['median_rent']).toLocaleString():'—')+'</td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ── FUND I CRM tab (VCG Investor Portal base) ──
+function loadFund1CRM() {
+  var tbody = document.getElementById('fund1-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading Fund I investors...</td></tr>';
+  var token = getVCGToken();
+  if (!token) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No token — set it in Settings</td></tr>'; return; }
+  fetch('https://api.airtable.com/v0/' + VCG_BASE_ID + '/' + VCG_TABLES.investors + '?maxRecords=200', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    _fund1Cache = data.records || [];
+    renderFund1CRM();
+    loadFund1OutreachLog();
+  }).catch(function(e) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Could not load — check token permissions</td></tr>';
+  });
+}
+
+function renderFund1CRM() {
+  var tbody   = document.getElementById('fund1-tbody');
+  var countEl = document.getElementById('fund1-count');
+  var search  = (document.getElementById('fund1-search')?.value || '').toLowerCase();
+  var status  = document.getElementById('fund1-status')?.value || '';
+  var type    = document.getElementById('fund1-type')?.value || '';
+  var filtered = _fund1Cache.filter(function(r) {
+    var f = r.fields;
+    if (status && (f.Status||'').toLowerCase() !== status) return false;
+    if (type && f.Type !== type) return false;
+    if (search) {
+      var hay = ((f.FullName||'')+(f.Contact||'')+(f.Email||'')+(f.Focus||'')).toLowerCase();
+      if (hay.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+  if (countEl) countEl.textContent = filtered.length + ' investor' + (filtered.length === 1 ? '' : 's');
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">No investors match filters</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(function(r) {
+    var f = r.fields;
+    var status = (f.Status||'').toLowerCase();
+    var sc = status === 'hot' ? 'pill-hot' : status === 'warm' ? 'pill-warm' :
+             status === 'committed' ? 'pill-success' : status === 'passed' ? 'pill-danger' : 'pill-cold';
+    var lc = f.LastContact ? formatDate(f.LastContact) : '—';
+    return '<tr data-rid="'+r.id+'" onclick="openFund1Detail(this.getAttribute(\"data-rid\"))" style="cursor:pointer">' +
+      '<td style="font-weight:500">'+esc(f.FullName||'—')+'</td>' +
+      '<td style="font-size:12px">'+esc(f.Contact||'—')+'</td>' +
+      '<td>'+esc(f.Type||'—')+'</td>' +
+      '<td style="font-size:12px">'+esc(f.InvestmentRange||'—')+'</td>' +
+      '<td style="font-size:11px;color:var(--muted)">'+esc((f.Focus||'').slice(0,40))+'</td>' +
+      '<td><span class="pill '+sc+'">'+esc(f.Status||'—')+'</span></td>' +
+      '<td style="font-size:12px;color:var(--muted)">'+esc(lc)+'</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function loadFund1OutreachLog() {
+  var tbody = document.getElementById('fund1-outreach-tbody');
+  if (!tbody) return;
+  var token = getVCGToken();
+  if (!token) return;
+  fetch('https://api.airtable.com/v0/' + VCG_BASE_ID + '/' + VCG_TABLES.outreachLog + '?maxRecords=20&sort[0][field]=Date&sort[0][direction]=desc', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var records = data.records || [];
+    if (!records.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem">No outreach logged yet</td></tr>'; return; }
+    tbody.innerHTML = records.map(function(r) {
+      var f = r.fields;
+      var sc = f.Status === 'Sent' ? 'pill-active' : f.Status === 'Replied' ? 'pill-success' : 'pill-neutral';
+      return '<tr>' +
+        '<td style="font-weight:500;font-size:12px">'+esc(f.InvestorName||'—')+'</td>' +
+        '<td style="font-size:12px">'+esc((f.Subject||'—').slice(0,50))+'</td>' +
+        '<td style="font-size:11px">'+esc(f.Method||'—')+'</td>' +
+        '<td style="font-size:11px;color:var(--muted)">'+esc(f.Date?formatDate(f.Date):'—')+'</td>' +
+        '<td><span class="pill '+sc+'">'+esc(f.Status||'—')+'</span></td>' +
+        '</tr>';
+    }).join('');
+  }).catch(function() {});
+}
+
+function openFund1Detail(recordId) {
+  var rec = _fund1Cache.find(function(r) { return r.id === recordId; });
+  if (!rec) return;
+  var f = rec.fields;
+  // Reuse the existing detail panel but populate with Fund I fields
+  currentLead = { id: rec.id, fields: {
+    'Full Name': f.FullName || '',
+    'Company': f.FullName || '',
+    'Role': f.Contact || '',
+    'Email': f.Email || '',
+    'Phone': f.Phone || '',
+    'Notes': f.Notes || '',
+    'Source': 'VCG Fund I — ' + (f.Type||''),
+    'Status': f.Status || '',
+    'Submitted At': f.LastContact || '',
+    'Activity Log': ''
+  }};
+  openDetailPanel(rec.id);
+  // Override cache lookup so detail panel works
+  if (!deckLeadsCache.find(function(r){return r.id===rec.id;})) {
+    deckLeadsCache.push(currentLead);
+  }
+}
+
+// Load VetConnect tab data on CRM open
+var _origLoadDeckLeads = loadDeckLeads;
+function loadDeckLeads() {
+  _origLoadDeckLeads();
 }
 
 // KEYBOARD
