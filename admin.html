@@ -231,6 +231,94 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 .form-row textarea{min-height:70px;resize:vertical;line-height:1.5;}
 .chart-wrap{position:relative;height:180px;}
 
+/* ===== CALENDAR ===== */
+.calendar-wrap{display:grid;grid-template-columns:1fr 320px;gap:1.25rem;}
+.calendar-grid{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1A0F45,#2D1B69);}
+.cal-header-title{font-family:"DM Serif Display",serif;font-size:1.1rem;color:#fff;}
+.cal-nav-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.cal-nav-btn:hover{background:rgba(255,255,255,0.2);}
+.cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface2);}
+.cal-dow{padding:.5rem 0;text-align:center;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-day{min-height:80px;padding:6px 8px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;position:relative;}
+.cal-day:hover{background:var(--surface2);}
+.cal-day.other-month{background:#fafafa;}
+.cal-day.other-month .cal-day-num{color:#ccc;}
+.cal-day.today{background:rgba(45,27,105,0.05);}
+.cal-day.today .cal-day-num{background:var(--purple);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-event{font-size:10px;padding:2px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;font-weight:500;}
+.cal-event.type-investor{background:#DBEAFE;color:#1D4ED8;}
+.cal-event.type-veteran{background:#D1FAE5;color:#065F46;}
+.cal-event.type-followup{background:#FEF3C7;color:#92400E;}
+.cal-event.type-lp{background:#EDE9FE;color:#5B21B6;}
+.cal-event.type-case{background:#CCFBF1;color:#0F766E;}
+.cal-event.type-team{background:#F3F4F6;color:#374151;}
+.cal-event.type-other{background:#FEE2E2;color:#991B1B;}
+.cal-sidebar{display:flex;flex-direction:column;gap:1rem;}
+.cal-upcoming{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1;}
+.cal-upcoming-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);}
+.cal-upcoming-list{padding:.5rem 0;max-height:350px;overflow-y:auto;}
+.cal-upcoming-item{display:flex;gap:10px;padding:.6rem 1rem;border-bottom:1px solid rgba(45,27,105,0.05);cursor:pointer;transition:background .1s;}
+.cal-upcoming-item:hover{background:var(--surface2);}
+.cal-upcoming-item:last-child{border-bottom:none;}
+.cal-upcoming-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.cal-upcoming-title{font-size:12px;font-weight:500;color:var(--text);}
+.cal-upcoming-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* ===== EVENT MODAL ===== */
+.event-modal-overlay{position:fixed;inset:0;background:rgba(26,15,69,0.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:400;padding:1rem;}
+.event-modal-overlay.is-open{display:flex;}
+.event-modal{background:var(--surface);border-radius:14px;width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(26,15,69,0.3);}
+.event-modal-header{padding:1.1rem 1.5rem;background:linear-gradient(135deg,#1A0F45,#2D1B69);color:#fff;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center;}
+.event-modal-title{font-family:"DM Serif Display",serif;font-size:1.1rem;color:#fff;}
+.event-modal-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.event-modal-body{padding:1.25rem;overflow-y:auto;display:flex;flex-direction:column;gap:.85rem;}
+.event-modal-footer{padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
+.field-group{display:flex;flex-direction:column;gap:4px;}
+.field-group label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.field-group input,.field-group select,.field-group textarea{padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:"DM Sans",sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;}
+.field-group input:focus,.field-group select:focus,.field-group textarea:focus{border-color:var(--purple-lit);}
+.field-group textarea{min-height:60px;resize:vertical;line-height:1.5;}
+.field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.event-save-status{font-size:12px;color:var(--muted);}
+.event-save-status.saving{color:var(--warning);}
+.event-save-status.saved{color:var(--success);}
+.event-save-status.error{color:var(--danger);}
+
+/* ===== TASKS ===== */
+.tasks-layout{display:grid;grid-template-columns:1fr 320px;gap:1.25rem;}
+.tasks-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.task-col{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.task-col-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.task-col-title{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px;}
+.task-col-count{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--surface2);color:var(--muted);}
+.task-list{padding:.5rem;min-height:120px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
+.task-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .75rem;cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+.task-card:hover{box-shadow:0 2px 8px rgba(45,27,105,0.1);border-color:var(--purple-lit);}
+.task-card.priority-high{border-left:3px solid var(--danger);}
+.task-card.priority-medium{border-left:3px solid var(--warning);}
+.task-card.priority-low{border-left:3px solid var(--success);}
+.task-card-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.4;}
+.task-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.task-badge{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500;}
+.task-badge-investor{background:#DBEAFE;color:#1D4ED8;}
+.task-badge-veteran{background:#D1FAE5;color:#065F46;}
+.task-badge-operations{background:#F3F4F6;color:#374151;}
+.task-badge-fund{background:#EDE9FE;color:#5B21B6;}
+.task-badge-platform{background:#FEF3C7;color:#92400E;}
+.task-due{font-size:10px;color:var(--muted);}
+.task-due.overdue{color:var(--danger);font-weight:600;}
+.task-assignee{font-size:10px;color:var(--muted);margin-left:auto;}
+.task-add-btn{width:100%;padding:.5rem;background:none;border:1.5px dashed var(--border);border-radius:6px;color:var(--muted);font-size:12px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s;margin-top:4px;}
+.task-add-btn:hover{border-color:var(--purple-lit);color:var(--purple-lit);background:var(--surface2);}
+.tasks-sidebar{display:flex;flex-direction:column;gap:1rem;}
+.task-stats-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.task-stat-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(45,27,105,0.05);font-size:12px;}
+.task-stat-row:last-child{border-bottom:none;}
+.task-stat-label{color:var(--muted);}
+.task-stat-val{font-weight:600;color:var(--text);}
 /* ===== INTEGRATIONS ===== */
 .integrations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
 .integration-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s;}
@@ -292,6 +380,8 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
   </nav>
   <nav class="nav-section">
     <div class="nav-label">AI Operations</div>
+    <button class="nav-item" onclick="showSection('calendar')"><span class="nav-icon">&#x1F4C5;</span> Calendar</button>
+    <button class="nav-item" onclick="showSection('tasks')"><span class="nav-icon">&#x2705;</span> Tasks</button>
     <button class="nav-item agents-nav-item" onclick="openAgentsPanel()"><span class="nav-icon">&#x25C8;</span> AI Agents</button>
   </nav>
   <nav class="nav-section">
@@ -1026,7 +1116,108 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 
     </div>
 
-    <!-- SETTINGS -->
+    <!-- CALENDAR -->
+    <div class="section" id="section-calendar">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Calendar</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Meetings, follow-ups, and appointments</p></div>
+        <button class="btn btn-gold btn-sm" onclick="openEventModal()">+ Add Event</button>
+      </div>
+      <div class="calendar-wrap">
+        <div class="calendar-grid">
+          <div class="cal-header">
+            <button class="cal-nav-btn" onclick="calNavMonth(-1)">&#x2039;</button>
+            <div class="cal-header-title" id="cal-month-label">June 2026</div>
+            <button class="cal-nav-btn" onclick="calNavMonth(1)">&#x203A;</button>
+          </div>
+          <div class="cal-dow-row">
+            <div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div>
+            <div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div>
+          </div>
+          <div class="cal-days" id="cal-days"></div>
+        </div>
+        <div class="cal-sidebar">
+          <div class="cal-upcoming">
+            <div class="cal-upcoming-header" style="display:flex;justify-content:space-between;align-items:center">
+              <span>Upcoming Events</span>
+              <span id="cal-event-count" style="font-size:10px;color:var(--muted)"></span>
+            </div>
+            <div class="cal-upcoming-list" id="cal-upcoming-list">
+              <div class="empty" style="padding:1.5rem"><div class="empty-icon">&#x1F4C5;</div>No events yet</div>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Event Types</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:6px;padding:.75rem 1rem">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#DBEAFE;border:1px solid #93C5FD"></div>Investor Call</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#D1FAE5;border:1px solid #6EE7B7"></div>Veteran Intake</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#FEF3C7;border:1px solid #FCD34D"></div>Follow-Up</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#EDE9FE;border:1px solid #C4B5FD"></div>LP Update</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#CCFBF1;border:1px solid #5EEAD4"></div>Case Review</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><div style="width:10px;height:10px;border-radius:2px;background:#F3F4F6;border:1px solid #D1D5DB"></div>Team Meeting</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="section" id="section-tasks">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Task Management</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Shared across your team &middot; synced to Airtable</p></div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-ghost btn-sm" onclick="loadTasks()">&#x21BB; Refresh</button>
+          <button class="btn btn-gold btn-sm" onclick="openTaskModal()">+ Add Task</button>
+        </div>
+      </div>
+      <!-- Filter bar -->
+      <div class="crm-filter-bar">
+        <span class="crm-filter-label">Category</span>
+        <select id="task-filter-cat" onchange="renderTasks()">
+          <option value="">All</option>
+          <option value="Investor">Investor</option>
+          <option value="Veteran">Veteran</option>
+          <option value="Operations">Operations</option>
+          <option value="Fund I">Fund I</option>
+          <option value="Platform">Platform</option>
+        </select>
+        <span class="crm-filter-label">Assigned To</span>
+        <select id="task-filter-assigned" onchange="renderTasks()">
+          <option value="">Anyone</option>
+          <option value="Darryl Barnes">Darryl Barnes</option>
+          <option value="Christine Turull">Christine Turull</option>
+        </select>
+        <input type="text" id="task-search" placeholder="&#x1F50D; Search tasks..." oninput="renderTasks()" style="flex:1">
+      </div>
+      <!-- Kanban columns -->
+      <div class="tasks-columns">
+        <div class="task-col">
+          <div class="task-col-header">
+            <div class="task-col-title"><span style="width:8px;height:8px;border-radius:50%;background:#6B7280;display:inline-block"></span> To Do</div>
+            <span class="task-col-count" id="task-count-todo">0</span>
+          </div>
+          <div class="task-list" id="task-list-todo"></div>
+          <div style="padding:.5rem"><button class="task-add-btn" onclick="openTaskModal('To Do')">+ Add task</button></div>
+        </div>
+        <div class="task-col">
+          <div class="task-col-header">
+            <div class="task-col-title"><span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;display:inline-block"></span> In Progress</div>
+            <span class="task-col-count" id="task-count-progress">0</span>
+          </div>
+          <div class="task-list" id="task-list-progress"></div>
+          <div style="padding:.5rem"><button class="task-add-btn" onclick="openTaskModal('In Progress')">+ Add task</button></div>
+        </div>
+        <div class="task-col">
+          <div class="task-col-header">
+            <div class="task-col-title"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block"></span> Done</div>
+            <span class="task-col-count" id="task-count-done">0</span>
+          </div>
+          <div class="task-list" id="task-list-done"></div>
+        </div>
+      </div>
+    </div>
+
+        <!-- SETTINGS -->
     <div class="section" id="section-settings">
       <div><h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Settings</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">Platform configuration</p></div>
       <div class="card">
@@ -1230,8 +1421,8 @@ document.getElementById('agents-iframe').addEventListener('load', function() {
 });
 
 // NAVIGATION
-var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings'];
-var sectionTitles = {dashboard:'Dashboard',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
+var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks'];
+var sectionTitles = {dashboard:'Dashboard',calendar:'Calendar',tasks:'Task Management',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
 function showSection(name) {
   sections.forEach(function(s) { var el = document.getElementById('section-'+s); if (el) el.classList.toggle('active', s===name); });
   document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); if (el.getAttribute('onclick') && el.getAttribute('onclick').indexOf("'"+name+"'") > -1) el.classList.add('active'); });
@@ -1250,6 +1441,8 @@ function showSection(name) {
 var TABLE_IDS = {veterans:'tbl4tCL2wag2MKKTK',properties:'tblopdWlgwI5gTMaA',vouchers:'tbl29ojex3jMa6IpT',payments:'tblr9DMVe1QkIHDhk',markets:'tblSvWyGpo5pjwzgG',deckLeads:'tblnDM50dD7d8Fkjy'};
 var AIRTABLE_BASE_ID = 'appooo5Vcblwu8Ysn';
 var VCG_BASE_ID    = 'app2NoY3IVNxAxgsV';
+var TABLE_CALENDAR = 'tblPYY8Do3QDKAS9I';
+var TABLE_TASKS     = 'tblbuiTkTPUvzBR1e';
 var VCG_TABLES = {
   investors:   'tbl0wBMdscOCrRQgF',
   outreachLog: 'tblYOWODS24SMImAd',
@@ -1822,6 +2015,500 @@ document.addEventListener('keydown',function(e){
     if(document.getElementById('email-modal-overlay').classList.contains('is-open')){document.getElementById('email-modal-overlay').classList.remove('is-open');return;}
     if(document.getElementById('add-investor-overlay').classList.contains('is-open')){document.getElementById('add-investor-overlay').classList.remove('is-open');return;}
     if(document.getElementById('detail-panel').classList.contains('is-open')){closeDetailPanel();return;}
+  }
+});
+</script>
+</body>
+</html>
+
+<!-- EVENT MODAL -->
+<div class="event-modal-overlay" id="event-modal-overlay" onclick="closeEventModal(event)">
+  <div class="event-modal" onclick="event.stopPropagation()">
+    <div class="event-modal-header">
+      <div class="event-modal-title" id="event-modal-title">Add Event</div>
+      <button class="event-modal-close" onclick="closeEventModal()">&#xD7;</button>
+    </div>
+    <div class="event-modal-body">
+      <div class="field-group"><label>Title *</label><input type="text" id="ev-title" placeholder="e.g. Investor call with Sarah Guo"></div>
+      <div class="field-row-2">
+        <div class="field-group"><label>Date *</label><input type="date" id="ev-date"></div>
+        <div class="field-group"><label>Type</label>
+          <select id="ev-type">
+            <option value="Investor Call">Investor Call</option>
+            <option value="Veteran Intake">Veteran Intake</option>
+            <option value="Follow-Up">Follow-Up</option>
+            <option value="LP Update">LP Update</option>
+            <option value="Case Review">Case Review</option>
+            <option value="Team Meeting">Team Meeting</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row-2">
+        <div class="field-group"><label>Start Time</label><input type="time" id="ev-start"></div>
+        <div class="field-group"><label>End Time</label><input type="time" id="ev-end"></div>
+      </div>
+      <div class="field-row-2">
+        <div class="field-group"><label>Assigned To</label><input type="text" id="ev-assigned" placeholder="Darryl Barnes"></div>
+        <div class="field-group"><label>Status</label>
+          <select id="ev-status">
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Rescheduled">Rescheduled</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group"><label>Location / Link</label><input type="text" id="ev-location" placeholder="Zoom link, address, or phone number"></div>
+      <div class="field-group"><label>Related To (investor/veteran name)</label><input type="text" id="ev-related" placeholder="e.g. Sarah Guo — Conviction Capital"></div>
+      <div class="field-group"><label>Notes</label><textarea id="ev-notes" placeholder="Agenda, prep notes..."></textarea></div>
+      <div id="ev-error" style="display:none;background:#FEE2E2;color:#DC2626;padding:.6rem;border-radius:6px;font-size:12px"></div>
+    </div>
+    <div class="event-modal-footer">
+      <span class="event-save-status" id="ev-save-status"></span>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-ghost btn-sm" id="ev-delete-btn" onclick="deleteEvent()" style="display:none;color:var(--danger)">Delete</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeEventModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveEvent()">Save Event</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div class="event-modal-overlay" id="task-modal-overlay" onclick="closeTaskModal(event)">
+  <div class="event-modal" onclick="event.stopPropagation()">
+    <div class="event-modal-header">
+      <div class="event-modal-title" id="task-modal-title">Add Task</div>
+      <button class="event-modal-close" onclick="closeTaskModal()">&#xD7;</button>
+    </div>
+    <div class="event-modal-body">
+      <div class="field-group"><label>Task *</label><input type="text" id="tk-title" placeholder="e.g. Follow up with Sarah Guo"></div>
+      <div class="field-row-2">
+        <div class="field-group"><label>Due Date</label><input type="date" id="tk-due"></div>
+        <div class="field-group"><label>Priority</label>
+          <select id="tk-priority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row-2">
+        <div class="field-group"><label>Category</label>
+          <select id="tk-category">
+            <option value="Investor">Investor</option>
+            <option value="Veteran">Veteran</option>
+            <option value="Operations">Operations</option>
+            <option value="Fund I">Fund I</option>
+            <option value="Platform">Platform</option>
+          </select>
+        </div>
+        <div class="field-group"><label>Status</label>
+          <select id="tk-status">
+            <option value="To Do">To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
+            <option value="Blocked">Blocked</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group"><label>Assigned To</label>
+        <select id="tk-assigned">
+          <option value="Darryl Barnes">Darryl Barnes</option>
+          <option value="Christine Turull">Christine Turull</option>
+        </select>
+      </div>
+      <div class="field-group"><label>Related To</label><input type="text" id="tk-related" placeholder="e.g. investor name, veteran case #"></div>
+      <div class="field-group"><label>Notes</label><textarea id="tk-notes" placeholder="Additional context..."></textarea></div>
+      <div id="tk-error" style="display:none;background:#FEE2E2;color:#DC2626;padding:.6rem;border-radius:6px;font-size:12px"></div>
+    </div>
+    <div class="event-modal-footer">
+      <span class="event-save-status" id="tk-save-status"></span>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-ghost btn-sm" id="tk-delete-btn" onclick="deleteTask()" style="display:none;color:var(--danger)">Delete</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeTaskModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveTask()">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// AIRTABLE HELPERS — Calendar + Tasks
+// ═══════════════════════════════════════════════════════════
+function airtableGet(tableId, params) {
+  var token = localStorage.getItem('vcg_airtable_token_full') || sessionStorage.getItem('vcg_airtable_token_full');
+  var url = 'https://api.airtable.com/v0/appooo5Vcblwu8Ysn/' + tableId + '?maxRecords=500' + (params||'');
+  return fetch(url, { headers: { 'Authorization': 'Bearer ' + token } }).then(function(r) { return r.json(); });
+}
+function airtablePost(tableId, fields) {
+  var token = localStorage.getItem('vcg_airtable_token_full') || sessionStorage.getItem('vcg_airtable_token_full');
+  return fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/' + tableId, {
+    method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: fields })
+  }).then(function(r) { return r.json(); });
+}
+function airtablePatchRecord(tableId, recordId, fields) {
+  var token = localStorage.getItem('vcg_airtable_token_full') || sessionStorage.getItem('vcg_airtable_token_full');
+  return fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/' + tableId + '/' + recordId, {
+    method: 'PATCH', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: fields })
+  }).then(function(r) { return r.json(); });
+}
+function airtableDelete(tableId, recordId) {
+  var token = localStorage.getItem('vcg_airtable_token_full') || sessionStorage.getItem('vcg_airtable_token_full');
+  return fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/' + tableId + '/' + recordId, {
+    method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r) { return r.json(); });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════════════════
+var calEvents = [];
+var calYear = new Date().getFullYear();
+var calMonth = new Date().getMonth();
+var currentEventId = null;
+var _calLoaded = false;
+
+var TYPE_COLORS = {
+  'Investor Call': 'investor', 'Veteran Intake': 'veteran', 'Follow-Up': 'followup',
+  'LP Update': 'lp', 'Case Review': 'case', 'Team Meeting': 'team', 'Other': 'other'
+};
+var DOT_COLORS = {
+  'investor':'#1D4ED8','veteran':'#065F46','followup':'#92400E',
+  'lp':'#5B21B6','case':'#0F766E','team':'#374151','other':'#991B1B'
+};
+
+function initCalendar() {
+  if (!_calLoaded) { loadCalendarEvents(); _calLoaded = true; }
+  else renderCalendar();
+}
+
+function loadCalendarEvents() {
+  airtableGet(TABLE_CALENDAR).then(function(data) {
+    calEvents = data.records || [];
+    renderCalendar();
+    renderUpcoming();
+  }).catch(function(e) { console.error('Calendar load error', e); });
+}
+
+function renderCalendar() {
+  var label = document.getElementById('cal-month-label');
+  var daysEl = document.getElementById('cal-days');
+  if (!label || !daysEl) return;
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  label.textContent = months[calMonth] + ' ' + calYear;
+  var firstDay = new Date(calYear, calMonth, 1).getDay();
+  var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  var daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  var today = new Date();
+  var html = '';
+  var totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+  for (var i = 0; i < totalCells; i++) {
+    var day, isOther = false, month = calMonth, year = calYear;
+    if (i < firstDay) { day = daysInPrev - firstDay + i + 1; isOther = true; month = calMonth - 1; if (month < 0) { month = 11; year--; } }
+    else if (i >= firstDay + daysInMonth) { day = i - firstDay - daysInMonth + 1; isOther = true; month = calMonth + 1; if (month > 11) { month = 0; year++; } }
+    else { day = i - firstDay + 1; }
+    var isToday = !isOther && day === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    var dateStr = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    var dayEvents = calEvents.filter(function(e) { return e.fields.Date === dateStr; });
+    var evHtml = dayEvents.slice(0,3).map(function(e) {
+      var cls = TYPE_COLORS[e.fields.Type] || 'other';
+      return '<div class="cal-event type-' + cls + '" onclick="event.stopPropagation();openEventModal(\'' + e.id + '\')" title="' + esc(e.fields.Title||'') + '">' + esc(e.fields.Title||'') + '</div>';
+    }).join('');
+    if (dayEvents.length > 3) evHtml += '<div style="font-size:10px;color:var(--muted);padding:1px 5px">+' + (dayEvents.length-3) + ' more</div>';
+    html += '<div class="cal-day' + (isOther?' other-month':'') + (isToday?' today':'') + '" onclick="openEventModal(null,\'' + dateStr + '\')">' +
+      '<div class="cal-day-num">' + day + '</div>' + evHtml + '</div>';
+  }
+  daysEl.innerHTML = html;
+  renderUpcoming();
+}
+
+function renderUpcoming() {
+  var el = document.getElementById('cal-upcoming-list');
+  var countEl = document.getElementById('cal-event-count');
+  if (!el) return;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var upcoming = calEvents.filter(function(e) {
+    if (!e.fields.Date) return false;
+    return new Date(e.fields.Date) >= today;
+  }).sort(function(a,b) { return a.fields.Date.localeCompare(b.fields.Date); }).slice(0,10);
+  if (countEl) countEl.textContent = upcoming.length + ' upcoming';
+  if (!upcoming.length) { el.innerHTML = '<div class="empty" style="padding:1.5rem"><div class="empty-icon">&#x1F4C5;</div>No upcoming events</div>'; return; }
+  el.innerHTML = upcoming.map(function(e) {
+    var cls = TYPE_COLORS[e.fields.Type] || 'other';
+    var dotColor = DOT_COLORS[cls] || '#6B7280';
+    var d = new Date(e.fields.Date + 'T12:00:00');
+    var dateLabel = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    return '<div class="cal-upcoming-item" onclick="openEventModal(\'' + e.id + '\')">' +
+      '<div class="cal-upcoming-dot" style="background:' + dotColor + '"></div>' +
+      '<div><div class="cal-upcoming-title">' + esc(e.fields.Title||'—') + '</div>' +
+      '<div class="cal-upcoming-meta">' + dateLabel + (e.fields['Start Time']?' at '+e.fields['Start Time']:'') + (e.fields['Assigned To']?' &middot; '+esc(e.fields['Assigned To']):'') + '</div></div></div>';
+  }).join('');
+}
+
+function calNavMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+// ── Event Modal ──
+function openEventModal(recordId, prefillDate) {
+  currentEventId = recordId || null;
+  var title = document.getElementById('event-modal-title');
+  var delBtn = document.getElementById('ev-delete-btn');
+  document.getElementById('ev-error').style.display = 'none';
+  document.getElementById('ev-save-status').textContent = '';
+  if (recordId) {
+    var rec = calEvents.find(function(e) { return e.id === recordId; });
+    if (!rec) return;
+    var f = rec.fields;
+    title.textContent = 'Edit Event';
+    delBtn.style.display = 'inline-flex';
+    document.getElementById('ev-title').value = f.Title || '';
+    document.getElementById('ev-date').value = f.Date || '';
+    document.getElementById('ev-type').value = f.Type || 'Investor Call';
+    document.getElementById('ev-start').value = f['Start Time'] || '';
+    document.getElementById('ev-end').value = f['End Time'] || '';
+    document.getElementById('ev-assigned').value = f['Assigned To'] || '';
+    document.getElementById('ev-status').value = f.Status || 'Scheduled';
+    document.getElementById('ev-location').value = f.Location || '';
+    document.getElementById('ev-related').value = f['Related To'] || '';
+    document.getElementById('ev-notes').value = f.Notes || '';
+  } else {
+    title.textContent = 'Add Event';
+    delBtn.style.display = 'none';
+    document.getElementById('ev-title').value = '';
+    document.getElementById('ev-date').value = prefillDate || new Date().toISOString().split('T')[0];
+    document.getElementById('ev-type').value = 'Investor Call';
+    document.getElementById('ev-start').value = '';
+    document.getElementById('ev-end').value = '';
+    document.getElementById('ev-assigned').value = (session && session.full_name) || '';
+    document.getElementById('ev-status').value = 'Scheduled';
+    document.getElementById('ev-location').value = '';
+    document.getElementById('ev-related').value = '';
+    document.getElementById('ev-notes').value = '';
+  }
+  document.getElementById('event-modal-overlay').classList.add('is-open');
+  setTimeout(function() { document.getElementById('ev-title').focus(); }, 100);
+}
+function closeEventModal(e) {
+  if (e && e.target && e.target.id !== 'event-modal-overlay') return;
+  document.getElementById('event-modal-overlay').classList.remove('is-open');
+  currentEventId = null;
+}
+function saveEvent() {
+  var title = document.getElementById('ev-title').value.trim();
+  var date  = document.getElementById('ev-date').value;
+  var errEl = document.getElementById('ev-error');
+  var status = document.getElementById('ev-save-status');
+  if (!title) { errEl.textContent = 'Title is required.'; errEl.style.display = 'block'; return; }
+  if (!date)  { errEl.textContent = 'Date is required.';  errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  status.textContent = 'Saving...'; status.className = 'event-save-status saving';
+  var fields = {
+    'Title': title, 'Date': date,
+    'Type': document.getElementById('ev-type').value,
+    'Start Time': document.getElementById('ev-start').value,
+    'End Time': document.getElementById('ev-end').value,
+    'Assigned To': document.getElementById('ev-assigned').value,
+    'Status': document.getElementById('ev-status').value,
+    'Location': document.getElementById('ev-location').value,
+    'Related To': document.getElementById('ev-related').value,
+    'Notes': document.getElementById('ev-notes').value,
+    'Org ID': session ? session.org_id : 'vcg'
+  };
+  Object.keys(fields).forEach(function(k) { if (fields[k] === '') delete fields[k]; });
+  var promise = currentEventId
+    ? airtablePatchRecord(TABLE_CALENDAR, currentEventId, fields)
+    : airtablePost(TABLE_CALENDAR, fields);
+  promise.then(function(rec) {
+    if (rec.error) { status.textContent = '✗ ' + rec.error.message; status.className = 'event-save-status error'; return; }
+    status.textContent = '✓ Saved'; status.className = 'event-save-status saved';
+    if (currentEventId) {
+      var idx = calEvents.findIndex(function(e) { return e.id === currentEventId; });
+      if (idx > -1) calEvents[idx].fields = Object.assign(calEvents[idx].fields, fields);
+    } else {
+      calEvents.push(rec);
+    }
+    renderCalendar();
+    setTimeout(function() { closeEventModal(); }, 800);
+  }).catch(function(e) { status.textContent = '✗ ' + e.message; status.className = 'event-save-status error'; });
+}
+function deleteEvent() {
+  if (!currentEventId || !confirm('Delete this event?')) return;
+  var status = document.getElementById('ev-save-status');
+  status.textContent = 'Deleting...'; status.className = 'event-save-status saving';
+  airtableDelete(TABLE_CALENDAR, currentEventId).then(function() {
+    calEvents = calEvents.filter(function(e) { return e.id !== currentEventId; });
+    renderCalendar();
+    closeEventModal();
+  }).catch(function(e) { status.textContent = '✗ ' + e.message; status.className = 'event-save-status error'; });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════════════════════════
+var allTasks = [];
+var currentTaskId = null;
+var _tasksLoaded = false;
+
+function initTasks() {
+  if (!_tasksLoaded) { loadTasks(); _tasksLoaded = true; }
+  else renderTasks();
+}
+
+function loadTasks() {
+  airtableGet(TABLE_TASKS, '&sort[0][field]=Due Date&sort[0][direction]=asc').then(function(data) {
+    allTasks = data.records || [];
+    renderTasks();
+  }).catch(function(e) { console.error('Tasks load error', e); });
+}
+
+function renderTasks() {
+  var cat      = document.getElementById('task-filter-cat')?.value || '';
+  var assigned = document.getElementById('task-filter-assigned')?.value || '';
+  var search   = (document.getElementById('task-search')?.value || '').toLowerCase();
+  var filtered = allTasks.filter(function(t) {
+    var f = t.fields;
+    if (cat && f.Category !== cat) return false;
+    if (assigned && f['Assigned To'] !== assigned) return false;
+    if (search && !(f.Task||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+  var todo     = filtered.filter(function(t) { return t.fields.Status === 'To Do' || t.fields.Status === 'Blocked' || !t.fields.Status; });
+  var progress = filtered.filter(function(t) { return t.fields.Status === 'In Progress'; });
+  var done     = filtered.filter(function(t) { return t.fields.Status === 'Done'; });
+  renderTaskList('task-list-todo', todo, 'task-count-todo');
+  renderTaskList('task-list-progress', progress, 'task-count-progress');
+  renderTaskList('task-list-done', done, 'task-count-done');
+}
+
+function renderTaskList(listId, tasks, countId) {
+  var el = document.getElementById(listId);
+  var countEl = document.getElementById(countId);
+  if (!el) return;
+  if (countEl) countEl.textContent = tasks.length;
+  if (!tasks.length) { el.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--muted);font-size:12px">No tasks</div>'; return; }
+  var today = new Date(); today.setHours(0,0,0,0);
+  el.innerHTML = tasks.map(function(t) {
+    var f = t.fields;
+    var pri = (f.Priority||'Medium').toLowerCase();
+    var catKey = (f.Category||'').toLowerCase().replace(' ','');
+    var dueStr = '';
+    if (f['Due Date']) {
+      var due = new Date(f['Due Date'] + 'T12:00:00');
+      var isOverdue = due < today && f.Status !== 'Done';
+      dueStr = '<span class="task-due' + (isOverdue?' overdue':'') + '">' + due.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + (isOverdue?' &#x26A0;':'') + '</span>';
+    }
+    var assigneeInitials = (f['Assigned To']||'').split(' ').map(function(n){return n[0];}).join('').slice(0,2);
+    return '<div class="task-card priority-' + pri + '" onclick="openTaskModal(null,\'' + t.id + '\')">' +
+      '<div class="task-card-title">' + esc(f.Task||'—') + '</div>' +
+      '<div class="task-card-meta">' +
+      (f.Category ? '<span class="task-badge task-badge-' + catKey + '">' + esc(f.Category) + '</span>' : '') +
+      dueStr +
+      (assigneeInitials ? '<span class="task-assignee" title="'+esc(f['Assigned To']||'')+'">'+assigneeInitials+'</span>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+function openTaskModal(defaultStatus, recordId) {
+  currentTaskId = recordId || null;
+  var title = document.getElementById('task-modal-title');
+  var delBtn = document.getElementById('tk-delete-btn');
+  document.getElementById('tk-error').style.display = 'none';
+  document.getElementById('tk-save-status').textContent = '';
+  if (recordId) {
+    var rec = allTasks.find(function(t) { return t.id === recordId; });
+    if (!rec) return;
+    var f = rec.fields;
+    title.textContent = 'Edit Task';
+    delBtn.style.display = 'inline-flex';
+    document.getElementById('tk-title').value = f.Task || '';
+    document.getElementById('tk-due').value = f['Due Date'] || '';
+    document.getElementById('tk-priority').value = f.Priority || 'Medium';
+    document.getElementById('tk-category').value = f.Category || 'Investor';
+    document.getElementById('tk-status').value = f.Status || 'To Do';
+    document.getElementById('tk-assigned').value = f['Assigned To'] || 'Darryl Barnes';
+    document.getElementById('tk-related').value = f['Related To'] || '';
+    document.getElementById('tk-notes').value = f.Notes || '';
+  } else {
+    title.textContent = 'Add Task';
+    delBtn.style.display = 'none';
+    document.getElementById('tk-title').value = '';
+    document.getElementById('tk-due').value = '';
+    document.getElementById('tk-priority').value = 'Medium';
+    document.getElementById('tk-category').value = 'Investor';
+    document.getElementById('tk-status').value = defaultStatus || 'To Do';
+    document.getElementById('tk-assigned').value = (session && session.full_name) || 'Darryl Barnes';
+    document.getElementById('tk-related').value = '';
+    document.getElementById('tk-notes').value = '';
+  }
+  document.getElementById('task-modal-overlay').classList.add('is-open');
+  setTimeout(function() { document.getElementById('tk-title').focus(); }, 100);
+}
+function closeTaskModal(e) {
+  if (e && e.target && e.target.id !== 'task-modal-overlay') return;
+  document.getElementById('task-modal-overlay').classList.remove('is-open');
+  currentTaskId = null;
+}
+function saveTask() {
+  var title  = document.getElementById('tk-title').value.trim();
+  var errEl  = document.getElementById('tk-error');
+  var status = document.getElementById('tk-save-status');
+  if (!title) { errEl.textContent = 'Task title is required.'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  status.textContent = 'Saving...'; status.className = 'event-save-status saving';
+  var fields = {
+    'Task': title,
+    'Due Date': document.getElementById('tk-due').value || undefined,
+    'Priority': document.getElementById('tk-priority').value,
+    'Category': document.getElementById('tk-category').value,
+    'Status': document.getElementById('tk-status').value,
+    'Assigned To': document.getElementById('tk-assigned').value,
+    'Related To': document.getElementById('tk-related').value,
+    'Notes': document.getElementById('tk-notes').value,
+    'Org ID': session ? session.org_id : 'vcg',
+    'Created By': session ? session.full_name : 'System'
+  };
+  Object.keys(fields).forEach(function(k) { if (!fields[k]) delete fields[k]; });
+  var promise = currentTaskId
+    ? airtablePatchRecord(TABLE_TASKS, currentTaskId, fields)
+    : airtablePost(TABLE_TASKS, fields);
+  promise.then(function(rec) {
+    if (rec.error) { status.textContent = '✗ ' + rec.error.message; status.className = 'event-save-status error'; return; }
+    status.textContent = '✓ Saved'; status.className = 'event-save-status saved';
+    if (currentTaskId) {
+      var idx = allTasks.findIndex(function(t) { return t.id === currentTaskId; });
+      if (idx > -1) allTasks[idx].fields = Object.assign(allTasks[idx].fields, fields);
+    } else {
+      allTasks.push(rec);
+    }
+    renderTasks();
+    setTimeout(function() { closeTaskModal(); }, 600);
+  }).catch(function(e) { status.textContent = '✗ ' + e.message; status.className = 'event-save-status error'; });
+}
+function deleteTask() {
+  if (!currentTaskId || !confirm('Delete this task?')) return;
+  var status = document.getElementById('tk-save-status');
+  status.textContent = 'Deleting...'; status.className = 'event-save-status saving';
+  airtableDelete(TABLE_TASKS, currentTaskId).then(function() {
+    allTasks = allTasks.filter(function(t) { return t.id !== currentTaskId; });
+    renderTasks();
+    closeTaskModal();
+  }).catch(function(e) { status.textContent = '✗ ' + e.message; status.className = 'event-save-status error'; });
+}
+
+// Escape key closes modals
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('event-modal-overlay').classList.contains('is-open')) { closeEventModal(); return; }
+    if (document.getElementById('task-modal-overlay').classList.contains('is-open')) { closeTaskModal(); return; }
   }
 });
 </script>
