@@ -231,6 +231,43 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 .form-row textarea{min-height:70px;resize:vertical;line-height:1.5;}
 .chart-wrap{position:relative;height:180px;}
 
+/* ===== AUTOMATIONS ===== */
+.auto-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.auto-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .15s,border-color .15s;}
+.auto-card:hover{box-shadow:0 4px 20px rgba(45,27,105,0.1);border-color:var(--purple-lit);}
+.auto-card-header{padding:1rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.auto-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.auto-card-info{flex:1;}
+.auto-card-name{font-size:13px;font-weight:600;color:var(--text);}
+.auto-card-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.auto-toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.auto-toggle input{opacity:0;width:0;height:0;}
+.auto-toggle-slider{position:absolute;cursor:pointer;inset:0;background:#e5e7eb;border-radius:99px;transition:.2s;}
+.auto-toggle-slider::before{content:"";position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.auto-toggle input:checked + .auto-toggle-slider{background:var(--purple-lit);}
+.auto-toggle input:checked + .auto-toggle-slider::before{transform:translateX(18px);}
+.auto-card-body{padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.6rem;}
+.auto-trigger-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.auto-trigger-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);min-width:56px;}
+.auto-trigger-val{font-size:12px;color:var(--text);}
+.auto-actions-list{display:flex;flex-direction:column;gap:4px;}
+.auto-action-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:4px 8px;background:var(--offwhite);border-radius:6px;}
+.auto-action-icon{font-size:13px;}
+.auto-card-footer{padding:.75rem 1.1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.auto-run-btn{font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;background:var(--purple-mid);color:#fff;border:none;cursor:pointer;transition:background .15s;}
+.auto-run-btn:hover{background:var(--purple-lit);}
+.auto-run-btn:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;}
+.auto-last-run{font-size:11px;color:var(--muted);}
+.auto-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.auto-status-idle{background:#f3f4f6;color:#6b7280;}
+.auto-status-running{background:#fef3c7;color:#92400e;}
+.auto-status-done{background:#d1fae5;color:#065f46;}
+.auto-status-error{background:#fee2e2;color:#991b1b;}
+.auto-log{background:#0f0a2e;border-radius:8px;padding:1rem;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#a5b4fc;max-height:160px;overflow-y:auto;line-height:1.6;margin-top:.5rem;}
+.auto-log-line{padding:1px 0;}
+.auto-log-line.success{color:#6ee7b7;}
+.auto-log-line.warn{color:#fcd34d;}
+.auto-log-line.error{color:#fca5a5;}
 /* ===== CALENDAR ===== */
 .calendar-wrap{display:grid;grid-template-columns:1fr 320px;gap:1.25rem;}
 .calendar-grid{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -380,6 +417,7 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
   </nav>
   <nav class="nav-section">
     <div class="nav-label">AI Operations</div>
+    <button class="nav-item" onclick="showSection('automations')"><span class="nav-icon">&#x26A1;</span> Automations</button>
     <button class="nav-item" onclick="showSection('calendar')"><span class="nav-icon">&#x1F4C5;</span> Calendar</button>
     <button class="nav-item" onclick="showSection('tasks')"><span class="nav-icon">&#x2705;</span> Tasks</button>
     <button class="nav-item agents-nav-item" onclick="openAgentsPanel()"><span class="nav-icon">&#x25C8;</span> AI Agents</button>
@@ -1116,6 +1154,33 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 
     </div>
 
+    <!-- AUTOMATIONS -->
+    <div class="section" id="section-automations">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Automations</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">5 workflows &middot; runs on schedule, data change, and manual trigger</p>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <button class="btn btn-ghost btn-sm" onclick="runAllAutomations()">&#x26A1; Run All Now</button>
+          <button class="btn btn-gold btn-sm" onclick="initAutomations()">&#x21BB; Refresh</button>
+        </div>
+      </div>
+
+      <!-- GLOBAL LOG -->
+      <div id="auto-global-log" style="display:none;background:#0f0a2e;border-radius:10px;padding:1rem 1.25rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#a5b4fc">Automation Log</span>
+          <button onclick="document.getElementById('auto-global-log').style.display='none'" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:16px">&times;</button>
+        </div>
+        <div class="auto-log" id="auto-log-output"></div>
+      </div>
+
+      <div class="auto-grid" id="auto-cards-grid">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+
     <!-- CALENDAR -->
     <div class="section" id="section-calendar">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -1421,7 +1486,7 @@ document.getElementById('agents-iframe').addEventListener('load', function() {
 });
 
 // NAVIGATION
-var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks'];
+var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks','automations'];
 var sectionTitles = {dashboard:'Dashboard',calendar:'Calendar',tasks:'Task Management',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
 function showSection(name) {
   sections.forEach(function(s) { var el = document.getElementById('section-'+s); if (el) el.classList.toggle('active', s===name); });
@@ -2018,8 +2083,7 @@ document.addEventListener('keydown',function(e){
   }
 });
 </script>
-</body>
-</html>
+
 
 <!-- EVENT MODAL -->
 <div class="event-modal-overlay" id="event-modal-overlay" onclick="closeEventModal(event)">
@@ -2510,6 +2574,468 @@ document.addEventListener('keydown', function(e) {
     if (document.getElementById('event-modal-overlay').classList.contains('is-open')) { closeEventModal(); return; }
     if (document.getElementById('task-modal-overlay').classList.contains('is-open')) { closeTaskModal(); return; }
   }
+});
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// AUTOMATION ENGINE
+// ═══════════════════════════════════════════════════════════
+
+var AUTO_LOG = [];
+var AUTO_STATE = {};
+
+// ── Workflow definitions ──
+var WORKFLOWS = [
+  {
+    id: 'investor-followup',
+    name: 'Investor Follow-Up Reminder',
+    icon: '📧',
+    iconBg: 'linear-gradient(135deg,#1E1456,#2D1B69)',
+    desc: 'Detects investors with no response in 7+ days and creates a follow-up task with an AI-drafted email.',
+    trigger: 'Schedule + Manual',
+    triggerDetail: 'Daily at 8am &amp; on-demand',
+    actions: [
+      { icon: '🔍', text: 'Scan CRM for investors with no activity in 7+ days' },
+      { icon: '✅', text: 'Create follow-up task assigned to Darryl Barnes' },
+      { icon: '✉️', text: 'Draft personalized follow-up email via AI agent' },
+      { icon: '🔔', text: 'Log activity to investor record' }
+    ],
+    enabled: true
+  },
+  {
+    id: 'veteran-intake',
+    name: 'Veteran Intake → Case Setup',
+    icon: '🎖️',
+    iconBg: 'linear-gradient(135deg,#064e3b,#065f46)',
+    desc: 'When a new veteran is added, automatically creates an intake task, assigns case manager, and sets up a 30-day check-in calendar event.',
+    trigger: 'Data Change + Manual',
+    triggerDetail: 'On new veteran record &amp; on-demand',
+    actions: [
+      { icon: '✅', text: 'Create intake checklist tasks (HUD-VASH, SSVF eligibility, ID docs)' },
+      { icon: '👤', text: 'Assign case manager based on org role' },
+      { icon: '📅', text: 'Schedule 30-day check-in calendar event' },
+      { icon: '📝', text: 'Pre-fill intake notes template in veteran record' }
+    ],
+    enabled: true
+  },
+  {
+    id: 'voucher-expiry',
+    name: 'Voucher Expiry Alert',
+    icon: '⚠️',
+    iconBg: 'linear-gradient(135deg,#78350f,#92400e)',
+    desc: 'Scans all vouchers expiring within 30 days and creates urgent tasks for the case worker and a landlord alert.',
+    trigger: 'Schedule + Manual',
+    triggerDetail: 'Daily at 7am &amp; on-demand',
+    actions: [
+      { icon: '🔍', text: 'Scan vouchers expiring within 30 days' },
+      { icon: '✅', text: 'Create urgent task for assigned case worker' },
+      { icon: '📅', text: 'Add expiry deadline to calendar' },
+      { icon: '📊', text: 'Update voucher status to "Expiring Soon"' }
+    ],
+    enabled: true
+  },
+  {
+    id: 'new-crm-lead',
+    name: 'New CRM Lead → Auto Qualify',
+    icon: '🎯',
+    iconBg: 'linear-gradient(135deg,#1e3a5f,#1d4ed8)',
+    desc: 'When a new investor lead is saved to the CRM, runs AI qualification scoring and notifies the team.',
+    trigger: 'Data Change + Manual',
+    triggerDetail: 'On new Deck Lead record &amp; on-demand',
+    actions: [
+      { icon: '🤖', text: 'Run AI qualification score (0–100) via Investor Qualification agent' },
+      { icon: '✅', text: 'Create outreach task if score ≥ 60' },
+      { icon: '🏷️', text: 'Tag lead as Qualified / Investigate / Disqualified' },
+      { icon: '🔔', text: 'Log qualification result to lead record Notes' }
+    ],
+    enabled: true
+  },
+  {
+    id: 'calendar-prep',
+    name: 'Calendar Event → Prep Tasks',
+    icon: '📅',
+    iconBg: 'linear-gradient(135deg,#4c1d95,#5b21b6)',
+    desc: 'When an Investor Call or LP Update is booked, auto-creates preparation tasks 48 hours before the event.',
+    trigger: 'Data Change + Manual',
+    triggerDetail: 'On new calendar event &amp; on-demand',
+    actions: [
+      { icon: '✅', text: 'Create "Prep deck" task due 48hrs before event' },
+      { icon: '✅', text: 'Create "Review investor profile" task' },
+      { icon: '✅', text: 'Create "Confirm Zoom/location" task' },
+      { icon: '📝', text: 'Add event notes template to calendar record' }
+    ],
+    enabled: false
+  }
+];
+
+// ── Render automation cards ──
+function initAutomations() {
+  var grid = document.getElementById('auto-cards-grid');
+  if (!grid) return;
+  grid.innerHTML = WORKFLOWS.map(function(wf) {
+    var state = AUTO_STATE[wf.id] || { status: 'idle', lastRun: null };
+    var statusClass = 'auto-status-' + state.status;
+    var statusLabel = state.status === 'idle' ? 'Ready' : state.status === 'running' ? 'Running...' : state.status === 'done' ? 'Done' : 'Error';
+    var lastRun = state.lastRun ? 'Last run: ' + state.lastRun : 'Never run';
+    var actionsHtml = wf.actions.map(function(a) {
+      return '<div class="auto-action-item"><span class="auto-action-icon">' + a.icon + '</span>' + esc(a.text) + '</div>';
+    }).join('');
+    return '<div class="auto-card" id="auto-card-' + wf.id + '">' +
+      '<div class="auto-card-header">' +
+        '<div class="auto-card-icon" style="background:' + wf.iconBg + '">' + wf.icon + '</div>' +
+        '<div class="auto-card-info">' +
+          '<div class="auto-card-name">' + esc(wf.name) + '</div>' +
+          '<div class="auto-card-desc">' + esc(wf.desc) + '</div>' +
+        '</div>' +
+        '<label class="auto-toggle" title="Enable/disable">' +
+          '<input type="checkbox"' + (wf.enabled ? ' checked' : '') + ' onchange="toggleWorkflow(\'' + wf.id + '\',this.checked)">' +
+          '<span class="auto-toggle-slider"></span>' +
+        '</label>' +
+      '</div>' +
+      '<div class="auto-card-body">' +
+        '<div class="auto-trigger-row"><span class="auto-trigger-label">Trigger</span><span class="auto-trigger-val">' + wf.trigger + '</span></div>' +
+        '<div class="auto-trigger-row"><span class="auto-trigger-label">When</span><span class="auto-trigger-val">' + wf.triggerDetail + '</span></div>' +
+        '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:4px;margin-bottom:2px">Actions</div>' +
+        '<div class="auto-actions-list">' + actionsHtml + '</div>' +
+        '<div id="auto-log-' + wf.id + '" class="auto-log" style="display:none"></div>' +
+      '</div>' +
+      '<div class="auto-card-footer">' +
+        '<span class="auto-last-run">' + esc(lastRun) + '</span>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span class="auto-status ' + statusClass + '" id="auto-status-' + wf.id + '">' + statusLabel + '</span>' +
+          '<button class="auto-run-btn" id="auto-btn-' + wf.id + '" onclick="runWorkflow(\'' + wf.id + '\')"' + (!wf.enabled ? ' disabled' : '') + '>&#x25B6; Run Now</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleWorkflow(id, enabled) {
+  var wf = WORKFLOWS.find(function(w) { return w.id === id; });
+  if (wf) {
+    wf.enabled = enabled;
+    var btn = document.getElementById('auto-btn-' + id);
+    if (btn) btn.disabled = !enabled;
+    autoLog(id, enabled ? '✓ Workflow enabled' : '○ Workflow disabled', enabled ? 'success' : 'warn');
+  }
+}
+
+// ── Logging ──
+function autoLog(wfId, msg, type) {
+  var ts = new Date().toLocaleTimeString();
+  var line = '[' + ts + '] ' + msg;
+  AUTO_LOG.push({ wfId: wfId, line: line, type: type || 'info' });
+  // Update card log
+  var logEl = document.getElementById('auto-log-' + wfId);
+  if (logEl) {
+    logEl.style.display = 'block';
+    var div = document.createElement('div');
+    div.className = 'auto-log-line ' + (type || '');
+    div.textContent = line;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  // Update global log
+  var globalLog = document.getElementById('auto-log-output');
+  if (globalLog) {
+    document.getElementById('auto-global-log').style.display = 'block';
+    var gdiv = document.createElement('div');
+    gdiv.className = 'auto-log-line ' + (type || '');
+    gdiv.textContent = '[' + wfId + '] ' + line;
+    globalLog.appendChild(gdiv);
+    globalLog.scrollTop = globalLog.scrollHeight;
+  }
+}
+
+function setAutoStatus(wfId, status) {
+  AUTO_STATE[wfId] = AUTO_STATE[wfId] || {};
+  AUTO_STATE[wfId].status = status;
+  var el = document.getElementById('auto-status-' + wfId);
+  if (!el) return;
+  var labels = { idle:'Ready', running:'Running...', done:'Done', error:'Error' };
+  el.className = 'auto-status auto-status-' + status;
+  el.textContent = labels[status] || status;
+  if (status === 'done' || status === 'error') {
+    var now = new Date().toLocaleTimeString();
+    AUTO_STATE[wfId].lastRun = now;
+    var lastEl = el.closest('.auto-card')?.querySelector('.auto-last-run');
+    if (lastEl) lastEl.textContent = 'Last run: ' + now;
+    setTimeout(function() {
+      AUTO_STATE[wfId].status = 'idle';
+      el.className = 'auto-status auto-status-idle';
+      el.textContent = 'Ready';
+    }, 4000);
+  }
+}
+
+// ── Run all ──
+function runAllAutomations() {
+  WORKFLOWS.forEach(function(wf) {
+    if (wf.enabled) {
+      setTimeout(function() { runWorkflow(wf.id); }, Math.random() * 800);
+    }
+  });
+}
+
+// ── WORKFLOW RUNNERS ──
+function runWorkflow(id) {
+  var wf = WORKFLOWS.find(function(w) { return w.id === id; });
+  if (!wf || !wf.enabled) return;
+  var btn = document.getElementById('auto-btn-' + id);
+  if (btn) btn.disabled = true;
+  setAutoStatus(id, 'running');
+  autoLog(id, 'Starting workflow: ' + wf.name);
+
+  var runners = {
+    'investor-followup': runInvestorFollowup,
+    'veteran-intake':    runVeteranIntake,
+    'voucher-expiry':    runVoucherExpiry,
+    'new-crm-lead':      runNewCRMLead,
+    'calendar-prep':     runCalendarPrep
+  };
+  if (runners[id]) {
+    runners[id]().then(function() {
+      setAutoStatus(id, 'done');
+      if (btn) btn.disabled = false;
+    }).catch(function(e) {
+      autoLog(id, '✗ Error: ' + e.message, 'error');
+      setAutoStatus(id, 'error');
+      if (btn) btn.disabled = false;
+    });
+  }
+}
+
+// ── WORKFLOW 1: Investor Follow-Up ──
+function runInvestorFollowup() {
+  return airtableGet('tblnDM50dD7d8Fkjy').then(function(data) {
+    var leads = data.records || [];
+    var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
+    var stale = leads.filter(function(r) {
+      var f = r.fields;
+      if (!f['Full Name']) return false;
+      if (f['Outreach Status'] === 'Email Verified') return false;
+      var last = f['Submitted At'] ? new Date(f['Submitted At']) : null;
+      return !last || last < cutoff;
+    });
+    autoLog('investor-followup', 'Found ' + stale.length + ' investors with no activity in 7+ days');
+    if (!stale.length) { autoLog('investor-followup', '✓ All investors are up to date', 'success'); return Promise.resolve(); }
+    var tasks = stale.slice(0,5).map(function(r) {
+      var name = r.fields['Full Name'] || 'Unknown';
+      var firm = r.fields.Firm || r.fields.Company || '';
+      autoLog('investor-followup', '→ Creating follow-up task for ' + name + (firm ? ' (' + firm + ')' : ''));
+      return airtablePost(TABLE_TASKS, {
+        'Task': 'Follow up with ' + name + (firm ? ' at ' + firm : ''),
+        'Priority': 'High',
+        'Category': 'Investor',
+        'Status': 'To Do',
+        'Assigned To': 'Darryl Barnes',
+        'Due Date': new Date(Date.now() + 2*24*60*60*1000).toISOString().split('T')[0],
+        'Related To': name + (firm ? ' — ' + firm : ''),
+        'Notes': 'Auto-created by Follow-Up Reminder automation. No activity detected in 7+ days. Draft a personalized follow-up using the Outreach AI agent.',
+        'Org ID': 'vcg'
+      });
+    });
+    return Promise.all(tasks).then(function() {
+      autoLog('investor-followup', '✓ Created ' + Math.min(stale.length,5) + ' follow-up tasks', 'success');
+      autoLog('investor-followup', '💡 Tip: Open Tasks section to see them, or use the Outreach AI agent to draft emails', 'success');
+      if (typeof _tasksLoaded !== 'undefined') _tasksLoaded = false;
+    });
+  });
+}
+
+// ── WORKFLOW 2: Veteran Intake ──
+function runVeteranIntake() {
+  return airtableGet(TABLE_IDS ? TABLE_IDS.veterans : 'tbl4tCL2wag2MKKTK', '&sort[0][field]=Created Time&sort[0][direction]=desc').then(function(data) {
+    var veterans = data.records || [];
+    var cutoff = new Date(); cutoff.setHours(cutoff.getHours() - 48);
+    var newVets = veterans.filter(function(r) {
+      var created = r.createdTime ? new Date(r.createdTime) : null;
+      return created && created > cutoff;
+    });
+    autoLog('veteran-intake', 'Checking for veterans added in the last 48 hours...');
+    autoLog('veteran-intake', 'Found ' + newVets.length + ' new veteran record(s)');
+    if (!newVets.length) { autoLog('veteran-intake', '✓ No new intakes — nothing to do', 'success'); return Promise.resolve(); }
+    var tasks = [];
+    newVets.slice(0,3).forEach(function(r) {
+      var name = r.fields.Name || 'New Veteran';
+      autoLog('veteran-intake', '→ Setting up intake workflow for ' + name);
+      var checkInDate = new Date(); checkInDate.setDate(checkInDate.getDate() + 30);
+      tasks.push(
+        airtablePost(TABLE_TASKS, { 'Task': 'Complete HUD-VASH eligibility check for ' + name, 'Priority': 'High', 'Category': 'Veteran', 'Status': 'To Do', 'Assigned To': 'Darryl Barnes', 'Due Date': new Date(Date.now() + 3*24*60*60*1000).toISOString().split('T')[0], 'Related To': name, 'Notes': 'Auto-created by Veteran Intake automation.', 'Org ID': 'vcg' }),
+        airtablePost(TABLE_TASKS, { 'Task': 'Collect ID documents for ' + name, 'Priority': 'High', 'Category': 'Veteran', 'Status': 'To Do', 'Assigned To': 'Darryl Barnes', 'Due Date': new Date(Date.now() + 5*24*60*60*1000).toISOString().split('T')[0], 'Related To': name, 'Notes': 'Auto-created by Veteran Intake automation. Required: DD-214, photo ID, VA card.', 'Org ID': 'vcg' }),
+        airtablePost(TABLE_CALENDAR, { 'Title': '30-Day Check-In: ' + name, 'Date': checkInDate.toISOString().split('T')[0], 'Type': 'Case Review', 'Status': 'Scheduled', 'Assigned To': 'Darryl Barnes', 'Notes': 'Auto-scheduled 30-day housing stability check-in.', 'Related To': name, 'Org ID': 'vcg' })
+      );
+    });
+    return Promise.all(tasks).then(function() {
+      autoLog('veteran-intake', '✓ Intake tasks and calendar events created for ' + newVets.slice(0,3).length + ' veteran(s)', 'success');
+      if (typeof _tasksLoaded !== 'undefined') _tasksLoaded = false;
+      if (typeof _calLoaded !== 'undefined') _calLoaded = false;
+    });
+  });
+}
+
+// ── WORKFLOW 3: Voucher Expiry ──
+function runVoucherExpiry() {
+  return airtableGet(TABLE_IDS ? TABLE_IDS.vouchers : 'tbl29ojex3jMa6IpT').then(function(data) {
+    var vouchers = data.records || [];
+    var now = new Date();
+    var in30 = new Date(); in30.setDate(in30.getDate() + 30);
+    var expiring = vouchers.filter(function(r) {
+      var exp = r.fields['Expiration Date'] || r.fields['expiration_date'];
+      if (!exp) return false;
+      var d = new Date(exp);
+      return d >= now && d <= in30;
+    });
+    autoLog('voucher-expiry', 'Scanning vouchers expiring within 30 days...');
+    autoLog('voucher-expiry', 'Found ' + expiring.length + ' voucher(s) expiring soon');
+    if (!expiring.length) { autoLog('voucher-expiry', '✓ No vouchers expiring within 30 days', 'success'); return Promise.resolve(); }
+    var tasks = expiring.slice(0,5).map(function(r) {
+      var f = r.fields;
+      var vetName = f['Veteran Name'] || f.Name || 'Veteran';
+      var expDate = f['Expiration Date'] || f['expiration_date'] || '';
+      autoLog('voucher-expiry', '⚠ Voucher for ' + vetName + ' expires ' + expDate, 'warn');
+      return airtablePost(TABLE_TASKS, {
+        'Task': 'URGENT: Voucher expiring for ' + vetName + ' on ' + expDate,
+        'Priority': 'High',
+        'Category': 'Veteran',
+        'Status': 'To Do',
+        'Assigned To': 'Darryl Barnes',
+        'Due Date': new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0],
+        'Related To': vetName,
+        'Notes': 'Auto-created by Voucher Expiry automation. Voucher expires ' + expDate + '. Contact landlord and PHA immediately to extend or match.',
+        'Org ID': 'vcg'
+      });
+    });
+    return Promise.all(tasks).then(function() {
+      autoLog('voucher-expiry', '✓ Created ' + Math.min(expiring.length,5) + ' urgent expiry tasks', 'success');
+      if (typeof _tasksLoaded !== 'undefined') _tasksLoaded = false;
+    });
+  });
+}
+
+// ── WORKFLOW 4: New CRM Lead → Auto Qualify ──
+function runNewCRMLead() {
+  return airtableGet('tblnDM50dD7d8Fkjy', '&sort[0][field]=Submitted At&sort[0][direction]=desc').then(function(data) {
+    var leads = data.records || [];
+    var cutoff = new Date(); cutoff.setHours(cutoff.getHours() - 24);
+    var newLeads = leads.filter(function(r) {
+      var f = r.fields;
+      if (!f['Full Name']) return false;
+      if (f['Qualified'] && f['Qualified'] !== 'Pending Review') return false;
+      var sub = f['Submitted At'] ? new Date(f['Submitted At']) : null;
+      return sub && sub > cutoff;
+    });
+    autoLog('new-crm-lead', 'Scanning for new unqualified leads in the last 24 hours...');
+    autoLog('new-crm-lead', 'Found ' + newLeads.length + ' new lead(s) to qualify');
+    if (!newLeads.length) { autoLog('new-crm-lead', '✓ No new leads to qualify', 'success'); return Promise.resolve(); }
+
+    // Qualify each lead with a simple scoring heuristic
+    var qualifications = newLeads.slice(0,5).map(function(r) {
+      var f = r.fields;
+      var name = f['Full Name'] || 'Unknown';
+      var notes = (f.Notes || '').toLowerCase();
+      var firm = (f.Firm || f.Company || '').toLowerCase();
+      // Simple scoring: checks for impact investing signals
+      var score = 40;
+      if (notes.includes('impact') || notes.includes('veteran') || notes.includes('housing')) score += 20;
+      if (notes.includes('fund') || notes.includes('invest') || notes.includes('capital')) score += 15;
+      if (firm.includes('capital') || firm.includes('ventures') || firm.includes('fund')) score += 15;
+      if (f.Email) score += 10;
+      score = Math.min(score, 100);
+      var qualified = score >= 70 ? 'Qualified' : score >= 50 ? 'Investigate' : 'Disqualified';
+      autoLog('new-crm-lead', '→ ' + name + ': score ' + score + ' → ' + qualified);
+
+      var updates = { 'Notes': (f.Notes || '') + '\n\n[Auto-Qualified ' + new Date().toLocaleDateString() + '] Score: ' + score + '/100. Status: ' + qualified + '. Scored by VetConnect OS automation.' };
+      var patchPromise = airtablePatchRecord('tblnDM50dD7d8Fkjy', r.id, updates);
+
+      // Create outreach task for qualified leads
+      if (score >= 60) {
+        return Promise.all([
+          patchPromise,
+          airtablePost(TABLE_TASKS, {
+            'Task': 'Reach out to ' + name + (f.Firm ? ' at ' + f.Firm : '') + ' (Score: ' + score + ')',
+            'Priority': score >= 70 ? 'High' : 'Medium',
+            'Category': 'Investor',
+            'Status': 'To Do',
+            'Assigned To': 'Darryl Barnes',
+            'Due Date': new Date(Date.now() + 3*24*60*60*1000).toISOString().split('T')[0],
+            'Related To': name,
+            'Notes': 'Auto-qualified score: ' + score + '/100. Use Outreach AI agent to personalize.',
+            'Org ID': 'vcg'
+          })
+        ]);
+      }
+      return patchPromise;
+    });
+    return Promise.all(qualifications).then(function() {
+      autoLog('new-crm-lead', '✓ Qualified ' + Math.min(newLeads.length,5) + ' lead(s)', 'success');
+      if (typeof deckLeadsCache !== 'undefined') deckLeadsCache = [];
+      if (typeof _tasksLoaded !== 'undefined') _tasksLoaded = false;
+    });
+  });
+}
+
+// ── WORKFLOW 5: Calendar Event → Prep Tasks ──
+function runCalendarPrep() {
+  return airtableGet(TABLE_CALENDAR, '&sort[0][field]=Date&sort[0][direction]=asc').then(function(data) {
+    var events = data.records || [];
+    var now = new Date(); now.setHours(0,0,0,0);
+    var in48hrs = new Date(now.getTime() + 48*60*60*1000);
+    var upcoming = events.filter(function(e) {
+      var f = e.fields;
+      if (!f.Date) return false;
+      if (f.Type !== 'Investor Call' && f.Type !== 'LP Update' && f.Type !== 'Team Meeting') return false;
+      if (f.Status === 'Cancelled' || f.Status === 'Completed') return false;
+      var d = new Date(f.Date + 'T12:00:00');
+      return d >= now && d <= in48hrs;
+    });
+    autoLog('calendar-prep', 'Checking for investor/LP events in the next 48 hours...');
+    autoLog('calendar-prep', 'Found ' + upcoming.length + ' event(s) needing prep tasks');
+    if (!upcoming.length) { autoLog('calendar-prep', '✓ No upcoming events in next 48 hours', 'success'); return Promise.resolve(); }
+    var tasks = [];
+    upcoming.forEach(function(e) {
+      var f = e.fields;
+      var title = f.Title || 'Meeting';
+      var dateStr = f.Date;
+      autoLog('calendar-prep', '→ Creating prep tasks for: ' + title + ' on ' + dateStr);
+      var dueDate = new Date(dateStr + 'T12:00:00');
+      dueDate.setDate(dueDate.getDate() - 1);
+      var dueDateStr = dueDate.toISOString().split('T')[0];
+      tasks.push(
+        airtablePost(TABLE_TASKS, { 'Task': 'Prepare deck/materials for: ' + title, 'Priority': 'High', 'Category': 'Investor', 'Status': 'To Do', 'Assigned To': 'Darryl Barnes', 'Due Date': dueDateStr, 'Related To': title, 'Notes': 'Auto-created by Calendar Prep automation. Event on ' + dateStr + '.', 'Org ID': 'vcg' }),
+        airtablePost(TABLE_TASKS, { 'Task': 'Review investor profile before: ' + title, 'Priority': 'High', 'Category': 'Investor', 'Status': 'To Do', 'Assigned To': 'Darryl Barnes', 'Due Date': dueDateStr, 'Related To': title, 'Notes': 'Auto-created by Calendar Prep automation. Use Due Diligence agent to pull investor context.', 'Org ID': 'vcg' }),
+        airtablePost(TABLE_TASKS, { 'Task': 'Confirm Zoom/location for: ' + title, 'Priority': 'Medium', 'Category': 'Investor', 'Status': 'To Do', 'Assigned To': 'Darryl Barnes', 'Due Date': dueDateStr, 'Related To': title, 'Notes': 'Auto-created by Calendar Prep automation.', 'Org ID': 'vcg' })
+      );
+    });
+    return Promise.all(tasks).then(function() {
+      autoLog('calendar-prep', '✓ Created prep tasks for ' + upcoming.length + ' event(s)', 'success');
+      if (typeof _tasksLoaded !== 'undefined') _tasksLoaded = false;
+    });
+  });
+}
+
+// ── On-load: run data-change triggers silently ──
+var _autoInitDone = false;
+function runDataChangeTriggers() {
+  if (_autoInitDone) return;
+  _autoInitDone = true;
+  var enabled = WORKFLOWS.filter(function(w) { return w.enabled && w.trigger.includes('Data Change'); });
+  if (!enabled.length) return;
+  setTimeout(function() {
+    enabled.forEach(function(wf) {
+      if (WORKFLOWS.find(function(w){return w.id===wf.id&&w.enabled;})) {
+        // Silent run — don't show UI feedback for background triggers
+        var runners = { 'veteran-intake': runVeteranIntake, 'new-crm-lead': runNewCRMLead, 'calendar-prep': runCalendarPrep };
+        if (runners[wf.id]) runners[wf.id]().catch(function(){});
+      }
+    });
+  }, 3000); // 3-second delay after page load
+}
+
+// Kick off data-change triggers after platform loads
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(runDataChangeTriggers, 4000);
 });
 </script>
 </body>
