@@ -10,32 +10,45 @@ exports.handler = async function(event) {
     try {
       const { email, role, invitedBy } = JSON.parse(event.body);
       if (!email) return { statusCode: 400, headers, body: JSON.stringify({ success: false, message: 'Email required.' }) };
+
       const check = await fetch(
         `https://api.airtable.com/v0/${base}/Users?filterByFormula=${enc(`{email}="${email}"`)}&maxRecords=1`,
         { headers: { 'Authorization': `Bearer ${token}` } }
       ).then(r => r.json());
+
       if (check.error) return { statusCode: 200, headers, body: JSON.stringify({ success: false, message: 'Auth error: ' + check.error.message }) };
       if (check.records?.length && check.records[0].fields.status === 'Active') {
         return { statusCode: 200, headers, body: JSON.stringify({ success: false, message: 'An active account with this email already exists.' }) };
       }
+
       const invToken = require('crypto').randomBytes(32).toString('hex');
       const expires  = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+
+      // Only write plain text fields — avoids all select field permission issues
       const fields = {
-        email, full_name: email.split('@')[0],
-        invite_token: invToken, invite_expires: expires,
-        invited_by: invitedBy || 'Admin', status: 'Invited',
-        invite_role: role || 'employee'
+        email,
+        full_name:      email.split('@')[0],
+        invite_token:   invToken,
+        invite_expires: expires,
+        invited_by:     invitedBy || 'Admin',
+        invite_role:    role || 'employee',
+        status:         'Invited'
       };
+
       const method = check.records?.length ? 'PATCH' : 'POST';
       const url = check.records?.length
         ? `https://api.airtable.com/v0/${base}/Users/${check.records[0].id}`
         : `https://api.airtable.com/v0/${base}/Users`;
+
       const res = await fetch(url, {
-        method, headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        method,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields })
       }).then(r => r.json());
+
       if (res.error) return { statusCode: 200, headers, body: JSON.stringify({ success: false, message: res.error.message }) };
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, token: invToken }) };
+
     } catch(err) {
       return { statusCode: 500, headers, body: JSON.stringify({ success: false, message: err.message }) };
     }
@@ -58,5 +71,6 @@ exports.handler = async function(event) {
       return { statusCode: 500, headers, body: JSON.stringify({ valid: false, message: err.message }) };
     }
   }
+
   return { statusCode: 405, headers, body: 'Method Not Allowed' };
 };
