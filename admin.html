@@ -1737,8 +1737,8 @@ What would you like me to create today?</div>
         <div class="card-header"><div class="card-title">Airtable Token</div></div>
         <div class="card-body">
           <p style="font-size:13px;color:var(--muted);margin-bottom:.85rem">Update your Airtable Personal Access Token. Stored locally, never sent to any server.</p>
-          <input type="password" id="token-input" placeholder="patXXXXXX..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;margin-bottom:.75rem;font-family:'DM Sans',sans-serif;outline:none;">
-          <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
+          <input type="text" id="token-input" placeholder="patXXXXXX..." oninput="document.getElementById('save-token-btn').disabled=!this.value.trim()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;margin-bottom:.75rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button class="btn btn-primary" id="save-token-btn" onclick="saveToken()">Save Token</button>
           <span id="token-saved" style="display:none;font-size:12px;color:var(--success);margin-left:10px">&#x2705; Saved</span>
         </div>
       </div>
@@ -2202,7 +2202,17 @@ function renderAnalyticsChart(){
 }
 
 // SETTINGS
-function saveToken(){var t=document.getElementById('token-input').value.trim();if(!t)return;VetConnectAuth.setToken(t,true);_loaded={};deckLeadsCache=[];document.getElementById('token-saved').style.display='inline';setTimeout(function(){document.getElementById('token-saved').style.display='none';},3000);}
+function saveToken(){
+  var t=document.getElementById('token-input').value.trim();
+  if(!t){alert('Please paste your Airtable token first.');return;}
+  localStorage.setItem('vcg_airtable_token_full',t);
+  sessionStorage.setItem('vcg_airtable_token_full',t);
+  if(typeof _loaded!=='undefined')_loaded={};
+  if(typeof deckLeadsCache!=='undefined')deckLeadsCache=[];
+  var saved=document.getElementById('token-saved');
+  if(saved){saved.style.display='inline';setTimeout(function(){saved.style.display='none';},3000);}
+  alert('Token saved! The platform will now load your Airtable data.');
+}
 
 
 // INTEGRATIONS — save API keys to localStorage
