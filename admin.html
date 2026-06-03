@@ -231,6 +231,51 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 .form-row textarea{min-height:70px;resize:vertical;line-height:1.5;}
 .chart-wrap{position:relative;height:180px;}
 
+/* ===== TEAM MANAGEMENT ===== */
+.team-layout{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;}
+.presence-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.presence-dot.online{background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.2);}
+.presence-dot.offline{background:#d1d5db;}
+.presence-dot.away{background:#f59e0b;}
+.team-table{width:100%;border-collapse:collapse;font-size:13px;}
+.team-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--border);background:var(--offwhite);}
+.team-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.team-table tr:hover td{background:var(--offwhite);}
+.team-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;}
+.role-pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:600;}
+.rp-super{background:#ede9fe;color:#5b21b6;}
+.rp-admin{background:#dbeafe;color:#1d4ed8;}
+.rp-developer{background:#ccfbf1;color:#0f766e;}
+.rp-employee{background:#d1fae5;color:#065f46;}
+.rp-invited{background:#fef3c7;color:#92400e;}
+.rp-inactive{background:#f3f4f6;color:#6b7280;}
+.team-action-btn{font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;}
+.team-action-btn:hover{background:var(--surface2);color:var(--text);}
+.rights-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rights-panel-header{padding:.85rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1a0f45,#2d1b69);color:#fff;display:flex;justify-content:space-between;align-items:center;}
+.rights-panel-title{font-size:13px;font-weight:600;}
+.rights-category{padding:.75rem 1rem;}
+.rights-cat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.5rem;}
+.rights-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(45,27,105,0.05);}
+.rights-row:last-child{border-bottom:none;}
+.rights-row-info{flex:1;}
+.rights-row-label{font-size:12px;font-weight:500;color:var(--text);}
+.rights-row-desc{font-size:10px;color:var(--muted);margin-top:1px;}
+.toggle-sm{position:relative;width:34px;height:18px;flex-shrink:0;}
+.toggle-sm input{opacity:0;width:0;height:0;}
+.toggle-sm-slider{position:absolute;cursor:pointer;inset:0;background:#e5e7eb;border-radius:99px;transition:.2s;}
+.toggle-sm-slider::before{content:"";position:absolute;width:12px;height:12px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+.toggle-sm input:checked + .toggle-sm-slider{background:var(--purple-lit);}
+.toggle-sm input:checked + .toggle-sm-slider::before{transform:translateX(16px);}
+.toggle-sm input:disabled + .toggle-sm-slider{opacity:0.5;cursor:not-allowed;}
+.invite-form{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.online-list{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.online-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center;}
+.online-item{display:flex;align-items:center;gap:10px;padding:.6rem 1rem;border-bottom:1px solid rgba(45,27,105,0.05);}
+.online-item:last-child{border-bottom:none;}
+.online-name{font-size:12px;font-weight:500;color:var(--text);}
+.online-role{font-size:10px;color:var(--muted);}
+.online-time{font-size:10px;color:var(--muted);margin-left:auto;}
 /* ===== MARKETING HUB ===== */
 .mkt-layout{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;}
 .mkt-main{display:flex;flex-direction:column;gap:1.25rem;}
@@ -479,6 +524,7 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
     <div class="nav-label">AI Operations</div>
     <button class="nav-item" onclick="showSection('automations')"><span class="nav-icon">&#x26A1;</span> Automations</button>
     <button class="nav-item" onclick="showSection('marketing')"><span class="nav-icon">&#x1F4E3;</span> Marketing Hub</button>
+    <button class="nav-item admin-nav-item" id="team-nav-btn" onclick="showSection('team')"><span class="nav-icon">&#x1F465;</span> Team</button>
     <button class="nav-item" onclick="showSection('calendar')"><span class="nav-icon">&#x1F4C5;</span> Calendar</button>
     <button class="nav-item" onclick="showSection('tasks')"><span class="nav-icon">&#x2705;</span> Tasks</button>
     <button class="nav-item agents-nav-item" onclick="openAgentsPanel()"><span class="nav-icon">&#x25C8;</span> AI Agents</button>
@@ -1215,6 +1261,137 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 
     </div>
 
+    <!-- TEAM MANAGEMENT -->
+    <div class="section" id="section-team">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
+        <div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Team Management</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">Invite employees &middot; Assign roles &middot; Manage permissions &middot; Live presence</p>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="openInviteModal()">&#x2B; Invite Employee</button>
+      </div>
+
+      <div class="team-layout">
+        <!-- LEFT: Employee Directory + Rights Editor -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+          <!-- Employee Table -->
+          <div class="card">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+              <div class="card-title">Employee Directory</div>
+              <button class="btn btn-ghost btn-sm" onclick="loadTeam()">&#x21BB; Refresh</button>
+            </div>
+            <div class="card-body" style="padding:0">
+              <table class="team-table">
+                <thead><tr>
+                  <th style="width:32px"></th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Last Login</th>
+                  <th>Actions</th>
+                </tr></thead>
+                <tbody id="team-tbody">
+                  <tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Loading team...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Rights Editor (shown when employee selected) -->
+          <div class="rights-panel" id="rights-panel" style="display:none">
+            <div class="rights-panel-header">
+              <div>
+                <div class="rights-panel-title" id="rights-panel-name">Select an employee</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.45)" id="rights-panel-role"></div>
+              </div>
+              <div style="display:flex;gap:.5rem">
+                <button onclick="resetRightsToDefault()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px">Reset to defaults</button>
+                <button onclick="saveRights()" style="background:var(--gold);border:none;color:#1A0F45;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600" id="save-rights-btn">Save rights</button>
+              </div>
+            </div>
+            <div id="rights-categories" style="display:flex;flex-direction:column;divide-y"></div>
+            <div style="padding:.75rem 1rem;border-top:1px solid var(--border);font-size:11px;color:var(--muted)" id="rights-save-status"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Online Now + Invite -->
+        <div style="display:flex;flex-direction:column;gap:1rem">
+
+          <!-- Live Presence -->
+          <div class="online-list">
+            <div class="online-header">
+              <span>&#x1F7E2; Online Now</span>
+              <span id="online-count" style="font-size:10px;color:var(--muted)">0 online</span>
+            </div>
+            <div id="online-list-body">
+              <div style="padding:1rem;text-align:center;font-size:12px;color:var(--muted)">No one online yet</div>
+            </div>
+          </div>
+
+          <!-- Invite Form -->
+          <div class="invite-form">
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:.75rem">&#x2709;&#xFE0F; Quick invite</div>
+            <div class="field-group" style="margin-bottom:.6rem">
+              <label>Email address</label>
+              <input type="email" id="quick-invite-email" placeholder="employee@company.com">
+            </div>
+            <div class="field-group" style="margin-bottom:.75rem">
+              <label>Role</label>
+              <select id="quick-invite-role">
+                <option value="employee">Employee</option>
+                <option value="admin">Admin</option>
+                <option value="developer">Developer</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-sm" style="width:100%" onclick="sendQuickInvite()">Send invite link</button>
+            <div id="invite-result" style="margin-top:.6rem;font-size:12px;display:none"></div>
+          </div>
+
+          <!-- Role Legend -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Role guide</div></div>
+            <div class="card-body" style="padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span class="role-pill rp-super">Super Admin</span><span style="color:var(--muted)">Full access — you only</span></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span class="role-pill rp-admin">Admin</span><span style="color:var(--muted)">Full platform, no admin panel</span></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span class="role-pill rp-developer">Developer</span><span style="color:var(--muted)">Full + settings + API</span></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span class="role-pill rp-employee">Employee</span><span style="color:var(--muted)">Dashboard, cases, tasks</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVITE MODAL -->
+    <div class="event-modal-overlay" id="invite-modal" onclick="closeInviteModal(event)">
+      <div class="event-modal" onclick="event.stopPropagation()" style="max-width:460px">
+        <div class="event-modal-header">
+          <div class="event-modal-title">Invite employee</div>
+          <button class="event-modal-close" onclick="closeInviteModal()">&#xD7;</button>
+        </div>
+        <div class="event-modal-body">
+          <div class="field-group"><label>Email address *</label><input type="email" id="modal-invite-email" placeholder="employee@company.com"></div>
+          <div class="field-group"><label>Role *</label>
+            <select id="modal-invite-role">
+              <option value="employee">Employee — Dashboard, cases, tasks</option>
+              <option value="admin">Admin — Full platform, no admin panel</option>
+              <option value="developer">Developer — Full platform + settings + API</option>
+            </select>
+          </div>
+          <div class="field-group"><label>Personal note (optional)</label><textarea id="modal-invite-note" placeholder="Hi! I'm inviting you to join VetConnect OS..." style="height:60px"></textarea></div>
+          <div id="modal-invite-result" style="display:none;background:var(--surface2);border-radius:8px;padding:.75rem;font-size:12px"></div>
+        </div>
+        <div class="event-modal-footer">
+          <span class="event-save-status" id="modal-invite-status"></span>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-ghost btn-sm" onclick="closeInviteModal()">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="sendModalInvite()">Send invite link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MARKETING HUB -->
     <div class="section" id="section-marketing">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
@@ -1746,7 +1923,7 @@ document.getElementById('agents-iframe').addEventListener('load', function() {
 });
 
 // NAVIGATION
-var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks','automations','marketing'];
+var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks','automations','marketing','team'];
 var sectionTitles = {dashboard:'Dashboard',calendar:'Calendar',tasks:'Task Management',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
 function showSection(name) {
   sections.forEach(function(s) { var el = document.getElementById('section-'+s); if (el) el.classList.toggle('active', s===name); });
@@ -3717,6 +3894,307 @@ function saveGraphicToLibrary() {
     alert('Graphic saved to Asset Library!');
   };
   reader.readAsDataURL(svgBlob);
+}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// TEAM MANAGEMENT + PRESENCE
+// ═══════════════════════════════════════════════════════════
+var teamMembers = [];
+var selectedEmployee = null;
+var _teamInit = false;
+var _presenceInterval = null;
+
+var ALL_RIGHTS_DEF = {
+  data:     { label:'Data Access',        rights:{ view_veterans:{label:'View veterans',desc:'See veteran records and case files'}, edit_veterans:{label:'Edit veterans',desc:'Add and update veteran records'}, delete_records:{label:'Delete records',desc:'Permanently delete any record'}, export_data:{label:'Export data',desc:'Download CSVs and reports'} } },
+  crm:      { label:'CRM & Investors',    rights:{ view_crm:{label:'View CRM',desc:'See investor pipeline and leads'}, edit_crm:{label:'Edit CRM',desc:'Add and update CRM records'}, view_fund1:{label:'View Fund I',desc:'Access VCG Fund I LP pipeline'}, manage_outreach:{label:'Manage outreach',desc:'Send investor outreach'} } },
+  platform: { label:'Platform Features',  rights:{ use_agents:{label:'Use AI agents',desc:'Access all 16 AI agents'}, run_automations:{label:'Run automations',desc:'Trigger and configure automations'}, marketing_hub:{label:'Marketing Hub',desc:'Create and manage marketing assets'}, calendar_tasks:{label:'Calendar & Tasks',desc:'Create and edit events and tasks'} } },
+  finance:  { label:'Finance & Housing',  rights:{ view_payments:{label:'View payments',desc:'See payment records and financials'}, manage_vouchers:{label:'Manage vouchers',desc:'Edit and assign housing vouchers'}, view_properties:{label:'View properties',desc:'Access property listings'} } },
+  admin:    { label:'Administration',     rights:{ manage_team:{label:'Manage team',desc:'Invite employees and assign roles'}, change_roles:{label:'Change roles',desc:'Modify role assignments'}, view_settings:{label:'View settings',desc:'Access platform settings'}, view_admin:{label:'Admin panel',desc:'Access the admin section'}, manage_api:{label:'API access',desc:'View and manage API keys'} } }
+};
+
+var ROLE_DEFAULTS_TEAM = {
+  super_admin:{ view_veterans:true,edit_veterans:true,delete_records:true,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:true,change_roles:true,view_settings:true,view_admin:true,manage_api:true },
+  admin:      { view_veterans:true,edit_veterans:true,delete_records:false,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:false,change_roles:false,view_settings:false,view_admin:false,manage_api:false },
+  developer:  { view_veterans:true,edit_veterans:true,delete_records:true,export_data:true,view_crm:true,edit_crm:true,view_fund1:false,manage_outreach:false,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:false,manage_vouchers:false,view_properties:true,manage_team:false,change_roles:false,view_settings:true,view_admin:false,manage_api:true },
+  employee:   { view_veterans:true,edit_veterans:true,delete_records:false,export_data:false,view_crm:false,edit_crm:false,view_fund1:false,manage_outreach:false,use_agents:true,run_automations:false,marketing_hub:false,calendar_tasks:true,view_payments:false,manage_vouchers:false,view_properties:true,manage_team:false,change_roles:false,view_settings:false,view_admin:false,manage_api:false }
+};
+
+var ROLE_COLORS = { super_admin:'#7C3AED', admin:'#1d4ed8', developer:'#0f766e', employee:'#065f46', invited:'#92400e', inactive:'#6b7280' };
+var ROLE_PILL_CLASS = { super_admin:'rp-super', admin:'rp-admin', developer:'rp-developer', employee:'rp-employee', invited:'rp-invited', inactive:'rp-inactive' };
+var ROLE_LABELS_TEAM = { super_admin:'Super Admin', admin:'Admin', developer:'Developer', employee:'Employee', case_manager:'Case Manager', org_admin:'Org Admin', invited:'Invited', inactive:'Inactive' };
+
+function initTeam() {
+  if (!_teamInit) { _teamInit = true; loadTeam(); startPresencePoller(); }
+}
+
+function loadTeam() {
+  var tbody = document.getElementById('team-tbody');
+  if (!tbody) return;
+  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users?maxRecords=50', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    teamMembers = data.records || [];
+    renderTeamTable();
+    renderOnlineList();
+  }).catch(function(e) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Could not load team — check token</td></tr>';
+  });
+}
+
+function isOnline(rec) {
+  var ls = rec.fields.last_seen;
+  if (!ls) return false;
+  return (Date.now() - new Date(ls).getTime()) < 3 * 60 * 1000; // 3 minutes
+}
+
+function isAway(rec) {
+  var ls = rec.fields.last_seen;
+  if (!ls) return false;
+  var diff = Date.now() - new Date(ls).getTime();
+  return diff >= 3 * 60 * 1000 && diff < 15 * 60 * 1000;
+}
+
+function renderTeamTable() {
+  var tbody = document.getElementById('team-tbody');
+  if (!tbody || !teamMembers.length) return;
+  tbody.innerHTML = teamMembers.map(function(rec) {
+    var f = rec.fields;
+    var name = f.full_name || f.email || 'Unknown';
+    var email = f.email || '—';
+    var role = f.role || 'employee';
+    var status = f.status || 'Active';
+    var lastLogin = f.last_login ? new Date(f.last_login).toLocaleDateString() : '—';
+    var online = isOnline(rec);
+    var away = isAway(rec);
+    var dotClass = online ? 'online' : away ? 'away' : 'offline';
+    var initials = name.split(' ').map(function(n){return n[0]||'';}).join('').slice(0,2).toUpperCase();
+    var bgColor = ROLE_COLORS[role] || '#6b7280';
+    var pillClass = ROLE_PILL_CLASS[status === 'Invited' ? 'invited' : status !== 'Active' ? 'inactive' : role] || 'rp-employee';
+    var isSelf = f.email === (session && session.email);
+    return '<tr' + (isSelf ? ' style="background:rgba(91,74,176,0.04)"' : '') + '>' +
+      '<td><div style="display:flex;align-items:center;gap:6px"><div class="presence-dot ' + dotClass + '" title="' + (online?'Online':away?'Away':'Offline') + '"></div></div></td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px"><div class="team-avatar" style="background:' + bgColor + '">' + esc(initials) + '</div><div><div style="font-weight:500;font-size:13px">' + esc(name) + (isSelf?' <span style="font-size:10px;color:var(--muted)">(you)</span>':'') + '</div></div></div></td>' +
+      '<td style="font-size:12px;color:var(--muted)">' + esc(email) + '</td>' +
+      '<td><span class="role-pill ' + pillClass + '">' + esc(ROLE_LABELS_TEAM[role] || role) + '</span></td>' +
+      '<td><span class="pill ' + (status==='Active'?'pill-active':status==='Invited'?'pill-warn':'pill-neutral') + '">' + esc(status) + '</span></td>' +
+      '<td style="font-size:12px;color:var(--muted)">' + esc(lastLogin) + '</td>' +
+      '<td><div style="display:flex;gap:4px">' +
+        (!isSelf ? '<button class="team-action-btn" onclick="selectEmployee(\'' + rec.id + '\')">&#x270E; Rights</button>' : '') +
+        (!isSelf && status !== 'Invited' ? '<button class="team-action-btn" onclick="toggleEmployeeStatus(\'' + rec.id + '\',\'' + status + '\')" style="color:' + (status==='Active'?'var(--danger)':'var(--success)') + '">' + (status==='Active'?'Deactivate':'Activate') + '</button>' : '') +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function renderOnlineList() {
+  var el = document.getElementById('online-list-body');
+  var countEl = document.getElementById('online-count');
+  if (!el) return;
+  var online = teamMembers.filter(function(r) { return isOnline(r) || isAway(r); });
+  if (countEl) {
+    var onlineNow = teamMembers.filter(function(r){return isOnline(r);}).length;
+    countEl.textContent = onlineNow + ' online';
+  }
+  if (!online.length) { el.innerHTML = '<div style="padding:1rem;text-align:center;font-size:12px;color:var(--muted)">No one online right now</div>'; return; }
+  el.innerHTML = online.map(function(rec) {
+    var f = rec.fields;
+    var name = f.full_name || f.email || 'Unknown';
+    var role = f.role || 'employee';
+    var online = isOnline(rec);
+    var dotClass = online ? 'online' : 'away';
+    var lastSeen = f.last_seen ? new Date(f.last_seen) : null;
+    var timeAgo = lastSeen ? Math.round((Date.now()-lastSeen.getTime())/60000) + 'm ago' : '';
+    var initials = name.split(' ').map(function(n){return n[0]||'';}).join('').slice(0,2).toUpperCase();
+    var bgColor = ROLE_COLORS[role] || '#6b7280';
+    return '<div class="online-item">' +
+      '<div class="team-avatar" style="background:' + bgColor + ';width:28px;height:28px;font-size:11px">' + esc(initials) + '</div>' +
+      '<div style="display:flex;flex-direction:column;flex:1">' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<span class="online-name">' + esc(name) + '</span>' +
+          '<div class="presence-dot ' + dotClass + '" style="width:7px;height:7px"></div>' +
+        '</div>' +
+        '<span class="online-role">' + esc(ROLE_LABELS_TEAM[role]||role) + '</span>' +
+      '</div>' +
+      '<span class="online-time">' + (online ? 'Online' : timeAgo) + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+// Refresh presence every 60 seconds
+function startPresencePoller() {
+  if (_presenceInterval) clearInterval(_presenceInterval);
+  _presenceInterval = setInterval(function() {
+    if (document.getElementById('section-team')?.classList.contains('active')) {
+      loadTeam();
+    }
+  }, 60000);
+}
+
+// ── SELECT EMPLOYEE → SHOW RIGHTS EDITOR ──
+function selectEmployee(recordId) {
+  var rec = teamMembers.find(function(r) { return r.id === recordId; });
+  if (!rec) return;
+  selectedEmployee = rec;
+  var f = rec.fields;
+  var role = f.role || 'employee';
+  var currentRights = {};
+  try { currentRights = f.rights ? JSON.parse(f.rights) : (ROLE_DEFAULTS_TEAM[role] || ROLE_DEFAULTS_TEAM.employee); }
+  catch(e) { currentRights = ROLE_DEFAULTS_TEAM[role] || ROLE_DEFAULTS_TEAM.employee; }
+
+  document.getElementById('rights-panel').style.display = 'block';
+  document.getElementById('rights-panel-name').textContent = f.full_name || f.email;
+  document.getElementById('rights-panel-role').textContent = (ROLE_LABELS_TEAM[role]||role) + ' &mdash; toggle individual rights below';
+  document.getElementById('rights-save-status').textContent = '';
+
+  var isSuperAdmin = role === 'super_admin';
+  var html = '';
+  Object.keys(ALL_RIGHTS_DEF).forEach(function(catKey) {
+    var cat = ALL_RIGHTS_DEF[catKey];
+    html += '<div class="rights-category">' +
+      '<div class="rights-cat-label">' + esc(cat.label) + '</div>';
+    Object.keys(cat.rights).forEach(function(rightKey) {
+      var r = cat.rights[rightKey];
+      var checked = isSuperAdmin ? true : !!(currentRights[rightKey]);
+      html += '<div class="rights-row">' +
+        '<div class="rights-row-info">' +
+          '<div class="rights-row-label">' + esc(r.label) + '</div>' +
+          '<div class="rights-row-desc">' + esc(r.desc) + '</div>' +
+        '</div>' +
+        '<label class="toggle-sm">' +
+          '<input type="checkbox" data-right="' + rightKey + '"' + (checked?' checked':'') + (isSuperAdmin?' disabled':'') + '>' +
+          '<span class="toggle-sm-slider"></span>' +
+        '</label>' +
+      '</div>';
+    });
+    html += '</div><div style="height:1px;background:var(--border)"></div>';
+  });
+  document.getElementById('rights-categories').innerHTML = html;
+  // Scroll to rights panel
+  document.getElementById('rights-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function resetRightsToDefault() {
+  if (!selectedEmployee) return;
+  var role = selectedEmployee.fields.role || 'employee';
+  var defaults = ROLE_DEFAULTS_TEAM[role] || ROLE_DEFAULTS_TEAM.employee;
+  document.querySelectorAll('#rights-categories input[type="checkbox"]').forEach(function(cb) {
+    var right = cb.dataset.right;
+    if (right && !cb.disabled) cb.checked = !!(defaults[right]);
+  });
+  document.getElementById('rights-save-status').textContent = 'Reset to ' + (ROLE_LABELS_TEAM[role]||role) + ' defaults — click Save rights to apply';
+}
+
+function saveRights() {
+  if (!selectedEmployee) return;
+  var rights = {};
+  document.querySelectorAll('#rights-categories input[type="checkbox"]').forEach(function(cb) {
+    if (cb.dataset.right) rights[cb.dataset.right] = cb.checked;
+  });
+  var btn = document.getElementById('save-rights-btn');
+  var status = document.getElementById('rights-save-status');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users/' + selectedEmployee.id, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { rights: JSON.stringify(rights) } })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.error) { status.textContent = '✗ Error: ' + data.error.message; }
+    else {
+      status.textContent = '✓ Rights saved for ' + (selectedEmployee.fields.full_name || selectedEmployee.fields.email);
+      // Update local cache
+      var rec = teamMembers.find(function(r) { return r.id === selectedEmployee.id; });
+      if (rec) rec.fields.rights = JSON.stringify(rights);
+    }
+    btn.textContent = 'Save rights'; btn.disabled = false;
+  }).catch(function(e) { status.textContent = '✗ ' + e.message; btn.textContent = 'Save rights'; btn.disabled = false; });
+}
+
+function toggleEmployeeStatus(recordId, currentStatus) {
+  var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+  if (!confirm('Set this employee to ' + newStatus + '?')) return;
+  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users/' + recordId, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { status: newStatus } })
+  }).then(function(r) { return r.json(); }).then(function() {
+    loadTeam();
+  });
+}
+
+// ── INVITE ──
+function openInviteModal() {
+  document.getElementById('invite-modal').classList.add('is-open');
+  document.getElementById('modal-invite-result').style.display = 'none';
+  document.getElementById('modal-invite-status').textContent = '';
+}
+function closeInviteModal(e) {
+  if (e && e.target.id !== 'invite-modal') return;
+  document.getElementById('invite-modal').classList.remove('is-open');
+}
+
+async function sendInvite(email, role, statusEl, resultEl) {
+  if (!email) { statusEl.textContent = 'Email is required.'; return null; }
+  statusEl.textContent = 'Creating invite...';
+  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  // Check if user already exists
+  var enc = encodeURIComponent;
+  var check = await fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users?filterByFormula=' + enc('{email}="' + email + '"') + '&maxRecords=1', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r){return r.json();});
+  if (check.records?.length && check.records[0].fields.status !== 'Invited') {
+    statusEl.textContent = '✗ An account with this email already exists.';
+    return null;
+  }
+  var invToken = btoa(email + ':' + Date.now() + ':' + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9]/g,'').slice(0,48);
+  var expires = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+  var method = 'POST';
+  var url = 'https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users';
+  var body = { fields: { email: email, role: role, status: 'Invited', invite_token: invToken, invite_expires: expires, invited_by: session?.full_name || 'Admin', full_name: email.split('@')[0], org_id: ['recigauG7MdP4MR4m'] } };
+  // If already invited, update instead
+  if (check.records?.length) { method = 'PATCH'; url += '/' + check.records[0].id; }
+  var res = await fetch(url, {
+    method: method,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(function(r){return r.json();});
+  if (res.error) { statusEl.textContent = '✗ ' + res.error.message; return null; }
+  var inviteUrl = window.location.origin + '/signup.html?token=' + invToken;
+  return inviteUrl;
+}
+
+async function sendModalInvite() {
+  var email = document.getElementById('modal-invite-email').value.trim();
+  var role  = document.getElementById('modal-invite-role').value;
+  var status = document.getElementById('modal-invite-status');
+  var result = document.getElementById('modal-invite-result');
+  var url = await sendInvite(email, role, status, result);
+  if (!url) return;
+  result.style.display = 'block';
+  result.innerHTML = '<div style="font-weight:600;color:var(--success);margin-bottom:6px">✓ Invite created!</div>' +
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">Send this link to ' + esc(email) + ':</div>' +
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:11px;font-family:monospace;word-break:break-all;color:var(--purple-lit)">' + esc(url) + '</div>' +
+    '<button onclick="navigator.clipboard.writeText(\'' + url + '\').then(function(){this.textContent=\'✓ Copied!\';}.bind(this))" style="margin-top:6px;font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid var(--border);background:none;cursor:pointer">&#x1F4CB; Copy link</button>' +
+    '<div style="font-size:10px;color:var(--muted);margin-top:6px">Link expires in 7 days. Employee will be prompted to set their name and password.</div>';
+  status.textContent = '';
+  loadTeam();
+}
+
+async function sendQuickInvite() {
+  var email = document.getElementById('quick-invite-email').value.trim();
+  var role  = document.getElementById('quick-invite-role').value;
+  var result = document.getElementById('invite-result');
+  var status = { textContent: '' };
+  result.style.display = 'block';
+  result.textContent = 'Creating invite...';
+  var url = await sendInvite(email, role, status, result);
+  if (!url) { result.textContent = status.textContent; return; }
+  result.innerHTML = '<span style="color:var(--success);font-weight:600">✓ Invite ready!</span> <a href="#" onclick="navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'Copied!\';return false" style="color:var(--purple-lit)">Copy link</a>';
+  document.getElementById('quick-invite-email').value = '';
+  loadTeam();
 }
 </script>
 </body>
