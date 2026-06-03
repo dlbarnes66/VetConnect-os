@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VetConnect OS — Platform</title>
 <script src="auth.js"></script>
-<script>/* auth guard handled by auth.js */</script>
+<script>
+// Safe session init — never crashes even if rights are empty
+var __s = (function() {
+  try { return JSON.parse(sessionStorage.getItem('vcos_session')) || {}; } catch(e) { return {}; }
+})();
+if (!__s.id) { window.location.href = 'login.html'; }
+// Ensure super_admin always has full rights
+if (__s.role === 'super_admin' && (!__s.rights || Object.keys(__s.rights).length === 0)) {
+  __s.rights = {view_veterans:true,edit_veterans:true,delete_records:true,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:true,change_roles:true,view_settings:true,view_admin:true,manage_api:true};
+  sessionStorage.setItem('vcos_session', JSON.stringify(__s));
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap");
@@ -1880,7 +1891,16 @@ What would you like me to create today?</div>
 </div>
 
 <script>
-var session = VetConnectAuth.getSession();
+var session = (function() {
+  var s = VetConnectAuth.getSession();
+  if (!s) return null;
+  // Ensure super_admin always has full rights populated
+  if (s.role === 'super_admin' && (!s.rights || Object.keys(s.rights).length === 0)) {
+    s.rights = {view_veterans:true,edit_veterans:true,delete_records:true,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:true,change_roles:true,view_settings:true,view_admin:true,manage_api:true};
+    sessionStorage.setItem('vcos_session', JSON.stringify(s));
+  }
+  return s;
+})();
 if (session) {
   var perms = session.permissions || VetConnectAuth.ROLE_PERMISSIONS[session.role] || {};
   var initials = session.full_name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
