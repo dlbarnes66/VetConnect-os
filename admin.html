@@ -4238,3 +4238,25 @@ function loadVeteranCRM(){var tbody=document.getElementById('vet-crm-tbody');if(
 function loadPHACRM(){netlifyAirtable(TABLE_IDS.markets,{max:100}).then(function(data){_phaCRMCache=data.records||[];renderPHACRM();}).catch(function(){});}
 function saveToken(){var t=document.getElementById('token-input').value.trim();if(!t){alert('Please paste your Airtable token first.');return;}localStorage.setItem('vcg_airtable_token_full',t);sessionStorage.setItem('vcg_airtable_token_full',t);if(typeof _loaded!=='undefined')_loaded={};if(typeof deckLeadsCache!=='undefined')deckLeadsCache=[];if(typeof _teamInit!=='undefined')_teamInit=false;var saved=document.getElementById('token-saved');if(saved){saved.style.display='inline';setTimeout(function(){saved.style.display='none';},3000);}var active=document.querySelector('.section.active');if(active){var id=active.id.replace('section-','');showSection(id);}}
                 </script>
+
+<script>
+// Override sendInvite to use Netlify function directly
+async function sendInvite(email, role, statusEl, resultEl) {
+  if (!email) { if(statusEl) statusEl.textContent = 'Email is required.'; return null; }
+  if(statusEl) statusEl.textContent = 'Creating invite...';
+  try {
+    const res = await fetch('/.netlify/functions/invite', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email, role, invitedBy: session?.full_name || 'Admin' })
+    });
+    const data = await res.json();
+    if (!data.success) { if(statusEl) statusEl.textContent = '\u2717 ' + data.message; return null; }
+    const inviteUrl = window.location.origin + '/signup.html?token=' + data.token;
+    return inviteUrl;
+  } catch(e) {
+    if(statusEl) statusEl.textContent = '\u2717 ' + e.message;
+    return null;
+  }
+}
+                </script>
