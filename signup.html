@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VetConnect OS — Create Your Account</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"DM Sans",sans-serif;background:#0F0A2E;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.card{background:#fff;border-radius:16px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 80px rgba(15,10,46,0.4);}
+.card-header{background:linear-gradient(135deg,#1E1456,#2D1B69);padding:2rem 2rem 1.5rem;text-align:center;}
+.logo-mark{width:48px;height:48px;background:rgba(201,168,76,0.2);border:2px solid rgba(201,168,76,0.4);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:22px;}
+.card-header h1{font-family:"DM Serif Display",serif;font-size:1.5rem;color:#fff;margin-bottom:6px;}
+.card-header p{font-size:13px;color:rgba(255,255,255,0.55);}
+.invite-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:#C9A84C;font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;margin-top:10px;}
+.card-body{padding:1.75rem 2rem;}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6B5B95;margin-bottom:5px;}
+.field input{width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:"DM Sans",sans-serif;color:#1A0F45;outline:none;transition:border-color .15s;}
+.field input:focus{border-color:#5B4AB0;}
+.field input[disabled]{background:#f9fafb;color:#9ca3af;}
+.pwd-strength{height:4px;border-radius:2px;margin-top:5px;background:#e5e7eb;overflow:hidden;}
+.pwd-strength-bar{height:100%;border-radius:2px;transition:width .2s,background .2s;}
+.pwd-hint{font-size:11px;color:#9ca3af;margin-top:3px;}
+.role-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;background:#ede9fe;color:#5b21b6;margin-top:4px;}
+.btn-submit{width:100%;padding:12px;background:#2D1B69;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:"DM Sans",sans-serif;cursor:pointer;margin-top:.5rem;transition:background .15s;}
+.btn-submit:hover{background:#5B4AB0;}
+.btn-submit:disabled{background:#d1d5db;cursor:not-allowed;}
+.error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:.75rem;font-size:13px;color:#dc2626;margin-bottom:1rem;display:none;}
+.success-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1rem;font-size:13px;color:#065f46;text-align:center;display:none;}
+.success-box .success-icon{font-size:32px;margin-bottom:.5rem;}
+.loading-state{text-align:center;padding:2rem;color:#6B5B95;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="logo-mark">⬡</div>
+    <h1>Create your account</h1>
+    <p>You've been invited to join VetConnect OS</p>
+    <div class="invite-badge" id="invite-role-badge">Loading invite...</div>
+  </div>
+  <div class="card-body">
+    <div class="loading-state" id="loading-state">Validating your invite link...</div>
+    <div id="signup-form" style="display:none">
+      <div class="error-box" id="error-box"></div>
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="inp-email" disabled>
+      </div>
+      <div class="field">
+        <label>Your role</label>
+        <div class="role-badge" id="role-badge">Employee</div>
+      </div>
+      <div class="field">
+        <label>Full name</label>
+        <input type="text" id="inp-name" placeholder="Your full name" autofocus>
+      </div>
+      <div class="field">
+        <label>Create password</label>
+        <input type="password" id="inp-password" placeholder="Min 8 characters" oninput="checkPwd()">
+        <div class="pwd-strength"><div class="pwd-strength-bar" id="pwd-bar" style="width:0%"></div></div>
+        <div class="pwd-hint" id="pwd-hint">Use at least 8 characters</div>
+      </div>
+      <div class="field">
+        <label>Confirm password</label>
+        <input type="password" id="inp-confirm" placeholder="Repeat your password">
+      </div>
+      <button class="btn-submit" id="btn-signup" onclick="doSignup()">Create account</button>
+    </div>
+    <div class="success-box" id="success-box">
+      <div class="success-icon">✅</div>
+      <strong>Account created!</strong><br>
+      Redirecting you to the platform...
+    </div>
+    <div id="invalid-state" style="display:none;text-align:center;padding:1rem;color:#dc2626;font-size:14px;">
+      <div style="font-size:32px;margin-bottom:.5rem">⚠️</div>
+      <strong id="invalid-msg">This invite link is invalid or has expired.</strong><br>
+      <span style="font-size:12px;color:#9ca3af">Contact dlbarnes@vcgnow.com for a new invite.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const BASE = 'appooo5Vcblwu8Ysn';
+const TOKEN = 'patvMD6jn0HcCxaKq.7a8f85732a9e74a55e7a81c482fc5dea2d1b492cbb2f7b2bda041aa69894df91';
+const ROLE_LABELS = { super_admin:'Super Admin', admin:'Admin', developer:'Developer', employee:'Employee', case_manager:'Case Manager', org_admin:'Org Admin' };
+const ROLE_DEFAULTS = {
+  admin:     { view_veterans:true,edit_veterans:true,delete_records:false,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:false,change_roles:false,view_settings:false,view_admin:false,manage_api:false },
+  developer: { view_veterans:true,edit_veterans:true,delete_records:true,export_data:true,view_crm:true,edit_crm:true,view_fund1:false,manage_outreach:false,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:false,manage_vouchers:false,view_properties:true,manage_team:false,change_roles:false,view_settings:true,view_admin:false,manage_api:true },
+  employee:  { view_veterans:true,edit_veterans:true,delete_records:false,export_data:false,view_crm:false,edit_crm:false,view_fund1:false,manage_outreach:false,use_agents:true,run_automations:false,marketing_hub:false,calendar_tasks:true,view_payments:false,manage_vouchers:false,view_properties:true,manage_team:false,change_roles:false,view_settings:false,view_admin:false,manage_api:false }
+};
+
+let inviteRecord = null;
+const params = new URLSearchParams(window.location.search);
+const token = params.get('token');
+
+async function hashPassword(pw) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function init() {
+  if (!token) { showInvalid('No invite token found in this link.'); return; }
+  const enc = encodeURIComponent;
+  const res = await fetch('https://api.airtable.com/v0/' + BASE + '/Users?filterByFormula=' + enc('{invite_token}="' + token + '"') + '&maxRecords=1', {
+    headers: { 'Authorization': 'Bearer ' + TOKEN }
+  });
+  const data = await res.json();
+  if (!data.records?.length) { showInvalid('This invite link is invalid.'); return; }
+  const rec = data.records[0];
+  if (rec.fields.status !== 'Invited') { showInvalid('This invite has already been used.'); return; }
+  if (new Date(rec.fields.invite_expires) < new Date()) { showInvalid('This invite link has expired. Request a new one.'); return; }
+  inviteRecord = rec;
+  const role = rec.fields.role || 'employee';
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('signup-form').style.display = 'block';
+  document.getElementById('inp-email').value = rec.fields.email || '';
+  document.getElementById('invite-role-badge').textContent = '✓ Invited as ' + (ROLE_LABELS[role] || role);
+  document.getElementById('role-badge').textContent = ROLE_LABELS[role] || role;
+  document.getElementById('inp-name').focus();
+}
+
+function showInvalid(msg) {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('invalid-state').style.display = 'block';
+  document.getElementById('invalid-msg').textContent = msg;
+  document.getElementById('invite-role-badge').textContent = '⚠ Invalid invite';
+}
+
+function checkPwd() {
+  const pw = document.getElementById('inp-password').value;
+  const bar = document.getElementById('pwd-bar');
+  const hint = document.getElementById('pwd-hint');
+  const score = pw.length >= 12 && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw) ? 100 :
+                pw.length >= 8 && (/[A-Z]/.test(pw) || /[0-9]/.test(pw)) ? 66 :
+                pw.length >= 6 ? 33 : 0;
+  bar.style.width = score + '%';
+  bar.style.background = score >= 66 ? '#10b981' : score >= 33 ? '#f59e0b' : '#ef4444';
+  hint.textContent = score >= 66 ? 'Strong password ✓' : score >= 33 ? 'Add numbers or symbols' : 'Too short — use at least 8 characters';
+}
+
+async function doSignup() {
+  const name = document.getElementById('inp-name').value.trim();
+  const pw   = document.getElementById('inp-password').value;
+  const conf = document.getElementById('inp-confirm').value;
+  const err  = document.getElementById('error-box');
+  err.style.display = 'none';
+  if (!name) { err.textContent = 'Please enter your full name.'; err.style.display = 'block'; return; }
+  if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.style.display = 'block'; return; }
+  if (pw !== conf) { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
+  if (!inviteRecord) { err.textContent = 'Invite data missing. Please reload.'; err.style.display = 'block'; return; }
+  const btn = document.getElementById('btn-signup');
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  const hash = await hashPassword(pw);
+  const role = inviteRecord.fields.role || 'employee';
+  const rights = ROLE_DEFAULTS[role] || ROLE_DEFAULTS.employee;
+  const res = await fetch('https://api.airtable.com/v0/' + BASE + '/Users/' + inviteRecord.id, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { full_name: name, password_hash: hash, status: 'Active', invite_token: '', rights: JSON.stringify(rights), last_login: new Date().toISOString(), last_seen: new Date().toISOString() } })
+  });
+  const data = await res.json();
+  if (data.error) { err.textContent = 'Error: ' + data.error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create account'; return; }
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('success-box').style.display = 'block';
+  setTimeout(() => { window.location.href = 'login.html'; }, 2500);
+}
+
+init();
+</script>
+</body>
+</html>
