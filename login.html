@@ -540,7 +540,7 @@
           investor_lp:      'deal-room.html',
           volunteer:        'tasks.html'
         };
-        const dest = redirectMap[result.user.role] || 'index.html';
+        const dest = redirectMap[result.session.role] || 'admin.html';
         window.location.href = dest;
       } else {
         alertBox.classList.add('visible');
