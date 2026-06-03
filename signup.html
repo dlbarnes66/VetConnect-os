@@ -84,7 +84,7 @@ body{font-family:"DM Sans",sans-serif;background:#0F0A2E;min-height:100vh;displa
 
 <script>
 const BASE = 'appooo5Vcblwu8Ysn';
-const TOKEN = 'patvMD6jn0HcCxaKq.7a8f85732a9e74a55e7a81c482fc5dea2d1b492cbb2f7b2bda041aa69894df91';
+const TOKEN = '';
 const ROLE_LABELS = { super_admin:'Super Admin', admin:'Admin', developer:'Developer', employee:'Employee', case_manager:'Case Manager', org_admin:'Org Admin' };
 const ROLE_DEFAULTS = {
   admin:     { view_veterans:true,edit_veterans:true,delete_records:false,export_data:true,view_crm:true,edit_crm:true,view_fund1:true,manage_outreach:true,use_agents:true,run_automations:true,marketing_hub:true,calendar_tasks:true,view_payments:true,manage_vouchers:true,view_properties:true,manage_team:false,change_roles:false,view_settings:false,view_admin:false,manage_api:false },
@@ -156,13 +156,13 @@ async function doSignup() {
   const hash = await hashPassword(pw);
   const role = inviteRecord.fields.role || 'employee';
   const rights = ROLE_DEFAULTS[role] || ROLE_DEFAULTS.employee;
-  const res = await fetch('https://api.airtable.com/v0/' + BASE + '/Users/' + inviteRecord.id, {
-    method: 'PATCH',
-    headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields: { full_name: name, password_hash: hash, status: 'Active', invite_token: '', rights: JSON.stringify(rights), last_login: new Date().toISOString(), last_seen: new Date().toISOString() } })
+  const res = await fetch('/.netlify/functions/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recordId: inviteRecord.id, fullName: name, passwordHash: hash, role: inviteRecord.fields.role || 'employee' })
   });
   const data = await res.json();
-  if (data.error) { err.textContent = 'Error: ' + data.error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create account'; return; }
+  if (!data.success) { err.textContent = data.message || 'Error creating account.'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create account'; return; }
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('success-box').style.display = 'block';
   setTimeout(() => { window.location.href = 'login.html'; }, 2500);
