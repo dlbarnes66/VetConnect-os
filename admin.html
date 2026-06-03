@@ -3931,7 +3931,7 @@ function initTeam() {
 function loadTeam() {
   var tbody = document.getElementById('team-tbody');
   if (!tbody) return;
-  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  var token = localStorage.getItem('vcg_airtable_token_full') || localStorage.getItem('vcg_airtable_token_full');
   fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users?maxRecords=50', {
     headers: { 'Authorization': 'Bearer ' + token }
   }).then(function(r) { return r.json(); }).then(function(data) {
@@ -4095,7 +4095,7 @@ function saveRights() {
   var btn = document.getElementById('save-rights-btn');
   var status = document.getElementById('rights-save-status');
   btn.textContent = 'Saving...'; btn.disabled = true;
-  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  var token = localStorage.getItem('vcg_airtable_token_full') || localStorage.getItem('vcg_airtable_token_full');
   fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users/' + selectedEmployee.id, {
     method: 'PATCH',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
@@ -4115,7 +4115,7 @@ function saveRights() {
 function toggleEmployeeStatus(recordId, currentStatus) {
   var newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
   if (!confirm('Set this employee to ' + newStatus + '?')) return;
-  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  var token = localStorage.getItem('vcg_airtable_token_full') || localStorage.getItem('vcg_airtable_token_full');
   fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users/' + recordId, {
     method: 'PATCH',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
@@ -4139,7 +4139,7 @@ function closeInviteModal(e) {
 async function sendInvite(email, role, statusEl, resultEl) {
   if (!email) { statusEl.textContent = 'Email is required.'; return null; }
   statusEl.textContent = 'Creating invite...';
-  var token = localStorage.getItem('vcg_airtable_token_full') || 'patBzXP197ymbSWc0.8d797cf4840c59b65c34bc7b9d980e5ce1f655b3f0be5c93a508ce17e973d8e2';
+  var token = localStorage.getItem('vcg_airtable_token_full') || localStorage.getItem('vcg_airtable_token_full');
   // Check if user already exists
   var enc = encodeURIComponent;
   var check = await fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users?filterByFormula=' + enc('{email}="' + email + '"') + '&maxRecords=1', {
