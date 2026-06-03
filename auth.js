@@ -263,13 +263,15 @@ const VetConnectAuth = (() => {
 })();
 
 // ── AUTH GUARD ─────────────────────────────────────────
+// Skips login.html, signup.html, index.html — only protects admin pages
 (function() {
+  const publicPages = ['login.html', 'signup.html', 'index.html', '/'];
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  if (publicPages.includes(currentPage)) return; // no guard on public pages
+
   const s = VetConnectAuth.getSession();
   if (!s) { window.location.href = 'login.html'; return; }
   if (Date.now() - s.loginTime > 28800000) { VetConnectAuth.logout(); return; }
   // Restart presence heartbeat on page reload
-  if (s.id) {
-    const storedToken = localStorage.getItem('vcg_airtable_token_full');
-    if (storedToken || true) VetConnectAuth.startPresenceHeartbeat(s.id);
-  }
+  if (s.id) VetConnectAuth.startPresenceHeartbeat(s.id);
 })();
