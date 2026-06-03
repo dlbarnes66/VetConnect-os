@@ -4,7 +4,7 @@
 
 const VetConnectAuth = (() => {
   const BASE    = 'appooo5Vcblwu8Ysn';
-  const TOKEN   = 'patvMD6jn0HcCxaKq.7a8f85732a9e74a55e7a81c482fc5dea2d1b492cbb2f7b2bda041aa69894df91';
+  const TOKEN   = null; // Never hardcode tokens — read from localStorage only
   const USERS   = 'tblUsers';
 
   // ── RIGHTS SCHEMA ──────────────────────────────────────
@@ -108,7 +108,8 @@ const VetConnectAuth = (() => {
   }
 
   async function airtableFetch(table, opts = {}) {
-    const storedToken = localStorage.getItem('vcg_airtable_token_full') || TOKEN;
+    const storedToken = localStorage.getItem('vcg_airtable_token_full');
+    if (!storedToken) { console.warn('VetConnect OS: No Airtable token set. Go to Settings and save your token.'); return { error: { message: 'No token configured' } }; }
     const url = `https://api.airtable.com/v0/${BASE}/${table}${opts.query || ''}`;
     const res = await fetch(url, {
       method: opts.method || 'GET',
@@ -160,7 +161,8 @@ const VetConnectAuth = (() => {
   function startPresenceHeartbeat(recordId) {
     if (_heartbeatInterval) clearInterval(_heartbeatInterval);
     const ping = () => {
-      const storedToken = localStorage.getItem('vcg_airtable_token_full') || TOKEN;
+      const storedToken = localStorage.getItem('vcg_airtable_token_full');
+    if (!storedToken) return;
       fetch(`https://api.airtable.com/v0/${BASE}/Users/${recordId}`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${storedToken}`, 'Content-Type': 'application/json' },
