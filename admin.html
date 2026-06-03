@@ -231,6 +231,66 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 .form-row textarea{min-height:70px;resize:vertical;line-height:1.5;}
 .chart-wrap{position:relative;height:180px;}
 
+/* ===== MARKETING HUB ===== */
+.mkt-layout{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;}
+.mkt-main{display:flex;flex-direction:column;gap:1.25rem;}
+.mkt-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.mkt-tab{flex:1;padding:.6rem;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--surface);color:var(--muted);transition:all .15s;border-right:1px solid var(--border);}
+.mkt-tab:last-child{border-right:none;}
+.mkt-tab.active{background:var(--purple-mid);color:#fff;}
+.mkt-tab-panel{display:none;}
+.mkt-tab-panel.active{display:block;}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--purple-lit);background:rgba(91,74,176,0.04);}
+.upload-zone-icon{font-size:32px;margin-bottom:.75rem;}
+.upload-zone-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.upload-zone-sub{font-size:12px;color:var(--muted);}
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:1rem;}
+.asset-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+.asset-card:hover{box-shadow:0 2px 12px rgba(45,27,105,0.1);border-color:var(--purple-lit);}
+.asset-thumb{height:90px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:32px;}
+.asset-thumb.pdf{background:#fef2f2;}
+.asset-thumb.img{background:#eff6ff;}
+.asset-thumb.doc{background:#f0fdf4;}
+.asset-thumb.ppt{background:#fffbeb;}
+.asset-meta{padding:8px 10px;}
+.asset-name{font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.asset-size{font-size:10px;color:var(--muted);margin-top:2px;}
+.asset-actions{display:flex;gap:4px;padding:4px 8px 8px;}
+.asset-btn{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;flex:1;text-align:center;}
+.asset-btn:hover{background:var(--surface2);color:var(--text);}
+.mkt-agent-wrap{display:flex;flex-direction:column;height:520px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.mkt-agent-header{padding:.85rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1a0f45,#2d1b69);display:flex;align-items:center;justify-content:space-between;}
+.mkt-agent-title{font-size:13px;font-weight:600;color:#fff;}
+.mkt-agent-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem;}
+.mkt-msg{max-width:85%;padding:.65rem .85rem;border-radius:10px;font-size:13px;line-height:1.6;}
+.mkt-msg.user{background:var(--purple-mid);color:#fff;align-self:flex-end;border-radius:10px 10px 2px 10px;}
+.mkt-msg.ai{background:var(--surface2);color:var(--text);align-self:flex-start;border-radius:10px 10px 10px 2px;white-space:pre-wrap;}
+.mkt-msg.ai .mkt-copy-btn{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;margin-top:6px;}
+.mkt-agent-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;}
+.mkt-agent-input{flex:1;padding:.6rem .85rem;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:"DM Sans",sans-serif;background:var(--surface);color:var(--text);resize:none;height:40px;}
+.mkt-agent-send{padding:.6rem 1rem;background:var(--purple-mid);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap;}
+.mkt-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:.5rem 1rem .75rem;}
+.mkt-suggestion{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;}
+.mkt-suggestion:hover{border-color:var(--purple-lit);color:var(--purple-lit);}
+.graphic-builder{display:flex;flex-direction:column;gap:.85rem;}
+.graphic-controls{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.graphic-preview{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;position:relative;}
+.gfx-canvas-wrap{padding:.75rem;}
+.graphic-actions{display:flex;gap:.5rem;}
+.mkt-sidebar{display:flex;flex-direction:column;gap:1rem;}
+.mkt-stats-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.mkt-stat-row{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(45,27,105,0.05);font-size:12px;}
+.mkt-stat-row:last-child{border-bottom:none;}
+.mkt-recent-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.mkt-recent-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);}
+.mkt-recent-list{padding:.5rem 0;}
+.mkt-recent-item{padding:.5rem 1rem;display:flex;align-items:center;gap:10px;font-size:12px;border-bottom:1px solid rgba(45,27,105,0.04);cursor:pointer;transition:background .1s;}
+.mkt-recent-item:hover{background:var(--surface2);}
+.mkt-recent-item:last-child{border-bottom:none;}
+.mkt-recent-icon{font-size:18px;}
+.mkt-recent-name{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mkt-recent-date{font-size:10px;color:var(--muted);}
 /* ===== AUTOMATIONS ===== */
 .auto-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
 .auto-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .15s,border-color .15s;}
@@ -418,6 +478,7 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
   <nav class="nav-section">
     <div class="nav-label">AI Operations</div>
     <button class="nav-item" onclick="showSection('automations')"><span class="nav-icon">&#x26A1;</span> Automations</button>
+    <button class="nav-item" onclick="showSection('marketing')"><span class="nav-icon">&#x1F4E3;</span> Marketing Hub</button>
     <button class="nav-item" onclick="showSection('calendar')"><span class="nav-icon">&#x1F4C5;</span> Calendar</button>
     <button class="nav-item" onclick="showSection('tasks')"><span class="nav-icon">&#x2705;</span> Tasks</button>
     <button class="nav-item agents-nav-item" onclick="openAgentsPanel()"><span class="nav-icon">&#x25C8;</span> AI Agents</button>
@@ -1154,6 +1215,205 @@ html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);colo
 
     </div>
 
+    <!-- MARKETING HUB -->
+    <div class="section" id="section-marketing">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
+        <div>
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem">Marketing Hub</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:2px">Asset library &middot; AI content creator &middot; Graphic builder</p>
+        </div>
+      </div>
+
+      <div class="mkt-layout">
+        <div class="mkt-main">
+          <!-- TABS -->
+          <div class="mkt-tabs">
+            <button class="mkt-tab active" onclick="switchMktTab('library')">&#x1F4C2; Asset Library</button>
+            <button class="mkt-tab" onclick="switchMktTab('agent')">&#x1F916; AI Content Creator</button>
+            <button class="mkt-tab" onclick="switchMktTab('graphics')">&#x1F3A8; Graphic Builder</button>
+          </div>
+
+          <!-- TAB: ASSET LIBRARY -->
+          <div class="mkt-tab-panel active" id="mkt-panel-library">
+            <!-- Upload Zone -->
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('mkt-file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+              <div class="upload-zone-icon">&#x1F4E4;</div>
+              <div class="upload-zone-title">Drop files here or click to upload</div>
+              <div class="upload-zone-sub">PDFs, images, PowerPoint, Word docs &middot; Max 10MB per file</div>
+              <input type="file" id="mkt-file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.pptx,.docx,.gif,.svg,.mp4" style="display:none" onchange="handleFileSelect(event)">
+            </div>
+
+            <!-- Filter bar -->
+            <div class="crm-filter-bar" style="margin-top:.75rem">
+              <span class="crm-filter-label">Type</span>
+              <select id="mkt-filter-type" onchange="renderAssets()">
+                <option value="">All</option>
+                <option value="pdf">PDF</option>
+                <option value="image">Image</option>
+                <option value="deck">Deck</option>
+                <option value="doc">Document</option>
+                <option value="social">Social</option>
+                <option value="video">Video</option>
+              </select>
+              <input type="text" id="mkt-search" placeholder="&#x1F50D; Search assets..." oninput="renderAssets()" style="flex:1">
+              <span class="crm-count" id="mkt-asset-count">0 assets</span>
+            </div>
+
+            <!-- Asset Grid -->
+            <div class="asset-grid" id="mkt-asset-grid">
+              <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:13px">
+                No assets yet — upload your first marketing material above
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: AI CONTENT CREATOR -->
+          <div class="mkt-tab-panel" id="mkt-panel-agent">
+            <div class="mkt-agent-wrap">
+              <div class="mkt-agent-header">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:18px">&#x25C8;</span>
+                  <div>
+                    <div class="mkt-agent-title">Marketing AI Agent</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.45)">Creates copy, social posts, emails, one-pagers &amp; more</div>
+                  </div>
+                </div>
+                <button onclick="clearMktChat()" style="background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.6);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px">Clear</button>
+              </div>
+              <div class="mkt-agent-msgs" id="mkt-msgs">
+                <div class="mkt-msg ai">Hi Darryl! I am your Marketing AI Agent for VetConnect OS. I can create:
+
+&#x2022; LinkedIn posts &amp; social media content
+&#x2022; Email campaigns to prospects or subscribers
+&#x2022; One-pagers and pitch summaries
+&#x2022; Press releases
+&#x2022; Website copy
+&#x2022; Ad copy for paid campaigns
+&#x2022; Investor update emails
+
+What would you like me to create today?</div>
+              </div>
+              <div class="mkt-suggestions" id="mkt-suggestions">
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">LinkedIn post about our pre-seed raise</button>
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">Email campaign to SSVF grantees</button>
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">One-pager for VetConnect OS</button>
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">Press release — platform launch</button>
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">Twitter/X thread about veteran housing crisis</button>
+                <button class="mkt-suggestion" onclick="useMktSuggestion(this)">Cold email to housing authority directors</button>
+              </div>
+              <div class="mkt-agent-input-row">
+                <textarea class="mkt-agent-input" id="mkt-input" placeholder="Ask me to create any marketing content..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMktMessage()}" rows="1"></textarea>
+                <button class="mkt-agent-send" onclick="sendMktMessage()">&#x2192; Send</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: GRAPHIC BUILDER -->
+          <div class="mkt-tab-panel" id="mkt-panel-graphics">
+            <div class="graphic-builder">
+              <!-- Controls -->
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem">
+                <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:.75rem">Graphic settings</div>
+                <div class="graphic-controls">
+                  <div class="field-group">
+                    <label>Template</label>
+                    <select id="gfx-template" onchange="renderGraphic()">
+                      <option value="social-square">Social Post — Square (1080x1080)</option>
+                      <option value="social-story">Social Story (1080x1920)</option>
+                      <option value="linkedin-banner">LinkedIn Banner (1584x396)</option>
+                      <option value="pitch-card">Pitch One-Pager Card</option>
+                      <option value="stat-card">Stat Highlight Card</option>
+                      <option value="email-header">Email Header Banner</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label>Color Theme</label>
+                    <select id="gfx-theme" onchange="renderGraphic()">
+                      <option value="navy">VCG Navy + Gold</option>
+                      <option value="purple">VCG Purple + Gold</option>
+                      <option value="dark">Dark Premium</option>
+                      <option value="light">Clean White</option>
+                      <option value="green">Impact Green</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label>Headline</label>
+                    <input type="text" id="gfx-headline" value="The Operating System for Veteran Housing" oninput="renderGraphic()">
+                  </div>
+                  <div class="field-group">
+                    <label>Subtext</label>
+                    <input type="text" id="gfx-subtext" value="247+ veterans housed &middot; 92% stability rate" oninput="renderGraphic()">
+                  </div>
+                  <div class="field-group">
+                    <label>Stat / Badge (optional)</label>
+                    <input type="text" id="gfx-stat" value="Pre-Seed Raise Open" oninput="renderGraphic()">
+                  </div>
+                  <div class="field-group">
+                    <label>CTA Text</label>
+                    <input type="text" id="gfx-cta" value="vetconnectos.com" oninput="renderGraphic()">
+                  </div>
+                </div>
+                <div style="margin-top:.75rem;display:flex;gap:.5rem;align-items:center">
+                  <label style="font-size:11px;color:var(--muted)">Add logo mark</label>
+                  <input type="checkbox" id="gfx-logo" checked onchange="renderGraphic()">
+                  <label style="font-size:11px;color:var(--muted);margin-left:.5rem">Show stats</label>
+                  <input type="checkbox" id="gfx-stats" checked onchange="renderGraphic()">
+                  <button class="btn btn-ghost btn-sm" onclick="generateGfxWithAI()" style="margin-left:auto">&#x25C8; AI Generate Text</button>
+                </div>
+              </div>
+
+              <!-- Preview Canvas -->
+              <div class="graphic-preview">
+                <div style="padding:.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;font-weight:600;color:var(--text)">Preview</span>
+                  <div style="display:flex;gap:.5rem">
+                    <button class="btn btn-ghost btn-sm" onclick="downloadGraphic()">&#x2B07; Download SVG</button>
+                    <button class="btn btn-gold btn-sm" onclick="saveGraphicToLibrary()">&#x1F4BE; Save to Library</button>
+                  </div>
+                </div>
+                <div class="gfx-canvas-wrap">
+                  <div id="gfx-preview" style="width:100%;border-radius:8px;overflow:hidden;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="mkt-sidebar">
+          <!-- Stats -->
+          <div class="mkt-stats-card">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:.75rem">Library overview</div>
+            <div class="mkt-stat-row"><span style="color:var(--muted)">Total assets</span><span id="mkt-total-count" style="font-weight:600">0</span></div>
+            <div class="mkt-stat-row"><span style="color:var(--muted)">PDFs</span><span id="mkt-pdf-count" style="font-weight:600">0</span></div>
+            <div class="mkt-stat-row"><span style="color:var(--muted)">Images</span><span id="mkt-img-count" style="font-weight:600">0</span></div>
+            <div class="mkt-stat-row"><span style="color:var(--muted)">Decks</span><span id="mkt-deck-count" style="font-weight:600">0</span></div>
+            <div class="mkt-stat-row"><span style="color:var(--muted)">Graphics made</span><span id="mkt-gfx-count" style="font-weight:600">0</span></div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="mkt-recent-card">
+            <div class="mkt-recent-header">Recent assets</div>
+            <div class="mkt-recent-list" id="mkt-recent-list">
+              <div style="padding:1rem;text-align:center;font-size:12px;color:var(--muted)">No assets yet</div>
+            </div>
+          </div>
+
+          <!-- Quick Create -->
+          <div class="mkt-stats-card">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:.75rem">&#x26A1; Quick create</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <button class="btn btn-ghost btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickCreate('linkedin')">&#x1F4F1; LinkedIn post</button>
+              <button class="btn btn-ghost btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickCreate('email')">&#x2709;&#xFE0F; Email campaign</button>
+              <button class="btn btn-ghost btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickCreate('onepager')">&#x1F4C4; One-pager</button>
+              <button class="btn btn-ghost btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickCreate('pressrelease')">&#x1F4F0; Press release</button>
+              <button class="btn btn-ghost btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickCreate('socialcard')">&#x1F3A8; Social graphic</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- AUTOMATIONS -->
     <div class="section" id="section-automations">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
@@ -1486,7 +1746,7 @@ document.getElementById('agents-iframe').addEventListener('load', function() {
 });
 
 // NAVIGATION
-var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks','automations'];
+var sections = ['dashboard','veterans','properties','vouchers','payments','markets','investors','crm','outreach','documents','dealroom','analytics','integrations','settings','calendar','tasks','automations','marketing'];
 var sectionTitles = {dashboard:'Dashboard',calendar:'Calendar',tasks:'Task Management',veterans:'Veterans',properties:'Properties',vouchers:'Vouchers',payments:'Payments',markets:'Markets',investors:'Investor Search',crm:'CRM / Back Office',outreach:'Outreach',documents:'Document Library',dealroom:'Deal Room',analytics:'Analytics',integrations:'Integrations',settings:'Settings'};
 function showSection(name) {
   sections.forEach(function(s) { var el = document.getElementById('section-'+s); if (el) el.classList.toggle('active', s===name); });
@@ -3037,6 +3297,427 @@ function runDataChangeTriggers() {
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(runDataChangeTriggers, 4000);
 });
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// MARKETING HUB
+// ═══════════════════════════════════════════════════════════
+var mktAssets = [];
+var mktMsgs = [];
+var mktGfxCount = 0;
+var _mktInit = false;
+
+function initMarketing() {
+  if (!_mktInit) {
+    _mktInit = true;
+    renderAssets();
+    renderGraphic();
+    updateMktSidebar();
+  }
+}
+
+// ── Tab switching ──
+function switchMktTab(tab) {
+  document.querySelectorAll('.mkt-tab').forEach(function(b, i) {
+    var tabs = ['library','agent','graphics'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.mkt-tab-panel').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  var panel = document.getElementById('mkt-panel-' + tab);
+  if (panel) panel.classList.add('active');
+  if (tab === 'graphics') renderGraphic();
+}
+
+// ═══ ASSET LIBRARY ═══
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('upload-zone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  processFiles(Array.from(e.dataTransfer.files));
+}
+function handleFileSelect(e) {
+  processFiles(Array.from(e.target.files));
+  e.target.value = '';
+}
+
+function processFiles(files) {
+  files.forEach(function(file) {
+    if (file.size > 10 * 1024 * 1024) {
+      alert(file.name + ' is too large (max 10MB)');
+      return;
+    }
+    var ext = file.name.split('.').pop().toLowerCase();
+    var type = ext === 'pdf' ? 'pdf' :
+               ['png','jpg','jpeg','gif','svg','webp'].includes(ext) ? 'image' :
+               ['pptx','ppt','key'].includes(ext) ? 'deck' :
+               ['docx','doc','txt','md'].includes(ext) ? 'doc' :
+               ext === 'mp4' ? 'video' : 'other';
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var asset = {
+        id: 'asset_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        name: file.name,
+        type: type,
+        size: file.size,
+        dataUrl: ev.target.result,
+        ext: ext,
+        created: new Date().toLocaleDateString()
+      };
+      mktAssets.unshift(asset);
+      renderAssets();
+      updateMktSidebar();
+      updateMktRecent();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function getAssetEmoji(type, ext) {
+  if (type === 'pdf') return '📄';
+  if (type === 'image') return '🖼️';
+  if (type === 'deck') return '📊';
+  if (type === 'doc') return '📝';
+  if (type === 'video') return '🎬';
+  if (type === 'social') return '📱';
+  return '📁';
+}
+
+function renderAssets() {
+  var grid = document.getElementById('mkt-asset-grid');
+  var countEl = document.getElementById('mkt-asset-count');
+  if (!grid) return;
+  var typeFilter = document.getElementById('mkt-filter-type')?.value || '';
+  var search = (document.getElementById('mkt-search')?.value || '').toLowerCase();
+  var filtered = mktAssets.filter(function(a) {
+    if (typeFilter && a.type !== typeFilter) return false;
+    if (search && !a.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  if (countEl) countEl.textContent = filtered.length + ' asset' + (filtered.length === 1 ? '' : 's');
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:13px">' + (mktAssets.length ? 'No assets match filters' : 'No assets yet — upload your first marketing material above') + '</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(a) {
+    var emoji = getAssetEmoji(a.type, a.ext);
+    var thumbContent = a.type === 'image'
+      ? '<img src="' + a.dataUrl + '" style="width:100%;height:100%;object-fit:cover">'
+      : '<span style="font-size:32px">' + emoji + '</span>';
+    return '<div class="asset-card" id="ac-' + a.id + '">' +
+      '<div class="asset-thumb ' + a.type + '">' + thumbContent + '</div>' +
+      '<div class="asset-meta">' +
+        '<div class="asset-name" title="' + esc(a.name) + '">' + esc(a.name) + '</div>' +
+        '<div class="asset-size">' + formatFileSize(a.size) + ' &middot; ' + a.created + '</div>' +
+      '</div>' +
+      '<div class="asset-actions">' +
+        '<button class="asset-btn" onclick="previewAsset(\'' + a.id + '\')">View</button>' +
+        '<button class="asset-btn" onclick="downloadAsset(\'' + a.id + '\')">&#x2B07;</button>' +
+        '<button class="asset-btn" onclick="deleteAsset(\'' + a.id + '\')" style="color:var(--danger)">&#x2715;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return Math.round(bytes/1024) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function previewAsset(id) {
+  var a = mktAssets.find(function(x) { return x.id === id; });
+  if (!a) return;
+  if (a.type === 'image') {
+    var w = window.open(''); w.document.write('<img src="' + a.dataUrl + '" style="max-width:100%">');
+  } else {
+    var link = document.createElement('a');
+    link.href = a.dataUrl; link.target = '_blank'; link.click();
+  }
+}
+
+function downloadAsset(id) {
+  var a = mktAssets.find(function(x) { return x.id === id; });
+  if (!a) return;
+  var link = document.createElement('a');
+  link.href = a.dataUrl; link.download = a.name; link.click();
+}
+
+function deleteAsset(id) {
+  if (!confirm('Delete this asset?')) return;
+  mktAssets = mktAssets.filter(function(a) { return a.id !== id; });
+  renderAssets(); updateMktSidebar(); updateMktRecent();
+}
+
+function updateMktSidebar() {
+  var counts = { pdf:0, image:0, deck:0 };
+  mktAssets.forEach(function(a) { if (counts[a.type] !== undefined) counts[a.type]++; });
+  var t = document.getElementById('mkt-total-count'); if (t) t.textContent = mktAssets.length;
+  var p = document.getElementById('mkt-pdf-count'); if (p) p.textContent = counts.pdf;
+  var i = document.getElementById('mkt-img-count'); if (i) i.textContent = counts.image;
+  var d = document.getElementById('mkt-deck-count'); if (d) d.textContent = counts.deck;
+  var g = document.getElementById('mkt-gfx-count'); if (g) g.textContent = mktGfxCount;
+}
+
+function updateMktRecent() {
+  var el = document.getElementById('mkt-recent-list');
+  if (!el) return;
+  if (!mktAssets.length) { el.innerHTML = '<div style="padding:1rem;text-align:center;font-size:12px;color:var(--muted)">No assets yet</div>'; return; }
+  el.innerHTML = mktAssets.slice(0,6).map(function(a) {
+    return '<div class="mkt-recent-item" onclick="previewAsset(\'' + a.id + '\')">' +
+      '<span class="mkt-recent-icon">' + getAssetEmoji(a.type, a.ext) + '</span>' +
+      '<span class="mkt-recent-name">' + esc(a.name) + '</span>' +
+      '<span class="mkt-recent-date">' + a.created + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+// ═══ AI MARKETING AGENT ═══
+var mktChatHistory = [];
+var MKT_SYSTEM = `You are the Marketing AI Agent for VetConnect OS, a veteran housing SaaS platform built by VCG Venture Collective Group.
+
+COMPANY CONTEXT:
+- Product: VetConnect OS — multi-tenant SaaS for veteran housing coordination
+- Founder: Darryl Barnes, service-disabled Army combat veteran, CEO of VCG Venture Collective Group
+- Mission: Connect VA case workers, housing authorities, landlords, and property managers on one real-time platform
+- Key stats: 247+ veterans housed, 92% housing stability rate (vs 67% national), $94K/month Fund I revenue, 16 AI agents live
+- Raise: Pre-seed $500K–$1M at $6M SAFE cap — pre-revenue SaaS, honest positioning
+- Pricing: Free ($0, 25 veterans), Growth ($99/mo), Mission ($249/mo), Enterprise (custom)
+- Target customers: SSVF grantees (239 orgs, $797.5M in federal grants), PHAs, veteran nonprofits
+- Key GTM insight: SSVF grantees can expense the subscription from federal grant allocation
+- Website: vetconnectos.com | Email: dlbarnes@vcgnow.com | Calendly: calendly.com/dlbarnes-dbglobalinvestments/new-meeting-1
+
+CONTENT GUIDELINES:
+- Tone: Mission-first, authentic, veteran-credible, never overhyped
+- Always lead with the problem (veteran homelessness, coordination gap) before the solution
+- Use real numbers — never invent statistics
+- For pre-seed investor content: be honest about pre-revenue status, lead with traction and founder story
+- For customer content: lead with outcomes (92% stability, voucher utilization, time saved)
+- Call to action should always point to the demo booking or free trial
+
+CONTENT TYPES YOU CREATE:
+- LinkedIn posts (personal brand posts for Darryl, company page posts)
+- Email campaigns (to SSVF grantees, investor outreach, newsletter)
+- One-pagers (product one-pager, investor one-pager)
+- Press releases
+- Social media copy (Twitter/X threads, Facebook posts)
+- Ad copy (Google, LinkedIn ads)
+- Website copy (landing pages, feature pages)
+- Cold email sequences
+
+Format output clearly with headers when creating multi-section content. Always offer a follow-up action.`;
+
+function sendMktMessage() {
+  var input = document.getElementById('mkt-input');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMktMsg(msg, 'user');
+  document.getElementById('mkt-suggestions').style.display = 'none';
+  var thinkingId = addMktMsg('Creating your content...', 'ai');
+  mktChatHistory.push({ role: 'user', content: msg });
+  fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: MKT_SYSTEM,
+      messages: mktChatHistory
+    })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var reply = data.content?.[0]?.text || 'Sorry, I could not generate content right now.';
+    mktChatHistory.push({ role: 'assistant', content: reply });
+    updateMktMsg(thinkingId, reply);
+  }).catch(function(e) {
+    updateMktMsg(thinkingId, 'Error: ' + e.message);
+  });
+}
+
+function addMktMsg(text, role) {
+  var msgs = document.getElementById('mkt-msgs');
+  var id = 'mktmsg_' + Date.now();
+  var div = document.createElement('div');
+  div.className = 'mkt-msg ' + role;
+  div.id = id;
+  if (role === 'ai') {
+    div.innerHTML = text.replace(/\n/g, '<br>') +
+      '<br><button class="mkt-copy-btn" onclick="copyMktMsg(this)">&#x1F4CB; Copy</button>' +
+      '<button class="mkt-copy-btn" onclick="saveMktAsAsset(this)" style="margin-left:4px">&#x1F4BE; Save to Library</button>';
+  } else {
+    div.textContent = text;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+
+function updateMktMsg(id, text) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = text.replace(/\n/g, '<br>') +
+    '<br><button class="mkt-copy-btn" onclick="copyMktMsg(this)">&#x1F4CB; Copy</button>' +
+    '<button class="mkt-copy-btn" onclick="saveMktAsAsset(this)" style="margin-left:4px">&#x1F4BE; Save to Library</button>';
+  el.closest('.mkt-agent-msgs').scrollTop = 99999;
+}
+
+function copyMktMsg(btn) {
+  var text = btn.closest('.mkt-msg').innerText.replace('📋 Copy','').replace('💾 Save to Library','').trim();
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = '✓ Copied!';
+    setTimeout(function() { btn.textContent = '📋 Copy'; }, 2000);
+  });
+}
+
+function saveMktAsAsset(btn) {
+  var text = btn.closest('.mkt-msg').innerText.replace('📋 Copy','').replace('💾 Save to Library','').trim();
+  var blob = new Blob([text], { type: 'text/plain' });
+  var file = new File([blob], 'AI-content-' + new Date().toLocaleDateString().replace(/\//g,'-') + '.txt', { type: 'text/plain' });
+  processFiles([file]);
+  btn.textContent = '✓ Saved!';
+  setTimeout(function() { btn.textContent = '💾 Save to Library'; }, 2000);
+}
+
+function clearMktChat() {
+  document.getElementById('mkt-msgs').innerHTML = '<div class="mkt-msg ai">Chat cleared. What would you like me to create?</div>';
+  mktChatHistory = [];
+  document.getElementById('mkt-suggestions').style.display = 'flex';
+}
+
+function useMktSuggestion(btn) {
+  document.getElementById('mkt-input').value = btn.textContent;
+  sendMktMessage();
+}
+
+function quickCreate(type) {
+  var prompts = {
+    linkedin: 'Write a LinkedIn post for Darryl Barnes about VetConnect OS — mission-forward, authentic veteran voice, mention the pre-seed raise and link to demo.',
+    email: 'Write an email campaign to SSVF grantees introducing VetConnect OS. Mention they can expense the subscription from their federal grant. Subject line + body.',
+    onepager: 'Write a one-pager for VetConnect OS — problem, solution, key stats, pricing overview, and call to action. For potential SSVF grantee customers.',
+    pressrelease: 'Write a press release announcing VetConnect OS launch — veteran-founded SaaS platform for housing coordination, key stats, and Darryl Barnes quote.',
+    socialcard: 'Give me the headline, subtext, and stat to use on a social media graphic for VetConnect OS. Keep it punchy and visual-friendly.'
+  };
+  switchMktTab('agent');
+  if (prompts[type]) {
+    document.getElementById('mkt-input').value = prompts[type];
+    sendMktMessage();
+  }
+}
+
+function generateGfxWithAI() {
+  var template = document.getElementById('gfx-template')?.value || 'social-square';
+  var prompt = 'Generate graphic text for a ' + template + ' for VetConnect OS. Give me: 1) A punchy headline (max 8 words), 2) A subtext line (max 12 words), 3) A stat or badge text (max 5 words), 4) A CTA (max 4 words). Format as: HEADLINE: ... / SUBTEXT: ... / STAT: ... / CTA: ...';
+  switchMktTab('agent');
+  document.getElementById('mkt-input').value = prompt;
+  sendMktMessage();
+}
+
+// ═══ GRAPHIC BUILDER ═══
+var GFX_THEMES = {
+  navy:   { bg: '#0F0A2E', bg2: '#1E1456', accent: '#C9A84C', text: '#FFFFFF', muted: 'rgba(255,255,255,0.6)', badge: '#C9A84C', badgeText: '#0F0A2E' },
+  purple: { bg: '#1E1456', bg2: '#2D1B69', accent: '#C9A84C', text: '#FFFFFF', muted: 'rgba(255,255,255,0.6)', badge: '#C9A84C', badgeText: '#1E1456' },
+  dark:   { bg: '#111111', bg2: '#1a1a1a', accent: '#E8C96A', text: '#FFFFFF', muted: 'rgba(255,255,255,0.55)', badge: '#E8C96A', badgeText: '#111' },
+  light:  { bg: '#FFFFFF', bg2: '#F8F6FF', accent: '#2D1B69', text: '#1A0F45', muted: '#6B5B95', badge: '#2D1B69', badgeText: '#fff' },
+  green:  { bg: '#064e3b', bg2: '#065f46', accent: '#6ee7b7', text: '#FFFFFF', muted: 'rgba(255,255,255,0.6)', badge: '#6ee7b7', badgeText: '#064e3b' }
+};
+
+function renderGraphic() {
+  var preview = document.getElementById('gfx-preview');
+  if (!preview) return;
+  var template = document.getElementById('gfx-template')?.value || 'social-square';
+  var themeName = document.getElementById('gfx-theme')?.value || 'navy';
+  var headline = document.getElementById('gfx-headline')?.value || 'VetConnect OS';
+  var subtext = document.getElementById('gfx-subtext')?.value || '';
+  var stat = document.getElementById('gfx-stat')?.value || '';
+  var cta = document.getElementById('gfx-cta')?.value || '';
+  var showLogo = document.getElementById('gfx-logo')?.checked;
+  var showStats = document.getElementById('gfx-stats')?.checked;
+  var T = GFX_THEMES[themeName] || GFX_THEMES.navy;
+
+  var dims = { 'social-square': [400,400], 'social-story': [225,400], 'linkedin-banner': [400,100], 'pitch-card': [400,225], 'stat-card': [400,200], 'email-header': [400,120] };
+  var d = dims[template] || [400,300];
+  var W = d[0], H = d[1];
+
+  var logoMark = showLogo ? '<rect x="' + (W-52) + '" y="18" width="34" height="34" rx="7" fill="' + T.accent + '"/><text x="' + (W-35) + '" y="40" font-size="14" text-anchor="middle" fill="' + T.badgeText + '" font-weight="bold">V</text>' : '';
+  var badgeSvg = stat ? '<rect x="20" y="' + (H-44) + '" width="' + Math.min(stat.length*8+16, W-40) + '" height="24" rx="12" fill="' + T.badge + '"/><text x="28" y="' + (H-28) + '" font-size="11" fill="' + T.badgeText + '" font-weight="bold">' + esc(stat) + '</text>' : '';
+  var ctaSvg = cta ? '<text x="' + (W-20) + '" y="' + (H-16) + '" font-size="11" text-anchor="end" fill="' + T.muted + '">' + esc(cta) + '</text>' : '';
+  var statsSvg = '';
+  if (showStats && template !== 'linkedin-banner' && template !== 'email-header') {
+    var statsY = H - 70;
+    statsSvg = '<line x1="20" y1="' + (statsY-8) + '" x2="' + (W-20) + '" y2="' + (statsY-8) + '" stroke="' + T.muted + '" stroke-opacity="0.3"/>' +
+      '<text x="20" y="' + statsY + '" font-size="18" font-weight="bold" fill="' + T.accent + '">247+</text>' +
+      '<text x="20" y="' + (statsY+13) + '" font-size="9" fill="' + T.muted + '">Veterans Housed</text>' +
+      '<text x="' + (W/2-20) + '" y="' + statsY + '" font-size="18" font-weight="bold" fill="' + T.accent + '">92%</text>' +
+      '<text x="' + (W/2-20) + '" y="' + (statsY+13) + '" font-size="9" fill="' + T.muted + '">Stability Rate</text>' +
+      '<text x="' + (W-60) + '" y="' + statsY + '" font-size="18" font-weight="bold" fill="' + T.accent + '">16</text>' +
+      '<text x="' + (W-60) + '" y="' + (statsY+13) + '" font-size="9" fill="' + T.muted + '">AI Agents</text>';
+  }
+
+  var headlineY = template === 'linkedin-banner' ? 42 : template === 'email-header' ? 46 : template === 'stat-card' ? 80 : H * 0.42;
+  var subtextY = headlineY + (template === 'linkedin-banner' ? 0 : 26);
+  var fontSize = template === 'linkedin-banner' ? 16 : template === 'stat-card' ? 22 : template === 'email-header' ? 18 : 22;
+  var maxW = W - 40;
+  var words = headline.split(' ');
+  var lines = []; var line = '';
+  words.forEach(function(w) {
+    var test = line ? line + ' ' + w : w;
+    if (test.length * (fontSize * 0.55) > maxW && line) { lines.push(line); line = w; }
+    else line = test;
+  });
+  if (line) lines.push(line);
+  var headlineSvg = lines.map(function(l, i) {
+    return '<text x="20" y="' + (headlineY + i * (fontSize + 6)) + '" font-size="' + fontSize + '" font-weight="bold" fill="' + T.text + '">' + esc(l) + '</text>';
+  }).join('');
+  var subtextSvg = subtext && template !== 'linkedin-banner' ? '<text x="20" y="' + (headlineY + lines.length*(fontSize+6) + 8) + '" font-size="12" fill="' + T.muted + '">' + esc(subtext.slice(0,55)) + '</text>' : '';
+  var accentLine = template !== 'linkedin-banner' ? '<rect x="20" y="' + (headlineY-28) + '" width="36" height="3" rx="1.5" fill="' + T.accent + '"/>' : '';
+
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' +
+    '<rect width="' + W + '" height="' + H + '" fill="' + T.bg + '"/>' +
+    '<rect x="' + (W*0.6) + '" y="0" width="' + (W*0.4) + '" height="' + H + '" fill="' + T.bg2 + '" opacity="0.5"/>' +
+    accentLine + logoMark + headlineSvg + subtextSvg + (showStats ? statsSvg : '') + badgeSvg + ctaSvg +
+    '</svg>';
+
+  preview.innerHTML = svg;
+  preview.querySelector('svg').style.width = '100%';
+  preview.querySelector('svg').style.height = 'auto';
+}
+
+function downloadGraphic() {
+  var svg = document.getElementById('gfx-preview')?.querySelector('svg');
+  if (!svg) return;
+  var template = document.getElementById('gfx-template')?.value || 'graphic';
+  var blob = new Blob([svg.outerHTML], { type: 'image/svg+xml' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url;
+  a.download = 'vetconnect-' + template + '-' + Date.now() + '.svg';
+  a.click(); URL.revokeObjectURL(url);
+  mktGfxCount++; updateMktSidebar();
+}
+
+function saveGraphicToLibrary() {
+  var svg = document.getElementById('gfx-preview')?.querySelector('svg');
+  if (!svg) return;
+  var template = document.getElementById('gfx-template')?.value || 'graphic';
+  var svgBlob = new Blob([svg.outerHTML], { type: 'image/svg+xml' });
+  var fileName = 'graphic-' + template + '-' + new Date().toLocaleDateString().replace(/\//g,'-') + '.svg';
+  var file = new File([svgBlob], fileName, { type: 'image/svg+xml' });
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var asset = { id:'asset_'+Date.now(), name:fileName, type:'image', size:svgBlob.size, dataUrl:e.target.result, ext:'svg', created:new Date().toLocaleDateString() };
+    mktAssets.unshift(asset);
+    renderAssets(); updateMktSidebar(); updateMktRecent();
+    mktGfxCount++; updateMktSidebar();
+    alert('Graphic saved to Asset Library!');
+  };
+  reader.readAsDataURL(svgBlob);
+}
 </script>
 </body>
 </html>
