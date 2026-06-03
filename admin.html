@@ -4229,3 +4229,12 @@ async function sendQuickInvite() {
 </script>
 </body>
 </html>
+
+<script>
+function netlifyAirtable(tableId,params){params=params||{};var url='/.netlify/functions/airtable?table='+tableId;if(params.max)url+='&max='+params.max;return fetch(url).then(function(r){return r.json();});}
+function loadDeckLeads(){var tbody=document.getElementById('crm-tbody');if(!tbody)return;tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading...</td></tr>';netlifyAirtable(TABLE_IDS.deckLeads,{max:200}).then(function(data){deckLeadsCache=data.records||[];renderDeckLeads();}).catch(function(e){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Error: '+e.message+'</td></tr>';});}
+function loadTeam(){var tbody=document.getElementById('team-tbody');if(tbody)tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Loading team...</td></tr>';netlifyAirtable('Users',{max:50}).then(function(data){teamMembers=data.records||[];renderTeamTable();renderOnlineList();}).catch(function(){});}
+function loadVeteranCRM(){var tbody=document.getElementById('vet-crm-tbody');if(tbody)tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading veterans...</td></tr>';netlifyAirtable(TABLE_IDS.veterans,{max:200}).then(function(data){_vetCRMCache=data.records||[];renderVeteranCRM();}).catch(function(){});}
+function loadPHACRM(){netlifyAirtable(TABLE_IDS.markets,{max:100}).then(function(data){_phaCRMCache=data.records||[];renderPHACRM();}).catch(function(){});}
+function saveToken(){var t=document.getElementById('token-input').value.trim();if(!t){alert('Please paste your Airtable token first.');return;}localStorage.setItem('vcg_airtable_token_full',t);sessionStorage.setItem('vcg_airtable_token_full',t);if(typeof _loaded!=='undefined')_loaded={};if(typeof deckLeadsCache!=='undefined')deckLeadsCache=[];if(typeof _teamInit!=='undefined')_teamInit=false;var saved=document.getElementById('token-saved');if(saved){saved.style.display='inline';setTimeout(function(){saved.style.display='none';},3000);}var active=document.querySelector('.section.active');if(active){var id=active.id.replace('section-','');showSection(id);}}
+                </script>
