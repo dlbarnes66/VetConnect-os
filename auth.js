@@ -259,7 +259,14 @@ const VetConnectAuth = (() => {
     return airtableFetch(table + q);
   }
 
-  return { login, logout, getSession, hasRight, createInvite, validateInviteToken,
+  function requireAuth() {
+    const s = getSession();
+    if (!s) { window.location.href = 'login.html'; return null; }
+    if (Date.now() - s.loginTime > 28800000) { logout(); return null; }
+    return s;
+  }
+
+  return { login, logout, getSession, requireAuth, hasRight, createInvite, validateInviteToken,
            completeSignup, startPresenceHeartbeat, ROLE_PERMISSIONS, ROLE_DEFAULTS,
            ALL_RIGHTS, query, airtableFetch };
 })();
