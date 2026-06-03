@@ -5,7 +5,7 @@
 const VetConnectAuth = (() => {
   const BASE    = 'appooo5Vcblwu8Ysn';
   const TOKEN   = null; // Never hardcode tokens — read from localStorage only
-  const USERS   = 'tblUsers';
+  const USERS   = 'Users';
 
   // ── RIGHTS SCHEMA ──────────────────────────────────────
   // 20 granular rights across 5 categories
@@ -108,8 +108,9 @@ const VetConnectAuth = (() => {
   }
 
   async function airtableFetch(table, opts = {}) {
+    // Token from localStorage only — set via platform Settings
     const storedToken = localStorage.getItem('vcg_airtable_token_full');
-    if (!storedToken) { console.warn('VetConnect OS: No Airtable token set. Go to Settings and save your token.'); return { error: { message: 'No token configured' } }; }
+    if (!storedToken) return { error: { message: 'No Airtable token. Go to Settings and save your token.' } };
     const url = `https://api.airtable.com/v0/${BASE}/${table}${opts.query || ''}`;
     const res = await fetch(url, {
       method: opts.method || 'GET',
@@ -119,41 +120,27 @@ const VetConnectAuth = (() => {
     return res.json();
   }
 
-  // ── LOGIN ──────────────────────────────────────────────
+    // ── LOGIN — calls Netlify function (token stays server-side) ──
   async function login(email, password) {
-    const enc = encodeURIComponent;
-    const data = await airtableFetch('Users', {
-      query: `?filterByFormula=${enc(`{email}="${email}"`)}&maxRecords=1`
-    });
-    if (!data.records?.length) return { success: false, message: 'No account found with that email.' };
-    const rec = data.records[0];
-    const f = rec.fields;
-    if (f.status !== 'Active') return { success: false, message: 'Account is inactive. Contact your admin.' };
-    const hash = await hashPassword(password);
-    if (hash !== f.password_hash) return { success: false, message: 'Incorrect password. Please try again.' };
-
-    // Parse rights — stored in Airtable as JSON string or use role defaults
-    let rights = {};
-    try { rights = f.rights ? JSON.parse(f.rights) : (ROLE_DEFAULTS[f.role] || ROLE_DEFAULTS.employee); }
-    catch(e) { rights = ROLE_DEFAULTS[f.role] || ROLE_DEFAULTS.employee; }
-
-    const role = f.role || 'employee';
-    const perms = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.employee;
-    const session = {
-      id: rec.id, full_name: f.full_name, email: f.email,
-      role, rights, permissions: perms,
-      org_id: f.org_id?.[0] || 'vcg', org_name: f.org_name || 'VCG',
-      avatar_url: null, loginTime: Date.now()
-    };
-    sessionStorage.setItem('vcos_session', JSON.stringify(session));
-
-    // Update last_login + last_seen
-    await airtableFetch('Users/' + rec.id, {
-      method: 'PATCH',
-      body: { fields: { last_login: new Date().toISOString(), last_seen: new Date().toISOString() } }
-    });
-    startPresenceHeartbeat(rec.id);
-    return { success: true, session };
+    try {
+      const res = await fetch('/.netlify/functions/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!data.success) return data;
+      // Add permissions from role
+      const role  = data.session.role || 'employee';
+      const perms = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.employee;
+      data.session.permissions = perms;
+      data.session.avatar_url  = null;
+      sessionStorage.setItem('vcos_session', JSON.stringify(data.session));
+      startPresenceHeartbeat(data.session.id);
+      return { success: true, session: data.session };
+    } catch(err) {
+      return { success: false, message: 'Connection error. Please try again.' };
+    }
   }
 
   // ── PRESENCE HEARTBEAT ─────────────────────────────────
@@ -161,9 +148,8 @@ const VetConnectAuth = (() => {
   function startPresenceHeartbeat(recordId) {
     if (_heartbeatInterval) clearInterval(_heartbeatInterval);
     const ping = () => {
-      const storedToken = localStorage.getItem('vcg_airtable_token_full');
-    if (!storedToken) return;
-      fetch(`https://api.airtable.com/v0/${BASE}/Users/${recordId}`, {
+      // Presence ping goes through Netlify function — no token in browser
+      fetch('/.netlify/functions/presence', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({recordId}) }) // replaced, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${storedToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields: { last_seen: new Date().toISOString() } })
