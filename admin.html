@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VetConnect OS — Platform</title>
 <script src="auth.js"></script>
-<script>var __session = VetConnectAuth.requireAuth();</script>
+<script>/* auth guard handled by auth.js */</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap");
@@ -1880,7 +1880,7 @@ What would you like me to create today?</div>
 </div>
 
 <script>
-var session = VetConnectAuth.requireAuth();
+var session = VetConnectAuth.getSession();
 if (session) {
   var perms = session.permissions || VetConnectAuth.ROLE_PERMISSIONS[session.role] || {};
   var initials = session.full_name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
