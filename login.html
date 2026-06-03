@@ -527,7 +527,7 @@
     btn.disabled = true;
 
     try {
-      const result = await VetConnectAuth.login(email, password);
+      const result = await await VetConnectAuth.login(email, password);
 
       if (result.success) {
         // Redirect based on role
