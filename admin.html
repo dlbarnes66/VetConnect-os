@@ -3961,16 +3961,16 @@ function initTeam() {
 function loadTeam() {
   var tbody = document.getElementById('team-tbody');
   if (!tbody) return;
-  var token = localStorage.getItem('vcg_airtable_token_full') || localStorage.getItem('vcg_airtable_token_full');
-  fetch('https://api.airtable.com/v0/appooo5Vcblwu8Ysn/Users?maxRecords=50', {
-    headers: { 'Authorization': 'Bearer ' + token }
-  }).then(function(r) { return r.json(); }).then(function(data) {
-    teamMembers = data.records || [];
-    renderTeamTable();
-    renderOnlineList();
-  }).catch(function(e) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Could not load team — check token</td></tr>';
-  });
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Loading team...</td></tr>';
+  fetch('/.netlify/functions/airtable?table=Users&max=50')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      teamMembers = data.records || [];
+      renderTeamTable();
+      renderOnlineList();
+    }).catch(function(e) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Could not load team</td></tr>';
+    });
 }
 
 function isOnline(rec) {
