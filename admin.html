@@ -4280,3 +4280,77 @@ function startPresencePoller() {
   }, 60000);
 }
                 </script>
+
+<script>
+window.addEventListener('load', function() {
+  // Override netlifyAirtable first
+  window.netlifyAirtable = function(tableId, params) {
+    params = params || {};
+    var url = '/.netlify/functions/airtable?table=' + tableId;
+    if (params.max) url += '&max=' + params.max;
+    return fetch(url).then(function(r) { return r.json(); });
+  };
+
+  // Override initTeam so it always fires loadTeam fresh
+  window.initTeam = function() {
+    window._teamInit = false;
+    window.loadTeam();
+    if (typeof startPresencePoller === 'function') startPresencePoller();
+  };
+
+  // Override loadTeam using netlifyAirtable
+  window.loadTeam = function() {
+    var tbody = document.getElementById('team-tbody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Loading team...</td></tr>';
+    window.netlifyAirtable('Users', {max:50}).then(function(data) {
+      window.teamMembers = data.records || [];
+      if (typeof renderTeamTable === 'function') renderTeamTable();
+      if (typeof renderOnlineList === 'function') renderOnlineList();
+    }).catch(function(e) {
+      if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--danger)">Error loading team: ' + e.message + '</td></tr>';
+    });
+  };
+
+  // Override loadDeckLeads
+  window.loadDeckLeads = function() {
+    var tbody = document.getElementById('crm-tbody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Loading...</td></tr>';
+    window.netlifyAirtable(window.TABLE_IDS ? TABLE_IDS.deckLeads : 'tblnDM50dD7d8Fkjy', {max:200}).then(function(data) {
+      window.deckLeadsCache = data.records || [];
+      if (typeof renderDeckLeads === 'function') renderDeckLeads();
+    }).catch(function(){});
+  };
+
+  // Override sendInvite
+  window.sendInvite = async function(email, role, statusEl, resultEl) {
+    if (!email) { if(statusEl) statusEl.textContent = 'Email is required.'; return null; }
+    if(statusEl) statusEl.textContent = 'Creating invite...';
+    try {
+      var res = await fetch('/.netlify/functions/invite', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ email: email, role: role, invitedBy: window.session ? window.session.full_name : 'Admin' })
+      });
+      var data = await res.json();
+      if (!data.success) { if(statusEl) statusEl.textContent = String.fromCharCode(10007) + ' ' + data.message; return null; }
+      return window.location.origin + '/signup.html?token=' + data.token;
+    } catch(e) {
+      if(statusEl) statusEl.textContent = String.fromCharCode(10007) + ' ' + e.message;
+      return null;
+    }
+  };
+
+  // Override saveToken
+  window.saveToken = function() {
+    var t = document.getElementById('token-input') ? document.getElementById('token-input').value.trim() : '';
+    if (!t) { alert('Please paste your Airtable token first.'); return; }
+    localStorage.setItem('vcg_airtable_token_full', t);
+    sessionStorage.setItem('vcg_airtable_token_full', t);
+    window.deckLeadsCache = [];
+    window._teamInit = false;
+    var saved = document.getElementById('token-saved');
+    if (saved) { saved.style.display = 'inline'; setTimeout(function(){saved.style.display='none';}, 3000); }
+  };
+
+  console.log('VetConnect OS: permanent overrides loaded');
+});
+                </script>
