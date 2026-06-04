@@ -4260,3 +4260,23 @@ async function sendInvite(email, role, statusEl, resultEl) {
   }
 }
                 </script>
+
+<script>
+// Fix initTeam — always loads team data on first open
+function initTeam() {
+  _teamInit = true;
+  loadTeam();
+  startPresencePoller();
+}
+// Fix initAutomations to not require token
+var _origInitAuto = typeof initAutomations === 'function' ? initAutomations : null;
+// Auto-refresh team every 60s when team section is visible
+if (typeof _presenceInterval === 'undefined') var _presenceInterval = null;
+function startPresencePoller() {
+  if (_presenceInterval) clearInterval(_presenceInterval);
+  _presenceInterval = setInterval(function() {
+    var ts = document.getElementById('section-team');
+    if (ts && ts.classList.contains('active')) loadTeam();
+  }, 60000);
+}
+                </script>
